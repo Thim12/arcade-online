@@ -1066,13 +1066,10 @@
   <script src="js/views/admin-review.js"></script>
   <script src="js/app.js"></script>
   <script>
-    // Cookie Banner
+    // Cookie Banner – automatisch akzeptiert, Banner bleibt versteckt
+    localStorage.setItem('cookie_consent', '1');
     function cookieAccept() {
-      localStorage.setItem('cookie_consent', '1');
       document.getElementById('cookie-banner').classList.add('hidden');
-    }
-    if (!localStorage.getItem('cookie_consent')) {
-      document.getElementById('cookie-banner').classList.remove('hidden');
     }
   </script>
 </body>

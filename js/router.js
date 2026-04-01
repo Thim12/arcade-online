@@ -62,10 +62,25 @@ const Router = (() => {
    * Initialise: handle popstate and click delegation.
    */
   function init() {
-    // Resolve initial hash
-    const hash = window.location.hash.replace('#', '');
-    const initial = VIEWS.includes(hash) ? hash : 'home';
+    // Resolve initial hash – support #view?key=value
+    const raw     = window.location.hash.replace('#', '');
+    const [hashView, hashQuery] = raw.split('?');
+    const initial = VIEWS.includes(hashView) ? hashView : 'home';
+
+    // Parse query params from hash (e.g. token=abc)
+    const hashParams = {};
+    if (hashQuery) {
+      hashQuery.split('&').forEach(pair => {
+        const [k, v] = pair.split('=');
+        if (k) hashParams[decodeURIComponent(k)] = decodeURIComponent(v || '');
+      });
+    }
+
     _setActive(initial);
+    if (Object.keys(hashParams).length) {
+      const ev = new CustomEvent('routeChange', { detail: { viewId: initial, params: hashParams } });
+      document.dispatchEvent(ev);
+    }
 
     // Browser back/forward
     window.addEventListener('popstate', (e) => {

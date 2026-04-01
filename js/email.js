@@ -112,6 +112,7 @@ async function sendSubmission(data) {
     .join('\n');
 
   const templateParams = {
+    to_email:      ADMIN_EMAIL,
     type:          data.type === 'verein' ? 'Verein' : 'Turnier',
     name:          data.name,
     sport:         data.sport,

@@ -1,13 +1,10 @@
 /**
  * views/admin-review.js
  * Admin page to approve or reject pending club/tournament submissions.
- *
- * Access: navigate to #admin-review in the URL, or click the link in
- * the confirmation email (token is read from URL params automatically).
- *
- * This is a simple, password-free admin view suitable for a
- * non-commercial demo project. Do not use this pattern in production.
+ * Protected: only accessible when logged in as the admin e-mail.
  */
+
+const ADMIN_EMAIL = 'timlober0@gmail.com';
 
 const AdminReviewView = (() => {
 
@@ -18,6 +15,14 @@ const AdminReviewView = (() => {
 
   /** Called by routeChange handler whenever this view becomes active. */
   function render(params) {
+    // --- Zugriffsschutz ---
+    const user = Auth.getUser();
+    if (!user || user.email !== ADMIN_EMAIL) {
+      Toast.show('Zugriff verweigert. Nur für Administratoren.', 'error', 4000);
+      Router.go('home');
+      return;
+    }
+
     _renderList();
 
     // If a token was passed in the URL (e.g. from email link), pre-scroll to it

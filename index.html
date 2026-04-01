@@ -1033,19 +1033,6 @@
     </div>
   </div>
 
-  <!-- COOKIE BANNER -->
-  <div class="cookie-banner hidden" id="cookie-banner">
-    <div class="cookie-banner-inner">
-      <p class="cookie-banner-text">
-        Wir verwenden technisch notwendige Cookies, um die Funktionalität der Website zu gewährleisten (z.&nbsp;B. Login-Sitzungen). Es werden keine Tracking- oder Werbe-Cookies eingesetzt.
-        <button class="cookie-link" onclick="document.getElementById('datenschutz-modal').classList.remove('hidden')">Mehr erfahren</button>
-      </p>
-      <div class="cookie-banner-actions">
-        <button class="btn btn-primary btn-sm" onclick="cookieAccept()">Verstanden</button>
-      </div>
-    </div>
-  </div>
-
   <!-- SCRIPTS -->
   <!-- EmailJS CDN -->
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -1065,12 +1052,5 @@
   <script src="js/views/register-club.js"></script>
   <script src="js/views/admin-review.js"></script>
   <script src="js/app.js"></script>
-  <script>
-    // Cookie Banner – automatisch akzeptiert, Banner bleibt versteckt
-    localStorage.setItem('cookie_consent', '1');
-    function cookieAccept() {
-      document.getElementById('cookie-banner').classList.add('hidden');
-    }
-  </script>
 </body>
 </html>

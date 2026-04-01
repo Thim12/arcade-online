@@ -1711,6 +1711,251 @@
   font-size: 0.9rem;
 }
 
+/* ============================================================
+   REGISTER VEREIN – MULTI-SPORT FORM
+   ============================================================ */
+
+.reg-info-box {
+  background: var(--color-bg-2, #f8f9fa);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm, 6px);
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  color: var(--color-text-2);
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+.reg-form-section {
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.reg-form-section:last-of-type {
+  border-bottom: none;
+}
+
+.reg-section-title {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+
+.reg-section-hint {
+  font-size: 0.82rem;
+  color: var(--color-text-3);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+/* Labels */
+.form-required { color: #ef4444; font-size: 0.85em; }
+.form-optional  { color: var(--color-text-3); font-size: 0.8em; font-weight: 400; }
+.form-recommended { color: #d97706; font-size: 0.8em; font-weight: 600; }
+
+/* Inline field error */
+.form-field-error {
+  display: block;
+  font-size: 0.78rem;
+  color: #ef4444;
+  margin-top: 4px;
+}
+.form-field-error.hidden { display: none; }
+
+/* Orange highlight for invalid required fields */
+.input-error {
+  border-color: #f97316 !important;
+  background: #fff7ed !important;
+}
+
+/* Sport selector buttons */
+.sport-selector-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.sport-selector-btn {
+  padding: 8px 20px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-full, 999px);
+  background: var(--color-bg);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  color: var(--color-text-2);
+}
+
+.sport-selector-btn:hover {
+  border-color: var(--color-accent, #3b82f6);
+  color: var(--color-accent, #3b82f6);
+}
+
+.sport-selector-btn.active {
+  border-color: var(--color-accent, #3b82f6);
+  background: var(--color-accent, #3b82f6);
+  color: #fff;
+}
+
+/* Sport tabs */
+.sport-tabs {
+  margin-top: 20px;
+}
+.sport-tabs.hidden { display: none; }
+
+.sport-tab-bar {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--color-border);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.sport-tab-btn {
+  padding: 8px 18px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--color-text-3);
+  margin-bottom: -2px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.sport-tab-btn.active {
+  color: var(--color-accent, #3b82f6);
+  border-bottom-color: var(--color-accent, #3b82f6);
+}
+
+.sport-tab-panel.hidden { display: none; }
+
+/* Agegroup and trainer rows */
+.agegroup-header-row,
+.trainer-header-row {
+  display: grid;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-3);
+  margin-bottom: 6px;
+  padding: 0 4px;
+}
+
+.agegroup-header-row { grid-template-columns: 1fr 1fr 100px 28px; }
+.trainer-header-row  { grid-template-columns: 1fr 1fr 28px; }
+
+.agegroup-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 100px 28px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.trainer-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 28px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.btn-remove-row {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-bg);
+  color: var(--color-text-3);
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.12s, color 0.12s;
+}
+
+.btn-remove-row:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.add-row-btn {
+  margin-top: 4px;
+  font-size: 0.82rem;
+}
+
+/* Partial-submit dialog */
+.partial-submit-dialog {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 16px;
+}
+
+.partial-submit-dialog.hidden { display: none; }
+
+.partial-submit-box {
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  padding: 28px 24px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+}
+
+.partial-submit-box h3 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.partial-submit-hint {
+  font-size: 0.85rem;
+  color: var(--color-text-2);
+  line-height: 1.55;
+  margin-bottom: 18px;
+}
+
+.partial-submit-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+/* Status banner ("In Bearbeitung") */
+.status-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm, 6px);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.status-banner--wip {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
 /* ---- ADMIN PASSWORD OVERLAY ------------------------------ */
 .admin-pw-overlay {
   display: flex;

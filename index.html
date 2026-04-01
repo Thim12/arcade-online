@@ -638,84 +638,11 @@
         <h2 class="reg-form-title">Verein eintragen</h2>
         <p class="reg-form-sub">Trag deinen Verein ein. Nach Prüfung wird er auf Playor Sports veröffentlicht.</p>
       </div>
-      <form class="reg-club-form" id="register-verein-form" novalidate>
-        <div class="reg-form-grid">
-          <div class="form-group">
-            <label class="form-label">Vereinsname <span class="form-required">*</span></label>
-            <input type="text" class="form-input" id="rv-name" required placeholder="z.B. TC Blau-Weiß Heusenstamm">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Sportart <span class="form-required">*</span></label>
-            <select class="form-input" id="rv-sport" required>
-              <option value="">Bitte wählen</option>
-              <option value="tennis">Tennis</option>
-              <option value="fussball">Fußball</option>
-              <option value="basketball">Basketball</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Standort / Adresse <span class="form-required">*</span></label>
-            <input type="text" class="form-input" id="rv-address" required placeholder="z.B. Hauptstraße 10, 63150 Heusenstamm">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Gegründet (Jahr)</label>
-            <input type="number" class="form-input" id="rv-founded" placeholder="z.B. 1965" min="1800" max="2100">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Mitgliederanzahl (ca.)</label>
-            <input type="number" class="form-input" id="rv-members" placeholder="z.B. 120" min="1">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Anzahl Plätze / Felder</label>
-            <input type="number" class="form-input" id="rv-courts" placeholder="z.B. 4" min="1">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Mitgliedsbeitrag (€/Jahr, ca.)</label>
-            <input type="text" class="form-input" id="rv-costs" placeholder="z.B. 180 €/Jahr oder kostenlos">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Leistungsorientiert?</label>
-            <select class="form-input" id="rv-competitive">
-              <option value="ja">Ja – Ligabetrieb / Wettkampf</option>
-              <option value="beides">Beides – Freizeit &amp; Wettkampf</option>
-              <option value="nein">Nein – nur Freizeit / Hobby</option>
-            </select>
-          </div>
-          <div class="form-group form-group--full">
-            <label class="form-label">Altersklassen (mehrere mit Komma)</label>
-            <input type="text" class="form-input" id="rv-agegroups" placeholder="z.B. U12, U16, Erwachsene, Ü50">
-          </div>
-          <div class="form-group form-group--full">
-            <label class="form-label">Ligen (falls vorhanden)</label>
-            <input type="text" class="form-input" id="rv-leagues" placeholder="z.B. Kreisliga A, Hessenliga">
-          </div>
-          <div class="form-group form-group--full">
-            <label class="form-label">Beschreibung <span class="form-required">*</span></label>
-            <textarea class="form-input form-textarea" id="rv-description" rows="4" required placeholder="Kurze Beschreibung des Vereins, Besonderheiten, Angebote ..."></textarea>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Website</label>
-            <input type="url" class="form-input" id="rv-website" placeholder="https://mein-verein.de">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Telefon</label>
-            <input type="tel" class="form-input" id="rv-phone" placeholder="z.B. 069 12345678">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Kontakt-E-Mail <span class="form-required">*</span></label>
-            <input type="email" class="form-input" id="rv-email" required placeholder="kontakt@mein-verein.de">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Ansprechpartner</label>
-            <input type="text" class="form-input" id="rv-contact-name" placeholder="Vor- und Nachname">
-          </div>
-        </div>
-        <div class="form-error hidden" id="rv-error"></div>
-        <div class="reg-form-submit">
-          <button type="submit" class="btn btn-primary btn-lg" id="rv-submit-btn">Anfrage senden</button>
-          <p class="reg-form-hint">Nach dem Absenden prüft unser Team den Eintrag. Du erhältst keine automatische Bestätigung (Demo-Modus).</p>
-        </div>
-      </form>
+      <div class="reg-info-box">
+        <strong>Hinweis:</strong> Pflichtfelder sind mit <span class="form-required">*</span> markiert. Mit <span class="form-recommended">★</span> markierte Felder sind stark empfohlen – sie helfen Sportlern, deinen Verein besser zu finden.
+      </div>
+      <!-- Formular wird per JS in diesen Container gerendert -->
+      <div id="rv-form-container"></div>
     </div>
   </section>
 
@@ -727,6 +654,10 @@
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Zurück
         </button>
+      </div>
+      <div class="status-banner status-banner--wip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        In Bearbeitung – Turniere werden demnächst auf Playor Sports veröffentlicht.
       </div>
       <div class="reg-form-header">
         <span class="reg-form-eyebrow">Kostenfrei &amp; unverbindlich</span>
@@ -890,6 +821,15 @@
               <option value="Erwachsene">Erwachsene</option>
               <option value="Ü35">Ü35</option>
               <option value="Ü50">Ü50</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Geschlecht</label>
+            <select class="form-input" id="reg-gender">
+              <option value="">Keine Angabe</option>
+              <option value="maennlich">Männlich</option>
+              <option value="weiblich">Weiblich</option>
+              <option value="divers">Divers</option>
             </select>
           </div>
           <div class="form-group">
@@ -1108,6 +1048,9 @@
   <script src="js/views/profile.js"></script>
   <script src="js/views/social.js"></script>
   <script src="js/views/chat.js"></script>
+  <script src="js/views/register-club-tennis.js"></script>
+  <script src="js/views/register-club-fussball.js"></script>
+  <script src="js/views/register-club-basketball.js"></script>
   <script src="js/views/register-club.js"></script>
   <script src="js/views/admin-review.js"></script>
   <script src="js/app.js"></script>

@@ -105,7 +105,7 @@ const Auth = (() => {
   /**
    * Registrierung – Supabase oder Demo-Modus.
    */
-  async function register({ name, email, password, sport, location, ageGroup }) {
+  async function register({ name, email, password, sport, location, ageGroup, gender }) {
     if (!name || !email || !password) return { ok: false, error: 'Alle Felder ausfüllen.' };
     if (password.length < 8) return { ok: false, error: 'Das Passwort muss mindestens 8 Zeichen lang sein.' };
 
@@ -133,6 +133,7 @@ const Auth = (() => {
           wins:        0,
           trainings:   0,
           club_status: 'suche',
+          gender:      gender || '',
         });
       }
       return { ok: true, user: data.user };
@@ -150,6 +151,7 @@ const Auth = (() => {
         sport:      sport || 'fussball',
         location:   location || 'Hessen',
         ageGroup:   ageGroup || '',
+        gender:     gender || '',
         bio:        '',
         xp:         0,
         level:      'anfanger',

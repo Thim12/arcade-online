@@ -120,7 +120,8 @@ function initAuthModal() {
     const sport    = document.getElementById('reg-sport').value;
     const location = document.getElementById('reg-location').value;
     const ageGroup = document.getElementById('reg-agegroup').value;
-    const res = await Auth.register({ name, email, password, sport, location, ageGroup });
+    const gender   = document.getElementById('reg-gender').value;
+    const res = await Auth.register({ name, email, password, sport, location, ageGroup, gender });
     if (res.ok) {
       close();
       Toast.show('Konto erstellt! Willkommen, ' + res.user.name + '!', 'success');
@@ -337,26 +338,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function _initFooterModals() {
-  function openModal(id) {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove('hidden');
-  }
-  function closeModal(id) {
-    const el = document.getElementById(id);
-    if (el) el.classList.add('hidden');
-  }
-
-  // Open
-  const btnImpressum = document.getElementById('btn-impressum');
-  const btnDatenschutz = document.getElementById('btn-datenschutz');
-  if (btnImpressum)   btnImpressum.addEventListener('click',   () => openModal('impressum-modal'));
-  if (btnDatenschutz) btnDatenschutz.addEventListener('click', () => openModal('datenschutz-modal'));
-
-  // Close via X button – kein Schließen durch Klick daneben
-  const closeImpressum   = document.getElementById('impressum-close');
-  const closeDatenschutz = document.getElementById('datenschutz-close');
-  if (closeImpressum)   closeImpressum.addEventListener('click',   () => closeModal('impressum-modal'));
-  if (closeDatenschutz) closeDatenschutz.addEventListener('click', () => closeModal('datenschutz-modal'));
+  // Event delegation on document – works regardless of when buttons/modals are in the DOM
+  document.addEventListener('click', e => {
+    // Open
+    if (e.target.closest('#btn-impressum'))   document.getElementById('impressum-modal')?.classList.remove('hidden');
+    if (e.target.closest('#btn-datenschutz')) document.getElementById('datenschutz-modal')?.classList.remove('hidden');
+    // Close via X only
+    if (e.target.closest('#impressum-close'))   document.getElementById('impressum-modal')?.classList.add('hidden');
+    if (e.target.closest('#datenschutz-close')) document.getElementById('datenschutz-modal')?.classList.add('hidden');
+  });
 }
 
 function _seedMockUsers() {

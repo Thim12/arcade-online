@@ -191,9 +191,9 @@
             Playor Sports
           </span>
           <div class="home-footer-links">
-            <button class="home-footer-link" id="btn-impressum">Impressum</button>
+            <button class="home-footer-link" onclick="document.getElementById('impressum-modal').classList.remove('hidden')">Impressum</button>
             <span class="home-footer-sep"></span>
-            <button class="home-footer-link" id="btn-datenschutz">Datenschutz</button>
+            <button class="home-footer-link" onclick="document.getElementById('datenschutz-modal').classList.remove('hidden')">Datenschutz</button>
           </div>
           <span class="home-footer-copy">&copy; 2026 Playor Sports</span>
         </div>
@@ -918,7 +918,7 @@
     <div class="modal">
       <div class="modal-header">
         <h3>Impressum</h3>
-        <button class="modal-close" id="impressum-close">&times;</button>
+        <button class="modal-close" onclick="document.getElementById('impressum-modal').classList.add('hidden')">&times;</button>
       </div>
       <div class="modal-body">
         <div class="legal-section">
@@ -945,7 +945,7 @@
     <div class="modal modal--wide">
       <div class="modal-header">
         <h3>Datenschutzerklärung</h3>
-        <button class="modal-close" id="datenschutz-close">&times;</button>
+        <button class="modal-close" onclick="document.getElementById('datenschutz-modal').classList.add('hidden')">&times;</button>
       </div>
       <div class="modal-body legal-body">
 

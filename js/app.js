@@ -333,21 +333,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // 8. Seed mock users into localStorage if not already there
   _seedMockUsers();
 
-  // 9. Footer modals (Impressum / Datenschutz)
-  _initFooterModals();
+  // 9. Footer modals handled via inline onclick in HTML
 });
-
-function _initFooterModals() {
-  // Event delegation on document – works regardless of when buttons/modals are in the DOM
-  document.addEventListener('click', e => {
-    // Open
-    if (e.target.closest('#btn-impressum'))   document.getElementById('impressum-modal')?.classList.remove('hidden');
-    if (e.target.closest('#btn-datenschutz')) document.getElementById('datenschutz-modal')?.classList.remove('hidden');
-    // Close via X only
-    if (e.target.closest('#impressum-close'))   document.getElementById('impressum-modal')?.classList.add('hidden');
-    if (e.target.closest('#datenschutz-close')) document.getElementById('datenschutz-modal')?.classList.add('hidden');
-  });
-}
 
 function _seedMockUsers() {
   const key = 'sm_users';

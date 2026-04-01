@@ -1,21 +1,164 @@
 /**
  * views/admin-review.js
  * Admin page to approve or reject pending club/tournament submissions.
- * Protected: only accessible when logged in as the admin e-mail.
+ * Protected: only accessible when logged in as the admin e-mail AND
+ * after entering the correct admin password (stored as SHA-256 hash).
  */
 
-const ADMIN_EMAIL = 'timlober0@gmail.com';
+const ADMIN_EMAIL   = 'timlober0@gmail.com';
+const ADMIN_PW_KEY  = 'playor_admin_pw_hash'; // localStorage key for hash
+const SESSION_KEY   = 'playor_admin_session';  // sessionStorage key
 
 const AdminReviewView = (() => {
+
+  // ---- stored params for after password entry ----
+  let _pendingParams = null;
 
   function init() {
     const backBtn = document.getElementById('admin-review-back');
     if (backBtn) backBtn.addEventListener('click', () => Router.go('home'));
   }
 
+  // ---- SHA-256 helper (Web Crypto API, built into all modern browsers) ----
+  async function _sha256(text) {
+    const buf = await crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(text)
+    );
+    return Array.from(new Uint8Array(buf))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
+
+  // ---- Password overlay -----------------------------------------------
+  function _showPasswordOverlay(mode) {
+    // mode: 'set' | 'enter' | 'change'
+    const list    = document.getElementById('admin-pending-list');
+    const empty   = document.getElementById('admin-empty');
+    const sub     = document.getElementById('admin-review-sub');
+    if (list)  list.innerHTML  = '';
+    if (empty) empty.classList.add('hidden');
+
+    const title = mode === 'set'
+      ? 'Admin-Passwort festlegen'
+      : mode === 'change'
+        ? 'Neues Admin-Passwort festlegen'
+        : 'Admin-Passwort eingeben';
+
+    const hint = mode === 'set'
+      ? 'Du öffnest das Admin-Panel zum ersten Mal. Lege jetzt ein sicheres Passwort fest.'
+      : mode === 'change'
+        ? 'Gib zuerst dein altes Passwort ein, dann das neue.'
+        : 'Gib das Admin-Passwort ein um fortzufahren.';
+
+    if (sub) sub.textContent = title;
+
+    const html = mode === 'change' ? `
+      <div class="admin-pw-overlay" id="admin-pw-overlay">
+        <div class="admin-pw-box">
+          <h3>${title}</h3>
+          <p class="admin-pw-hint">${hint}</p>
+          <div class="form-group">
+            <label>Altes Passwort</label>
+            <input type="password" id="admin-pw-old" class="form-input" placeholder="Altes Passwort" autocomplete="current-password">
+          </div>
+          <div class="form-group">
+            <label>Neues Passwort</label>
+            <input type="password" id="admin-pw-new" class="form-input" placeholder="Neues Passwort (min. 6 Zeichen)" autocomplete="new-password">
+          </div>
+          <div class="form-group">
+            <label>Neues Passwort bestätigen</label>
+            <input type="password" id="admin-pw-confirm" class="form-input" placeholder="Wiederholen" autocomplete="new-password">
+          </div>
+          <p class="form-error hidden" id="admin-pw-error"></p>
+          <div style="display:flex;gap:0.75rem;margin-top:1rem;">
+            <button class="btn btn-primary" id="admin-pw-submit">Passwort ändern</button>
+            <button class="btn btn-ghost" id="admin-pw-cancel">Abbrechen</button>
+          </div>
+        </div>
+      </div>` : `
+      <div class="admin-pw-overlay" id="admin-pw-overlay">
+        <div class="admin-pw-box">
+          <h3>${title}</h3>
+          <p class="admin-pw-hint">${hint}</p>
+          <div class="form-group">
+            <input type="password" id="admin-pw-input" class="form-input" placeholder="Passwort eingeben" autocomplete="${mode === 'set' ? 'new-password' : 'current-password'}">
+          </div>
+          ${mode === 'set' ? `
+          <div class="form-group">
+            <input type="password" id="admin-pw-confirm" class="form-input" placeholder="Passwort bestätigen" autocomplete="new-password">
+          </div>` : ''}
+          <p class="form-error hidden" id="admin-pw-error"></p>
+          <button class="btn btn-primary" id="admin-pw-submit" style="margin-top:0.5rem;">${mode === 'set' ? 'Passwort festlegen' : 'Einloggen'}</button>
+        </div>
+      </div>`;
+
+    if (list) list.innerHTML = html;
+
+    // Focus first input
+    setTimeout(() => {
+      const first = document.getElementById('admin-pw-old') || document.getElementById('admin-pw-input');
+      if (first) first.focus();
+    }, 50);
+
+    // Allow Enter key to submit
+    document.getElementById('admin-pw-overlay').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('admin-pw-submit')?.click();
+    });
+
+    document.getElementById('admin-pw-submit').addEventListener('click', async () => {
+      const errEl = document.getElementById('admin-pw-error');
+      errEl.classList.add('hidden');
+
+      if (mode === 'set') {
+        const pw  = document.getElementById('admin-pw-input').value;
+        const pw2 = document.getElementById('admin-pw-confirm').value;
+        if (pw.length < 6) { errEl.textContent = 'Mindestens 6 Zeichen.'; errEl.classList.remove('hidden'); return; }
+        if (pw !== pw2)    { errEl.textContent = 'Passwörter stimmen nicht überein.'; errEl.classList.remove('hidden'); return; }
+        const hash = await _sha256(pw);
+        localStorage.setItem(ADMIN_PW_KEY, hash);
+        sessionStorage.setItem(SESSION_KEY, '1');
+        Toast.show('Admin-Passwort wurde festgelegt!', 'success');
+        _renderList();
+
+      } else if (mode === 'enter') {
+        const pw   = document.getElementById('admin-pw-input').value;
+        const hash = await _sha256(pw);
+        if (hash !== localStorage.getItem(ADMIN_PW_KEY)) {
+          errEl.textContent = 'Falsches Passwort.';
+          errEl.classList.remove('hidden');
+          document.getElementById('admin-pw-input').value = '';
+          document.getElementById('admin-pw-input').focus();
+          return;
+        }
+        sessionStorage.setItem(SESSION_KEY, '1');
+        _renderList(_pendingParams);
+
+      } else if (mode === 'change') {
+        const oldPw  = document.getElementById('admin-pw-old').value;
+        const newPw  = document.getElementById('admin-pw-new').value;
+        const newPw2 = document.getElementById('admin-pw-confirm').value;
+        const oldHash = await _sha256(oldPw);
+        if (oldHash !== localStorage.getItem(ADMIN_PW_KEY)) {
+          errEl.textContent = 'Altes Passwort ist falsch.'; errEl.classList.remove('hidden'); return;
+        }
+        if (newPw.length < 6) { errEl.textContent = 'Neues Passwort: mindestens 6 Zeichen.'; errEl.classList.remove('hidden'); return; }
+        if (newPw !== newPw2)  { errEl.textContent = 'Passwörter stimmen nicht überein.'; errEl.classList.remove('hidden'); return; }
+        const newHash = await _sha256(newPw);
+        localStorage.setItem(ADMIN_PW_KEY, newHash);
+        Toast.show('Passwort erfolgreich geändert!', 'success');
+        _renderList();
+      }
+    });
+
+    // Cancel button (change mode only)
+    const cancelBtn = document.getElementById('admin-pw-cancel');
+    if (cancelBtn) cancelBtn.addEventListener('click', () => _renderList());
+  }
+
   /** Called by routeChange handler whenever this view becomes active. */
   function render(params) {
-    // --- Zugriffsschutz ---
+    // --- Zugriffsschutz 1: E-Mail ---
     const user = Auth.getUser();
     if (!user || user.email !== ADMIN_EMAIL) {
       Toast.show('Zugriff verweigert. Nur für Administratoren.', 'error', 4000);
@@ -23,18 +166,29 @@ const AdminReviewView = (() => {
       return;
     }
 
-    _renderList();
+    _pendingParams = params;
 
-    // If a token was passed in the URL (e.g. from email link), pre-scroll to it
-    if (params && params.token) {
-      setTimeout(() => {
-        const el = document.querySelector(`[data-token="${params.token}"]`);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 200);
+    // --- Zugriffsschutz 2: Passwort ---
+    const storedHash = localStorage.getItem(ADMIN_PW_KEY);
+    const hasSession = sessionStorage.getItem(SESSION_KEY);
+
+    if (!storedHash) {
+      // First time: let admin set a password
+      _showPasswordOverlay('set');
+      return;
     }
+
+    if (!hasSession) {
+      // Password is set but not yet entered this browser session
+      _showPasswordOverlay('enter');
+      return;
+    }
+
+    // All checks passed
+    _renderList(params);
   }
 
-  function _renderList() {
+  function _renderList(params) {
     const list  = document.getElementById('admin-pending-list');
     const empty = document.getElementById('admin-empty');
     const sub   = document.getElementById('admin-review-sub');
@@ -44,6 +198,14 @@ const AdminReviewView = (() => {
     const pending = items.filter(s => s.status === 'pending');
 
     sub.textContent = `${pending.length} ausstehend · ${items.length} gesamt`;
+
+    // If a token was passed in the URL, pre-scroll to it
+    if (params && params.token) {
+      setTimeout(() => {
+        const el = document.querySelector(`[data-token="${params.token}"]`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 200);
+    }
 
     if (items.length === 0) {
       list.innerHTML = '';
@@ -108,6 +270,14 @@ const AdminReviewView = (() => {
     list.querySelectorAll('.admin-reject-btn').forEach(btn => {
       btn.addEventListener('click', () => _reject(btn.dataset.token));
     });
+
+    // "Passwort ändern" footer link
+    const pwChangeBtn = document.createElement('button');
+    pwChangeBtn.className = 'btn btn-ghost btn-sm';
+    pwChangeBtn.style.cssText = 'margin-top:2rem;display:block;';
+    pwChangeBtn.textContent = 'Admin-Passwort ändern';
+    pwChangeBtn.addEventListener('click', () => _showPasswordOverlay('change'));
+    list.appendChild(pwChangeBtn);
   }
 
   function _approve(token) {
@@ -129,7 +299,6 @@ const AdminReviewView = (() => {
     Toast.show(`"${entry.name}" wurde abgelehnt und gelöscht.`, 'success');
     _renderList();
   }
-
   function _submissionToClub(entry) {
     const sportImgs = {
       tennis:     'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&q=80',

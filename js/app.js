@@ -72,7 +72,7 @@ function initAuthModal() {
   }
 
   closeBtn.addEventListener('click', close);
-  modal.addEventListener('click', e => { if (e.target === modal) close(); });
+  // Kein Schließen durch Klick daneben – nur das X schließt das Modal
   loginBtn.addEventListener('click', () => open('login'));
   registerBtn.addEventListener('click', () => open('register'));
   if (mobileLogin)    mobileLogin.addEventListener('click', () => open('login'));
@@ -134,9 +134,10 @@ function initAuthModal() {
     }
   });
 
-  // Datenschutz-Link im Registrierformular öffnet das Modal
+  // Datenschutz-Link im Registrierformular öffnet das Modal (Auth-Modal bleibt offen)
   document.getElementById('reg-datenschutz-link').addEventListener('click', () => {
-    document.getElementById('datenschutz-modal').classList.remove('hidden');
+    const dsModal = document.getElementById('datenschutz-modal');
+    if (dsModal) dsModal.classList.remove('hidden');
   });
 }
 
@@ -351,21 +352,11 @@ function _initFooterModals() {
   if (btnImpressum)   btnImpressum.addEventListener('click',   () => openModal('impressum-modal'));
   if (btnDatenschutz) btnDatenschutz.addEventListener('click', () => openModal('datenschutz-modal'));
 
-  // Close via X button
+  // Close via X button – kein Schließen durch Klick daneben
   const closeImpressum   = document.getElementById('impressum-close');
   const closeDatenschutz = document.getElementById('datenschutz-close');
   if (closeImpressum)   closeImpressum.addEventListener('click',   () => closeModal('impressum-modal'));
   if (closeDatenschutz) closeDatenschutz.addEventListener('click', () => closeModal('datenschutz-modal'));
-
-  // Close by clicking the overlay backdrop
-  ['impressum-modal', 'datenschutz-modal'].forEach(id => {
-    const overlay = document.getElementById(id);
-    if (overlay) {
-      overlay.addEventListener('click', e => {
-        if (e.target === overlay) closeModal(id);
-      });
-    }
-  });
 }
 
 function _seedMockUsers() {

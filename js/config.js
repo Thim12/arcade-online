@@ -11,10 +11,10 @@ const SUPABASE_URL  = 'https://bvuoidvssqfgzfllwthx.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2dW9pZHZzc3FmZ3pmbGx3dGh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5ODU0ODcsImV4cCI6MjA5MDU2MTQ4N30.oMRUti6FeMwq09R83SNpS71Qva7yZp2BhNM2znRru3E';
 
 /**
- * True when no Supabase keys are configured.
+ * True when no Supabase keys are configured OR when running from file://.
  * All data is then stored in localStorage.
  */
-const DEMO_MODE = !SUPABASE_URL || !SUPABASE_ANON;
+const DEMO_MODE = !SUPABASE_URL || !SUPABASE_ANON || window.location.protocol === 'file:';
 
 /**
  * Supabase client (only initialised when keys are present).

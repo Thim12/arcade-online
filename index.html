@@ -932,10 +932,6 @@
           <p class="legal-label">Kontakt</p>
           <p>E-Mail: <a class="legal-link" href="mailto:playor.Sports@outlook.de">playor.Sports@outlook.de</a></p>
         </div>
-        <div class="legal-section">
-          <p class="legal-label">Hinweis</p>
-          <p class="legal-note">Playor Sports ist ein nicht-kommerzielles Bildungsprojekt für junge Sportler in der Rhein-Main-Region.</p>
-        </div>
       </div>
     </div>
   </div>
@@ -950,7 +946,7 @@
       <div class="modal-body legal-body">
 
         <div class="legal-section">
-          <p>Wir von Playor Sports nehmen den Schutz deiner persönlichen Daten sehr ernst. Nachfolgend erklären wir, welche Daten wir erheben, wie wir sie verwenden und welche Rechte du hast.</p>
+          <p>Wir von SportMatch nehmen den Schutz deiner persönlichen Daten sehr ernst. Nachfolgend erklären wir, welche Daten wir erheben, wie wir sie verwenden und welche Rechte du hast.</p>
         </div>
 
         <div class="legal-section">
@@ -967,10 +963,9 @@
             <li>Vollständiger Name</li>
             <li>E-Mail-Adresse</li>
             <li>Passwort (verschlüsselt)</li>
-            <li>Sportart und Altersklasse</li>
-            <li>Geschlecht (freiwillig)</li>
-            <li>Wohnort / aktiver Bereich</li>
-            <li>Vereinsstatus (kein Verein, suche, bereits dabei)</li>
+            <li>Verein, dem du angehörst</li>
+            <li>Leistungsdaten (z. B. LK)</li>
+            <li>Persönliche Angaben zu deinem Account wie Rechts- oder Linkshänder, bevorzugter Fuß oder Hand, Verein, Altersklasse</li>
             <li>Weitere freiwillige Angaben, die du bei der Profilerstellung machst</li>
           </ul>
         </div>
@@ -992,22 +987,17 @@
         </div>
 
         <div class="legal-section">
-          <p class="legal-label">5. Drittanbieter – EmailJS</p>
-          <p>Für den Versand von Benachrichtigungen bei Vereins- und Turniereintragungen nutzen wir den Dienst <strong>EmailJS</strong> (emailjs.com). Dabei werden die im Formular eingetragenen Kontaktdaten (Name, E-Mail, Vereinsname) zur Übermittlung an unsere Geschäftsadresse verarbeitet. EmailJS verarbeitet diese Daten gemäß seiner eigenen Datenschutzrichtlinie. Es werden keine Nutzerdaten dauerhaft bei EmailJS gespeichert.</p>
-        </div>
-
-        <div class="legal-section">
-          <p class="legal-label">6. Speicherung und Sicherheit</p>
+          <p class="legal-label">5. Speicherung und Sicherheit</p>
           <p>Deine Daten werden sicher in der Datenbank von Supabase gespeichert. Passwörter werden verschlüsselt abgelegt. Wir treffen technische und organisatorische Maßnahmen, um deine Daten vor unbefugtem Zugriff, Verlust oder Missbrauch zu schützen. Supabase betreibt seine Infrastruktur in Europa (EU-Region), wodurch die DSGVO-Konformität gewährleistet ist.</p>
         </div>
 
         <div class="legal-section">
-          <p class="legal-label">7. Weitergabe an Dritte</p>
+          <p class="legal-label">6. Weitergabe an Dritte</p>
           <p>Wir geben deine Daten nicht an Werbetreibende oder andere externe Parteien weiter. Eine Weitergabe an Verbände oder Vereine erfolgt nur, wenn du dies explizit zustimmst.</p>
         </div>
 
         <div class="legal-section">
-          <p class="legal-label">8. Deine Rechte</p>
+          <p class="legal-label">7. Deine Rechte</p>
           <p>Du hast jederzeit das Recht:</p>
           <ul class="legal-list">
             <li>Auskunft über die von dir gespeicherten Daten zu erhalten</li>
@@ -1018,25 +1008,40 @@
         </div>
 
         <div class="legal-section">
-          <p class="legal-label">9. Cookies &amp; Tracking</p>
-          <p>Unsere Website verwendet nur notwendige Cookies, um die Funktionalität zu gewährleisten. Es werden keine Daten für Werbung oder Tracking verwendet.</p>
+          <p class="legal-label">8. Cookies &amp; Tracking</p>
+          <p>Unsere Website verwendet nur technisch notwendige Cookies, um die Funktionalität zu gewährleisten (z. B. Login-Sitzungen). Es werden keine Daten für Werbung oder Tracking verwendet.</p>
         </div>
 
         <div class="legal-section">
-          <p class="legal-label">10. Beschwerderecht bei der Aufsichtsbehörde</p>
-          <p>Du hast das Recht, dich bei der zuständigen Datenschutzaufsichtsbehörde zu beschweren. Für Hessen ist dies der Hessische Beauftragte für Datenschutz und Informationsfreiheit (HBDI), Poststraße 22, 65189 Wiesbaden.</p>
+          <p class="legal-label">9. Beschwerderecht bei der Aufsichtsbehörde</p>
+          <p>Du hast das Recht, dich bei der zuständigen Datenschutzaufsichtsbehörde zu beschweren. Für Hessen ist dies:<br>
+          Hessischer Beauftragter für Datenschutz und Informationsfreiheit (HBDI)<br>
+          Poststraße 22, 65189 Wiesbaden</p>
         </div>
 
         <div class="legal-section">
-          <p class="legal-label">11. Kontakt</p>
+          <p class="legal-label">10. Kontakt</p>
           <p>Bei Fragen zu deinen Daten oder zur Ausübung deiner Rechte kannst du uns unter <a class="legal-link" href="mailto:playor.Sports@outlook.de">playor.Sports@outlook.de</a> erreichen.</p>
         </div>
 
         <div class="legal-section">
           <p class="legal-label">Stand</p>
-          <p>April 2026</p>
+          <p>März 2026</p>
         </div>
 
+      </div>
+    </div>
+  </div>
+
+  <!-- COOKIE BANNER -->
+  <div class="cookie-banner hidden" id="cookie-banner">
+    <div class="cookie-banner-inner">
+      <p class="cookie-banner-text">
+        Wir verwenden technisch notwendige Cookies, um die Funktionalität der Website zu gewährleisten (z.&nbsp;B. Login-Sitzungen). Es werden keine Tracking- oder Werbe-Cookies eingesetzt.
+        <button class="cookie-link" onclick="document.getElementById('datenschutz-modal').classList.remove('hidden')">Mehr erfahren</button>
+      </p>
+      <div class="cookie-banner-actions">
+        <button class="btn btn-primary btn-sm" onclick="cookieAccept()">Verstanden</button>
       </div>
     </div>
   </div>
@@ -1060,5 +1065,15 @@
   <script src="js/views/register-club.js"></script>
   <script src="js/views/admin-review.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    // Cookie Banner
+    function cookieAccept() {
+      localStorage.setItem('cookie_consent', '1');
+      document.getElementById('cookie-banner').classList.add('hidden');
+    }
+    if (!localStorage.getItem('cookie_consent')) {
+      document.getElementById('cookie-banner').classList.remove('hidden');
+    }
+  </script>
 </body>
 </html>

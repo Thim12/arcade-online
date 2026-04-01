@@ -22,9 +22,9 @@
  *   {{token}}        – submission token (same as in approve_url)
  */
 
-const EMAILJS_SERVICE_ID  = '';   // e.g. 'service_abc123'
-const EMAILJS_TEMPLATE_ID = '';   // e.g. 'template_xyz789'
-const EMAILJS_PUBLIC_KEY  = '';   // e.g. 'user_...'
+const EMAILJS_SERVICE_ID  = 'service_f026ugd';
+const EMAILJS_TEMPLATE_ID = 'template_fuzc914';
+const EMAILJS_PUBLIC_KEY  = 'q6AP2ocScTzgMrsvY';
 const ADMIN_EMAIL         = 'timlober0@gmail.com';
 
 const EMAIL_MODE = !!(EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY);

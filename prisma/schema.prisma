@@ -1,0 +1,730 @@
+// ─────────────────────────────────────────────────────────────────
+// Prisma Schema – SportRise.de
+// PostgreSQL via Supabase (EU Frankfurt)
+// ─────────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────────────────────────
+
+enum SportLevel {
+  ANFAENGER
+  FORTGESCHRITTENE
+  WETTKAMPF
+  PROFI
+}
+
+enum UserGoal {
+  FITNESS
+  WETTKAMPF
+  FREIZEITSPORT
+  ABNEHMEN
+  MUSKELAUFBAU
+  TECHNIK_VERBESSERN
+}
+
+enum GermanState {
+  HESSEN
+  BAYERN
+  BERLIN
+  BRANDENBURG
+  BREMEN
+  HAMBURG
+  MECKLENBURG_VORPOMMERN
+  NIEDERSACHSEN
+  NORDRHEIN_WESTFALEN
+  RHEINLAND_PFALZ
+  SAARLAND
+  SACHSEN
+  SACHSEN_ANHALT
+  SCHLESWIG_HOLSTEIN
+  THUERINGEN
+  BADEN_WUERTTEMBERG
+}
+
+enum BadgeRarity {
+  COMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+enum TournamentStatus {
+  DRAFT
+  PUBLISHED
+  REGISTRATION_OPEN
+  REGISTRATION_CLOSED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum PostType {
+  TEXT
+  TIP
+  QUESTION
+  ACHIEVEMENT
+  MATCH_RESULT
+  TRAINING_UPDATE
+  MOTIVATION
+}
+
+enum VereinStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  SUSPENDED
+}
+
+enum NotificationType {
+  TOURNAMENT_REMINDER
+  BADGE_EARNED
+  STREAK_WARNING
+  VEREIN_UPDATE
+  SYSTEM
+  // Neu: Aktivität & Social
+  NEW_FOLLOWER
+  NEW_LIKE
+  NEW_COMMENT
+  LEVEL_UP
+  VEREIN_CONFIRMED
+  // Neu: Sparring
+  SPARRING_REQUEST
+  SPARRING_ACCEPTED
+}
+
+enum SparringStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SPORT
+// ─────────────────────────────────────────────────────────────────
+
+model Sport {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
+  description String
+  iconName    String  // Lucide React Icon Name, z.B. "Footprints", "Circle", "Trophy"
+  colorPrimary String // z.B. "#16A34A"
+  colorLight  String  // z.B. "#BBF7D0"
+  colorGlow   String  // z.B. "rgba(22, 163, 74, 0.35)"
+  isActive    Boolean @default(false) // false = Coming Soon
+  isComingSoon Boolean @default(true)
+  sortOrder   Int     @default(999)
+  sportType   String? // "MANNSCHAFT" | "EINZEL" | null
+
+  // Relations
+  users              UserSport[]
+  vereine            Verein[]
+  tournaments        Tournament[]
+  posts              Post[]
+  trainingPlans      TrainingPlan[]
+  badges             Badge[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sports")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// USER (NextAuth kompatibel)
+// ─────────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // bcrypt – null wenn OAuth
+  username      String?   @unique
+
+  // Profil
+  bio           String?
+  birthYear     Int?
+  state         GermanState?
+  city          String?
+
+  // Gamification
+  xp            Int     @default(0)
+  level         Int     @default(1)
+  streakDays    Int     @default(0)
+  lastTrainedAt DateTime?
+
+  // Jugendschutz (unter 14)
+  parentVerifyToken String?  @unique
+  isParentVerified  Boolean  @default(false)
+
+  // Zugriff & Onboarding
+  role             String   @default("USER")   // "USER" | "ADMIN"
+  gymAccessEnabled Boolean  @default(false)
+  onboardingDone   Boolean  @default(false)
+  isActive         Boolean  @default(true)
+
+  // Erweiterte Gamification
+  longestStreak    Int      @default(0)
+  lastActiveDate   DateTime?
+
+  // Einstellungen
+  isPublicProfile Boolean @default(true)
+  emailNotifications Boolean @default(true)
+
+  // Ernährungs-Einstellungen (JSON, nullable)
+  nutritionSettings Json?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // NextAuth Relations
+  accounts      Account[]
+  sessions      Session[]
+
+  // App Relations
+  sports            UserSport[]
+  trainingPlans     TrainingPlan[]
+  trainingSessions  TrainingSession[]
+  userBadges        UserBadge[]
+  posts             Post[]
+  postLikes         PostLike[]
+  postComments      PostComment[]
+  postReports       PostReport[]
+  followers         UserFollow[] @relation("UserFollowing")
+  following         UserFollow[] @relation("UserFollowers")
+  tournamentEntries TournamentEntry[]
+  vereinFollows     VereinFollow[]
+  nutritionPlans    NutritionPlan[]
+  mealLogs          MealLog[]
+  waterLogs         WaterLog[]
+  aiUsageLogs       AiUsageLog[]
+  notifications     Notification[]
+  nutritionFeedbacks NutritionFeedback[]
+  sparringSent      SparringRequest[] @relation("SparringSent")
+  sparringReceived  SparringRequest[] @relation("SparringReceived")
+
+  @@index([state, level])
+  @@map("users")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// NEXTAUTH MODELS
+// ─────────────────────────────────────────────────────────────────
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// USER ↔ SPORT (Sportart-Profil des Users)
+// ─────────────────────────────────────────────────────────────────
+
+model UserSport {
+  id       String     @id @default(cuid())
+  userId   String
+  sportId  String
+  level    SportLevel @default(ANFAENGER)
+  goals    UserGoal[]
+  // JSON-Feld für sportartspezifische Profildetails
+  // FussballProfile | TennisProfile | BasketballProfile
+  details  Json?
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sport Sport @relation(fields: [sportId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, sportId])
+  @@map("user_sports")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// TRAINING
+// ─────────────────────────────────────────────────────────────────
+
+model TrainingPlan {
+  id          String     @id @default(cuid())
+  userId      String
+  sportId     String
+  title       String
+  description String?
+  level       SportLevel
+  durationWeeks Int      @default(4)
+  sessionsPerWeek Int    @default(3)
+  isAiGenerated Boolean  @default(false)
+  isActive    Boolean    @default(true)
+  // JSON: Wochenplan-Struktur { weeks: [{ days: [{ exercises: [...] }] }] }
+  planData    Json
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sport Sport @relation(fields: [sportId], references: [id])
+  sessions TrainingSession[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("training_plans")
+}
+
+model TrainingSession {
+  id          String   @id @default(cuid())
+  userId      String
+  planId      String?
+  title       String
+  durationMin Int      // Minuten
+  xpEarned    Int      @default(0)
+  notes       String?
+  // JSON: gespeicherte Übungen, Sets, Reps, Gewichte
+  sessionData Json?
+  completedAt DateTime @default(now())
+
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan TrainingPlan? @relation(fields: [planId], references: [id], onDelete: SetNull)
+
+  // Performance-Indexes
+  @@index([userId, completedAt]) // Streak-Berechnung + Easter-Egg (03:33 Uhr)
+  @@map("training_sessions")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ERNÄHRUNG
+// ─────────────────────────────────────────────────────────────────
+
+enum MealType {
+  FRUEHSTUECK
+  MITTAGESSEN
+  ABENDESSEN
+  SNACK
+}
+
+model NutritionPlan {
+  id            String  @id @default(cuid())
+  userId        String
+  title         String
+  isAiGenerated Boolean @default(false)
+  isActive      Boolean @default(false)
+  // JSON: NutritionPlanAiOutput – { title, beschreibung, tagesKalorienZiel, wochenplan, einkaufsliste, gesamtpreisEur, tipps }
+  planData      Json
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("nutrition_plans")
+}
+
+model MealLog {
+  id           String   @id @default(cuid())
+  userId       String
+  date         DateTime @db.Date
+  mealType     MealType
+  foodId       String
+  foodName     String
+  portionGrams Int
+  calories     Int
+  proteinG     Float
+  carbsG       Float
+  fatG         Float
+  fiberG       Float
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, date])
+  @@map("meal_logs")
+}
+
+model WaterLog {
+  id      String   @id @default(cuid())
+  userId  String
+  date    DateTime @db.Date
+  glasses Int      @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@map("water_logs")
+}
+
+model NutritionFeedback {
+  id        String   @id @default(cuid())
+  userId    String
+  feedback  String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("nutrition_feedbacks")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// BADGES / GAMIFICATION
+// ─────────────────────────────────────────────────────────────────
+
+model Badge {
+  id          String      @id @default(cuid())
+  sportId     String?     // null = sport-übergreifend
+  name        String      @unique
+  description String
+  iconName    String      // Lucide React Icon Name
+  rarity      BadgeRarity @default(COMMON)
+  xpReward    Int         @default(50)
+  isSecret    Boolean     @default(false) // Easter Eggs
+  // JSON: BadgeRequirement Discriminated Union
+  requirement Json
+
+  sport       Sport?      @relation(fields: [sportId], references: [id], onDelete: SetNull)
+  userBadges  UserBadge[]
+
+  createdAt DateTime @default(now())
+
+  @@map("badges")
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  badgeId   String
+  earnedAt  DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id])
+
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// VEREIN
+// ─────────────────────────────────────────────────────────────────
+
+model Verein {
+  id          String      @id @default(cuid())
+  sportId     String
+  name        String
+  slug        String      @unique
+  description String?
+  address     String
+  city        String
+  state       GermanState
+  postalCode  String
+  latitude    Float?
+  longitude   Float?
+  website     String?
+  phone       String?
+  email       String?
+  logoUrl     String?
+  coverUrl    String?
+
+  // Konditionen
+  monthlyFee  Float?      // EUR, null = kostenlos/auf Anfrage
+  hasYouthTeam Boolean    @default(false)
+  ageMin      Int?
+  ageMax      Int?
+
+  // Status
+  status      VereinStatus @default(PENDING)
+  isVerified  Boolean      @default(false)
+  verifiedAt  DateTime?
+
+  // Einreichung
+  confirmToken   String?  @unique
+  submitterEmail String?
+  submitterName  String?
+
+  // Sportart-spezifische Extras
+  // JSON: FussballVereinDetails | TennisVereinDetails | BasketballVereinDetails
+  details     Json?
+
+  sport       Sport         @relation(fields: [sportId], references: [id])
+  follows     VereinFollow[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([sportId, state, isVerified])
+  @@map("vereine")
+}
+
+model VereinFollow {
+  id        String   @id @default(cuid())
+  userId    String
+  vereinId  String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verein Verein @relation(fields: [vereinId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, vereinId])
+  @@map("verein_follows")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// TURNIER
+// ─────────────────────────────────────────────────────────────────
+
+model Tournament {
+  id            String           @id @default(cuid())
+  sportId       String
+  name          String
+  slug          String           @unique
+  description   String?
+  city          String
+  state         GermanState
+  address       String?
+  latitude      Float?
+  longitude     Float?
+  startDate     DateTime
+  endDate       DateTime
+  registrationDeadline DateTime?
+  maxParticipants Int?
+  entryFee      Float?           // EUR, null = kostenlos
+  prizePool     Float?           // EUR
+  level         SportLevel
+  status        TournamentStatus @default(DRAFT)
+  isPublished   Boolean          @default(false)
+  isVerified    Boolean          @default(false)
+  coverUrl      String?
+  // JSON: Turnierformat, Regeln, Kontaktinfos
+  details       Json?
+
+  // Einreichung
+  confirmToken      String?  @unique
+  submitterName     String?
+  submitterEmail    String?
+  submittedByUserId String?
+
+  sport         Sport              @relation(fields: [sportId], references: [id])
+  entries       TournamentEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sportId, startDate, isPublished])
+  @@map("tournaments")
+}
+
+model TournamentEntry {
+  id           String   @id @default(cuid())
+  tournamentId String
+  userId       String
+  teamName     String?
+  notes        String?
+  registeredAt DateTime @default(now())
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tournamentId, userId])
+  @@map("tournament_entries")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// COMMUNITY (Posts)
+// ─────────────────────────────────────────────────────────────────
+
+model Post {
+  id           String   @id @default(cuid())
+  userId       String
+  sportId      String
+  type         PostType @default(TEXT)
+  title        String?
+  content      String
+  imageUrl     String?
+  mediaUrl     String?
+  mediaType    String?
+  isPinned     Boolean  @default(false)
+  reportsCount Int      @default(0)
+  isHidden     Boolean  @default(false)
+
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sport     Sport        @relation(fields: [sportId], references: [id])
+  likes     PostLike[]
+  comments  PostComment[]
+  reports   PostReport[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sportId, createdAt])
+  @@map("posts")
+}
+
+model PostLike {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@map("post_likes")
+}
+
+model PostComment {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("post_comments")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// COMMUNITY (UserFollow + PostReport)
+// ─────────────────────────────────────────────────────────────────
+
+model UserFollow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("UserFollowers", fields: [followerId],  references: [id], onDelete: Cascade)
+  following User @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@map("user_follows")
+}
+
+model PostReport {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  reason    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@map("post_reports")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// KI-NUTZUNGSPROTOKOLL
+// ─────────────────────────────────────────────────────────────────
+
+model AiUsageLog {
+  id         String   @id @default(cuid())
+  userId     String
+  type       String   // 'training' | 'nutrition' | 'verein' | 'motivation'
+  tokensUsed Int?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, type, createdAt])
+  @@map("ai_usage_logs")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// BENACHRICHTIGUNGEN
+// ─────────────────────────────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String
+  isRead    Boolean          @default(false)
+  data      Json?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead, createdAt])
+  @@map("notifications")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SPARRING (Tennis-Sparringsanfragen)
+// ─────────────────────────────────────────────────────────────────
+
+model SparringRequest {
+  id         String        @id @default(cuid())
+  senderId   String
+  receiverId String
+  message    String?       @db.VarChar(300)
+  status     SparringStatus @default(PENDING)
+
+  sender   User @relation("SparringSent",    fields: [senderId],   references: [id], onDelete: Cascade)
+  receiver User @relation("SparringReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([senderId, receiverId])
+  @@index([receiverId, status])
+  @@index([senderId, status])
+  @@map("sparring_requests")
+}

@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/turnier-check",
+      "schedule": "0 8 * * *"
+    }
+  ]
+}

@@ -1,0 +1,390 @@
+@import 'react-image-crop/dist/ReactCrop.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────────────────────────────
+   shadcn/ui CSS Variables – Dark Mode First
+   ───────────────────────────────────────────────────────────────── */
+
+@layer base {
+  :root {
+    --background: 222 84% 5%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 8%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 84% 5%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 55%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 212 97% 87%;
+    --radius: 0.75rem;
+  }
+
+  /* Optional Light Mode (wird mit class="light" aktiviert) */
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 222 84% 5%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 84% 5%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 84% 5%;
+    --primary: 222 84% 5%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 84% 5%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 84% 5%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 222 84% 5%;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Sport-Farbsystem – via data-sport Attribut
+   Verwendung: <div data-sport="fussball">...</div>
+   ───────────────────────────────────────────────────────────────── */
+
+[data-sport='fussball'] {
+  --sport-primary: #16a34a;
+  --sport-primary-hsl: 142 72% 29%;
+  --sport-light: #bbf7d0;
+  --sport-dark: #14532d;
+  --sport-glow: rgba(22, 163, 74, 0.35);
+  --sport-glow-strong: rgba(22, 163, 74, 0.6);
+}
+
+[data-sport='tennis'] {
+  --sport-primary: #c2621a;
+  --sport-primary-hsl: 27 76% 44%;
+  --sport-light: #fde68a;
+  --sport-dark: #7c2d12;
+  --sport-glow: rgba(194, 98, 26, 0.35);
+  --sport-glow-strong: rgba(194, 98, 26, 0.6);
+  --sport-accent: #cddc39;
+}
+
+[data-sport='basketball'] {
+  --sport-primary: #ea580c;
+  --sport-primary-hsl: 22 91% 48%;
+  --sport-light: #ffedd5;
+  --sport-dark: #7c2d12;
+  --sport-glow: rgba(234, 88, 12, 0.35);
+  --sport-glow-strong: rgba(234, 88, 12, 0.6);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Base Styles
+   ───────────────────────────────────────────────────────────────── */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Scrollbar (Webkit) – 6px, abgerundet */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+  }
+
+  /* Selektion – SportRise-Grün */
+  ::selection {
+    background-color: #16a34a;
+    color: #ffffff;
+  }
+
+  /* Focus-Visible – nutzt Sport-Primärfarbe wenn vorhanden */
+  *:focus-visible {
+    outline: 2px solid var(--sport-primary, #16a34a);
+    outline-offset: 2px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Utility Classes
+   ───────────────────────────────────────────────────────────────── */
+
+@layer utilities {
+  /* Sport-Glow Utility */
+  .shadow-sport {
+    box-shadow: 0 0 30px var(--sport-glow, rgba(255, 255, 255, 0.1)),
+      0 0 60px var(--sport-glow, rgba(255, 255, 255, 0.05));
+  }
+
+  /* Glassmorphism */
+  .glass {
+    @apply bg-white/5 backdrop-blur-md border border-white/10;
+  }
+
+  .glass-darker {
+    @apply bg-black/30 backdrop-blur-md border border-white/10;
+  }
+
+  /* Gradient Text */
+  .text-gradient-sport {
+    background: linear-gradient(
+      135deg,
+      var(--sport-primary, #fff),
+      var(--sport-light, #ccc)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Blur Blob (Hintergrund-Dekoration) */
+  .blob {
+    @apply absolute rounded-full blur-3xl opacity-20 pointer-events-none select-none;
+    animation: blob 8s ease-in-out infinite;
+  }
+
+  .blob-sport {
+    background-color: var(--sport-primary, #16a34a);
+    @apply blob;
+  }
+
+  /* Hero Overlay Gradient */
+  .hero-overlay {
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      hsl(var(--background) / 0.5) 60%,
+      hsl(var(--background)) 100%
+    );
+  }
+
+  /* Focus Visible Ring */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  /* Text Balancing */
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Animation Delays (für Blob-Deko)
+   ───────────────────────────────────────────────────────────────── */
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Keyframes
+   ───────────────────────────────────────────────────────────────── */
+
+/* Blob – schwebende Hintergrund-Deko-Elemente */
+@keyframes blob {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -20px) scale(1.08);
+  }
+  66% {
+    transform: translate(-15px, 15px) scale(0.95);
+  }
+}
+
+/* Ticker – horizontaler Lauftext (News-Ticker, Sport-Ticker) */
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* BounceY – sanftes vertikales Auf-und-Ab */
+@keyframes bounceY {
+  0%,
+  100% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(-8px);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* FloatUp – schwebendes Element (z.B. Achievement-Notification) */
+@keyframes floatUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+}
+
+/* Shimmer – Glanz-Effekt für Skeleton-Loader und Card-Highlights */
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* LoadProgress – Ladebalken von 0 auf 100% */
+@keyframes loadProgress {
+  0%   { width: 0%;   }
+  60%  { width: 80%;  }
+  85%  { width: 93%;  }
+  100% { width: 100%; }
+}
+
+/* BrainSpin – rotierende KI-Icon-Animation */
+@keyframes brainSpin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(90deg) scale(1.1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1);
+  }
+  75% {
+    transform: rotate(270deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Ticker-Container
+   Verwendung:
+     <div class="ticker-container">
+       <div class="ticker-content">text ... text ... </div>
+     </div>
+   ───────────────────────────────────────────────────────────────── */
+
+.ticker-container {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.ticker-content {
+  display: inline-block;
+  animation: ticker 30s linear infinite;
+  /* Duplizierter Inhalt (50% = eine Kopie) sorgt für nahtlosen Loop */
+}
+
+/* Pause beim Hover */
+.ticker-container:hover .ticker-content {
+  animation-play-state: paused;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Zusätzliche Utility-Klassen
+   ───────────────────────────────────────────────────────────────── */
+
+@layer utilities {
+  /* Shimmer-Hintergrund für Skeleton-Loader */
+  .shimmer-bg {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.06) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+  }
+
+  /* BrainSpin für KI-Icons */
+  .animate-brain-spin {
+    animation: brainSpin 3s linear infinite;
+  }
+
+  /* BounceY für Benachrichtigungen etc. */
+  .animate-bounce-y {
+    animation: bounceY 2s ease-in-out infinite;
+  }
+
+  /* FloatUp für Toast/Achievement-Anzeige (einmalig) */
+  .animate-float-up {
+    animation: floatUp 3s ease-in-out forwards;
+  }
+
+  /* LoadProgress für Ladebalken */
+  .animate-load-progress {
+    animation: loadProgress 2.4s ease-out forwards;
+  }
+
+  /* Scrollbar verstecken (für horizontale Scroll-Leisten etc.) */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

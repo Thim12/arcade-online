@@ -1,17 +1,20 @@
 // ─────────────────────────────────────────────────────────────────
-// emailjs.ts – Admin-Benachrichtigungen via EmailJS REST API
+// emailjs.ts – Admin-Benachrichtigungen via @emailjs/nodejs SDK
 //
 // Schickt E-Mails an den Admin bei neuen Verein- und Turnier-
 // Einreichungen. Verwendet EmailJS als Relay ohne eigenen E-Mail-Server.
 //
-// Konfiguration via .env.local:
-//   NEXT_PUBLIC_EMAILJS_SERVICE_ID
-//   NEXT_PUBLIC_EMAILJS_TEMPLATE_VEREIN
-//   NEXT_PUBLIC_EMAILJS_TEMPLATE_TURNIER
-//   NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+// Konfiguration via Umgebungsvariablen (ohne NEXT_PUBLIC_ Praefix,
+// da diese nur server-seitig verwendet werden):
+//   EMAILJS_SERVICE_ID
+//   EMAILJS_TEMPLATE_VEREIN
+//   EMAILJS_TEMPLATE_TURNIER
+//   EMAILJS_PUBLIC_KEY
+//   EMAILJS_PRIVATE_KEY
+//   ADMIN_EMAIL
 // ─────────────────────────────────────────────────────────────────
 
-const EMAILJS_API = 'https://api.emailjs.com/api/v1.0/email/send'
+import { init, send } from '@emailjs/nodejs'
 
 // ── Interfaces ───────────────────────────────────────────────────
 
@@ -21,115 +24,103 @@ export interface VereinEinreichungData {
   vereinSport: string
   einreicherName: string
   einreicherEmail: string
-  confirm_link: string    // Admin-Link: Verein bestätigen
-  reject_link: string     // Admin-Link: Verein ablehnen
+  confirm_link: string
+  reject_link: string
 }
 
 export interface TurnierEinreichungData {
   turnierName: string
   turnierStadt: string
   turnierSport: string
-  turnierDatum: string    // Formatiert: "15. März 2025"
+  turnierDatum: string
   einreicherName: string
   einreicherEmail: string
-  confirm_link: string    // Admin-Link: Turnier bestätigen
-  reject_link: string     // Admin-Link: Turnier ablehnen
+  confirm_link: string
+  reject_link: string
 }
 
-// ── Interner Helper ──────────────────────────────────────────────
+// ── Internal: Ensure EmailJS is initialized ──────────────────────
 
-async function sendEmail(
-  templateId: string,
-  templateParams: Record<string, string>,
-): Promise<void> {
-  const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID
-  const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+let initialized = false
 
-  if (!serviceId || !publicKey || !templateId) {
-    throw new Error(
-      'EmailJS nicht konfiguriert. Prüfe NEXT_PUBLIC_EMAILJS_SERVICE_ID, ' +
-        'NEXT_PUBLIC_EMAILJS_PUBLIC_KEY und das Template-ID.',
-    )
-  }
-
-  const body = JSON.stringify({
-    service_id: serviceId,
-    template_id: templateId,
-    user_id: publicKey,
-    template_params: {
-      ...templateParams,
-      admin_email: process.env.ADMIN_EMAIL ?? 'admin@sportrise.de',
-    },
-  })
-
-  const response = await fetch(EMAILJS_API, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Origin: process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
-    },
-    body,
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text().catch(() => 'Unbekannter Fehler')
-    throw new Error(
-      `EmailJS-Anfrage fehlgeschlagen (${response.status}): ${errorText}`,
-    )
-  }
+function ensureInit(): void {
+  if (initialized) return
+  const publicKey = process.env.EMAILJS_PUBLIC_KEY
+  const privateKey = process.env.EMAILJS_PRIVATE_KEY
+  if (!publicKey) return
+  init({ publicKey, privateKey: privateKey || undefined })
+  initialized = true
 }
 
-// ── Öffentliche Funktionen ───────────────────────────────────────
+// ── Public: Verein-Einreichung an Admin ──────────────────────────
 
-/**
- * Benachrichtigt den Admin über eine neue Vereins-Einreichung.
- * Enthält Links zum direkten Bestätigen oder Ablehnen.
- */
 export async function sendVereinEinreichung(
   data: VereinEinreichungData,
 ): Promise<void> {
-  const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_VEREIN
+  const serviceId = process.env.EMAILJS_SERVICE_ID
+  const templateId = process.env.EMAILJS_TEMPLATE_VEREIN
+  const publicKey = process.env.EMAILJS_PUBLIC_KEY
+  const adminEmail = process.env.ADMIN_EMAIL ?? 'admin@sportrise.de'
 
-  if (!templateId) {
+  if (!serviceId || !templateId || !publicKey) {
     throw new Error(
-      'NEXT_PUBLIC_EMAILJS_TEMPLATE_VEREIN ist nicht konfiguriert.',
+      'EmailJS nicht konfiguriert. Pruefe EMAILJS_SERVICE_ID, ' +
+        'EMAILJS_TEMPLATE_VEREIN und EMAILJS_PUBLIC_KEY in der .env.local.',
     )
   }
 
-  await sendEmail(templateId, {
-    verein_name: data.vereinName,
-    verein_stadt: data.vereinStadt,
-    verein_sport: data.vereinSport,
-    einreicher_name: data.einreicherName,
-    einreicher_email: data.einreicherEmail,
-    confirm_link: data.confirm_link,
-    reject_link: data.reject_link,
-  })
+  ensureInit()
+
+  await send(
+    serviceId,
+    templateId,
+    {
+      to_email: adminEmail,
+      verein_name: data.vereinName,
+      verein_stadt: data.vereinStadt,
+      verein_sport: data.vereinSport,
+      einreicher_name: data.einreicherName,
+      einreicher_email: data.einreicherEmail,
+      confirm_link: data.confirm_link,
+      reject_link: data.reject_link,
+    },
+    { publicKey },
+  )
 }
 
-/**
- * Benachrichtigt den Admin über eine neue Turnier-Einreichung.
- * Enthält Links zum direkten Bestätigen oder Ablehnen.
- */
+// ── Public: Turnier-Einreichung an Admin ──────────────────────────
+
 export async function sendTurnierEinreichung(
   data: TurnierEinreichungData,
 ): Promise<void> {
-  const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_TURNIER
+  const serviceId = process.env.EMAILJS_SERVICE_ID
+  const templateId = process.env.EMAILJS_TEMPLATE_TURNIER
+  const publicKey = process.env.EMAILJS_PUBLIC_KEY
+  const adminEmail = process.env.ADMIN_EMAIL ?? 'admin@sportrise.de'
 
-  if (!templateId) {
+  if (!serviceId || !templateId || !publicKey) {
     throw new Error(
-      'NEXT_PUBLIC_EMAILJS_TEMPLATE_TURNIER ist nicht konfiguriert.',
+      'EmailJS nicht konfiguriert. Pruefe EMAILJS_SERVICE_ID, ' +
+        'EMAILJS_TEMPLATE_TURNIER und EMAILJS_PUBLIC_KEY in der .env.local.',
     )
   }
 
-  await sendEmail(templateId, {
-    turnier_name: data.turnierName,
-    turnier_stadt: data.turnierStadt,
-    turnier_sport: data.turnierSport,
-    turnier_datum: data.turnierDatum,
-    einreicher_name: data.einreicherName,
-    einreicher_email: data.einreicherEmail,
-    confirm_link: data.confirm_link,
-    reject_link: data.reject_link,
-  })
+  ensureInit()
+
+  await send(
+    serviceId,
+    templateId,
+    {
+      to_email: adminEmail,
+      turnier_name: data.turnierName,
+      turnier_stadt: data.turnierStadt,
+      turnier_sport: data.turnierSport,
+      turnier_datum: data.turnierDatum,
+      einreicher_name: data.einreicherName,
+      einreicher_email: data.einreicherEmail,
+      confirm_link: data.confirm_link,
+      reject_link: data.reject_link,
+    },
+    { publicKey },
+  )
 }

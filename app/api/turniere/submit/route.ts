@@ -59,7 +59,15 @@ const SubmitSchema = z.object({
   veranstalterName: z.string().min(1),
   veranstalterEmail: z.string().email(),
   veranstalterTelefon: z.string().optional(),
-  veranstalterWebsite: z.string().url().optional(),
+  veranstalterWebsite: z.preprocess(
+    (val) => {
+      if (typeof val !== 'string' || val.trim() === '') return undefined
+      const url = val.trim()
+      if (!url.startsWith('http://') && !url.startsWith('https://')) return `https://${url}`
+      return url
+    },
+    z.string().url().optional(),
+  ),
   einreicherVorname: z.string().min(1),
   einreicherNachname: z.string().min(1),
   einreicherEmail: z.string().email(),

@@ -19,7 +19,6 @@ const config: Config = {
     },
     extend: {
       colors: {
-        // shadcn/ui system tokens (HSL via CSS vars)
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -53,7 +52,6 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        // Sport brand colors (static references)
         fussball: {
           DEFAULT: '#16A34A',
           light: '#BBF7D0',
@@ -131,6 +129,7 @@ const config: Config = {
         'glow-orange-clay': '0 0 30px rgba(194, 98, 26, 0.4), 0 0 60px rgba(194, 98, 26, 0.2)',
         'glow-orange-basket': '0 0 30px rgba(234, 88, 12, 0.4), 0 0 60px rgba(234, 88, 12, 0.2)',
         'sport': '0 0 30px var(--sport-glow)',
+        'sport-lg': '0 0 40px var(--sport-glow-strong), 0 0 80px var(--sport-glow), 0 8px 32px rgba(0, 0, 0, 0.4)',
       },
     },
   },

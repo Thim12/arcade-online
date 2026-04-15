@@ -1,11 +1,10 @@
 'use client'
 
 // ─────────────────────────────────────────────────────────────────
-// SportartenSection – Drei aktive Sportarten mit SVG-Icons
+// SportartenSection – Premium-Sportarten-Karten (Dark Design)
 //
-// • Fußball / Tennis / Basketball mit Vereins- & Turnier-Counts
-// • Eigene SVG-Icons (kein Emoji), 60×60 Viewbox
-// • Coming-Soon-Block mit 5 künftigen Sportarten
+// Design: Dunkler Hintergrund mit Sport-farbigem Glow auf Hover
+// Jede Sportart hat ihren eigenen Farbakzent und SVG-Icon
 // ─────────────────────────────────────────────────────────────────
 
 import { motion } from 'framer-motion'
@@ -29,10 +28,8 @@ type IconFC = () => JSX.Element
 interface SportMeta {
   slug: string
   name: string
-  colorHoverBorder: string
-  colorBtnBorder: string
-  colorBtnText: string
-  colorBtnHoverBg: string
+  color: string
+  glowColor: string
   description: string
   IconComponent: IconFC
 }
@@ -52,18 +49,15 @@ const COMING_SOON = [
 function FussballIcon() {
   return (
     <svg viewBox="0 0 60 60" width="60" height="60" aria-hidden="true" fill="none">
-      <circle cx="30" cy="30" r="29" fill="#DCFCE7" stroke="#86EFAC" strokeWidth="1.5" />
+      <circle cx="30" cy="30" r="29" fill="rgba(22,163,74,0.08)" stroke="rgba(22,163,74,0.25)" strokeWidth="1.5" />
       <circle cx="30" cy="30" r="20" stroke="#16A34A" strokeWidth="2" />
-      {/* V0(30,17) V1(41,23) V2(41,37) V3(30,43) V4(19,37) V5(19,23) */}
-      <g stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round">
-        {/* 6 Seiten */}
+      <g stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.7">
         <line x1="30" y1="17" x2="41" y2="23" />
         <line x1="41" y1="23" x2="41" y2="37" />
         <line x1="41" y1="37" x2="30" y2="43" />
         <line x1="30" y1="43" x2="19" y2="37" />
         <line x1="19" y1="37" x2="19" y2="23" />
         <line x1="19" y1="23" x2="30" y2="17" />
-        {/* 3 Diagonalen */}
         <line x1="30" y1="17" x2="30" y2="43" />
         <line x1="41" y1="23" x2="19" y2="37" />
         <line x1="41" y1="37" x2="19" y2="23" />
@@ -75,24 +69,21 @@ function FussballIcon() {
 function TennisIcon() {
   return (
     <svg viewBox="0 0 60 60" width="60" height="60" aria-hidden="true" fill="none">
-      <circle cx="30" cy="30" r="29" fill="#FDECD0" stroke="#F6C89F" strokeWidth="1.5" />
+      <circle cx="30" cy="30" r="29" fill="rgba(194,98,26,0.08)" stroke="rgba(194,98,26,0.25)" strokeWidth="1.5" />
       <defs>
-        <clipPath id="tennis-racket-clip">
+        <clipPath id="tennis-racket-clip-dark">
           <ellipse cx="30" cy="26" rx="14" ry="17" />
         </clipPath>
       </defs>
-      {/* Strings geclippt auf Ellipse */}
-      <g clipPath="url(#tennis-racket-clip)" stroke="#C2621A" strokeWidth="1.2" strokeOpacity="0.65">
+      <g clipPath="url(#tennis-racket-clip-dark)" stroke="#C2621A" strokeWidth="1.2" strokeOpacity="0.5">
         <line x1="16" y1="18" x2="44" y2="18" />
         <line x1="16" y1="26" x2="44" y2="26" />
         <line x1="16" y1="34" x2="44" y2="34" />
-        <line x1="24" y1="9"  x2="24" y2="43" />
-        <line x1="30" y1="9"  x2="30" y2="43" />
-        <line x1="36" y1="9"  x2="36" y2="43" />
+        <line x1="24" y1="9" x2="24" y2="43" />
+        <line x1="30" y1="9" x2="30" y2="43" />
+        <line x1="36" y1="9" x2="36" y2="43" />
       </g>
-      {/* Schlägerkopf */}
       <ellipse cx="30" cy="26" rx="14" ry="17" stroke="#C2621A" strokeWidth="2" />
-      {/* Griff */}
       <rect x="27" y="43" width="6" height="11" rx="3" fill="#C2621A" />
     </svg>
   )
@@ -101,9 +92,9 @@ function TennisIcon() {
 function BasketballIcon() {
   return (
     <svg viewBox="0 0 60 60" width="60" height="60" aria-hidden="true" fill="none">
-      <circle cx="30" cy="30" r="29" fill="#FFF7ED" stroke="#FFCBA4" strokeWidth="1.5" />
+      <circle cx="30" cy="30" r="29" fill="rgba(234,88,12,0.08)" stroke="rgba(234,88,12,0.25)" strokeWidth="1.5" />
       <circle cx="30" cy="30" r="20" stroke="#EA580C" strokeWidth="2" />
-      <g stroke="#EA580C" strokeWidth="1.5" strokeLinecap="round">
+      <g stroke="#EA580C" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.7">
         <line x1="10" y1="30" x2="50" y2="30" />
         <line x1="30" y1="10" x2="30" y2="50" />
         <path d="M 20 10 Q 10 30 20 50" />
@@ -119,10 +110,8 @@ const SPORT_METAS: SportMeta[] = [
   {
     slug: 'fussball',
     name: 'Fußball',
-    colorHoverBorder: 'hover:border-[#16A34A]/50',
-    colorBtnBorder: 'border-[#16A34A]',
-    colorBtnText: 'text-[#16A34A]',
-    colorBtnHoverBg: 'hover:bg-[#F0FDF4]',
+    color: '#16A34A',
+    glowColor: 'rgba(22, 163, 74, 0.2)',
     description:
       'Vollständiges Profil: Position, starker Fuß, Liga, Stärken. Eigene VereinKI versteht den Unterschied zwischen Kreisklasse und Bezirksliga.',
     IconComponent: FussballIcon,
@@ -130,10 +119,8 @@ const SPORT_METAS: SportMeta[] = [
   {
     slug: 'tennis',
     name: 'Tennis',
-    colorHoverBorder: 'hover:border-[#C2621A]/50',
-    colorBtnBorder: 'border-[#C2621A]',
-    colorBtnText: 'text-[#C2621A]',
-    colorBtnHoverBg: 'hover:bg-[#FDECD0]',
+    color: '#C2621A',
+    glowColor: 'rgba(194, 98, 26, 0.2)',
     description:
       'DTB-Leistungsklasse (LK 1–25), Spielhand, Rückhand, Oberfläche. KI kennt das LK-System. Sparringspartner-Funktion für Hessen.',
     IconComponent: TennisIcon,
@@ -141,10 +128,8 @@ const SPORT_METAS: SportMeta[] = [
   {
     slug: 'basketball',
     name: 'Basketball',
-    colorHoverBorder: 'hover:border-[#EA580C]/50',
-    colorBtnBorder: 'border-[#EA580C]',
-    colorBtnText: 'text-[#EA580C]',
-    colorBtnHoverBg: 'hover:bg-[#FFF7ED]',
+    color: '#EA580C',
+    glowColor: 'rgba(234, 88, 12, 0.2)',
     description:
       'Position (PG bis Center), Körpergröße für Matching. Eigene BasketballKI wählt nur PG-Drills für PGs — nichts generisches.',
     IconComponent: BasketballIcon,
@@ -158,26 +143,36 @@ export default function SportartenSection({ sportCounts }: SportartenSectionProp
     sportCounts.find((s) => s.slug === slug) ?? { vereinCount: 0, tournamentCount: 0 }
 
   return (
-    <section className="bg-[#F4F4F5] py-20 sm:py-28">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative bg-[#0a0a0a] py-24 sm:py-32 overflow-hidden">
+      {/* Subtile Gradient-Dekoration */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] pointer-events-none select-none"
+        style={{
+          background: 'radial-gradient(ellipse, rgba(22,163,74,0.04) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+        }}
+        aria-hidden="true"
+      />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <motion.div
-          className="text-center mb-14"
+          className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#0A0A0A] tracking-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-[52px] font-bold text-white tracking-tight leading-[1.1]">
             Fußball. Tennis. Basketball.
           </h2>
-          <p className="mt-3 text-lg text-[#71717A] max-w-xl mx-auto">
+          <p className="mt-4 text-lg text-white/35 max-w-xl mx-auto">
             Jetzt in Hessen — bald in ganz Deutschland.
           </p>
         </motion.div>
 
         {/* Sport-Karten */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-12">
           {SPORT_METAS.map((sport, i) => {
             const counts = getCount(sport.slug)
             const { IconComponent } = sport
@@ -188,37 +183,51 @@ export default function SportartenSection({ sportCounts }: SportartenSectionProp
                 initial={{ opacity: 0, y: 28 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-60px' }}
-                transition={{ duration: 0.5, delay: i * 0.08, ease: 'easeOut' }}
-                className={`bg-white rounded-2xl p-8 border border-[#E4E4E7] transition-all duration-[250ms] hover:-translate-y-1 hover:shadow-md ${sport.colorHoverBorder}`}
+                transition={{ duration: 0.5, delay: i * 0.1, ease: 'easeOut' }}
+                className="group relative rounded-2xl bg-white/[0.02] border border-white/[0.06] p-8 card-hover overflow-hidden"
               >
+                {/* Hover Glow */}
+                <div
+                  className="absolute -top-24 -right-24 w-48 h-48 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{
+                    background: `radial-gradient(ellipse, ${sport.glowColor} 0%, transparent 70%)`,
+                    filter: 'blur(40px)',
+                  }}
+                  aria-hidden="true"
+                />
+
                 {/* Icon */}
-                <div className="mb-5">
+                <div className="relative mb-6 transition-transform duration-300 group-hover:scale-105">
                   <IconComponent />
                 </div>
 
                 {/* Name + Counts */}
-                <h3 className="text-xl font-bold text-[#0A0A0A] mb-1">{sport.name}</h3>
-                <p className="text-sm text-[#71717A] mb-4">
+                <h3 className="relative text-xl font-bold text-white mb-1.5">{sport.name}</h3>
+                <p className="relative text-sm text-white/35 mb-5">
                   {counts.vereinCount}{' '}
                   {counts.vereinCount === 1 ? 'Verein' : 'Vereine'} ·{' '}
                   {counts.tournamentCount}{' '}
                   {counts.tournamentCount === 1 ? 'Turnier' : 'Turniere'}
                 </p>
 
-                <hr className="border-[#E4E4E7] mb-4" />
+                <hr className="relative border-white/[0.06] mb-5" />
 
                 {/* Beschreibung */}
-                <p className="text-sm text-[#52525B] leading-relaxed">
+                <p className="relative text-sm text-white/40 leading-relaxed mb-6">
                   {sport.description}
                 </p>
 
-                {/* CTA — Outline-Button */}
+                {/* CTA — Outline-Button mit Sport-Farbe */}
                 <Link
                   href={`/vereine?sport=${sport.slug}`}
-                  className={`inline-flex items-center gap-2 mt-5 border ${sport.colorBtnBorder} ${sport.colorBtnText} ${sport.colorBtnHoverBg} text-sm font-medium px-5 py-2.5 rounded-lg transition-colors`}
+                  className="relative inline-flex items-center gap-2 text-sm font-medium px-5 py-2.5 rounded-lg border transition-all duration-300 group-hover:scale-[1.02]"
+                  style={{
+                    borderColor: `${sport.color}40`,
+                    color: sport.color,
+                  }}
                 >
                   Vereine entdecken
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
                 </Link>
               </motion.div>
             )
@@ -227,23 +236,23 @@ export default function SportartenSection({ sportCounts }: SportartenSectionProp
 
         {/* Coming Soon */}
         <motion.div
-          className="bg-white/70 border border-dashed border-[#D4D4D8] rounded-2xl p-6 text-center"
+          className="mt-8 bg-white/[0.02] border border-dashed border-white/[0.08] rounded-2xl p-6 text-center"
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.5, delay: 0.28, ease: 'easeOut' }}
+          transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
         >
           <div className="flex justify-center mb-3">
-            <PlusCircle className="h-6 w-6 text-[#A1A1AA]" />
+            <PlusCircle className="h-6 w-6 text-white/20" />
           </div>
-          <p className="text-sm font-semibold text-[#52525B] mb-3">
+          <p className="text-sm font-semibold text-white/40 mb-3">
             Weitere Sportarten kommen bald
           </p>
           <div className="flex flex-wrap justify-center gap-2">
             {COMING_SOON.map((sport) => (
               <span
                 key={sport}
-                className="inline-flex items-center gap-1.5 text-xs text-[#A1A1AA] bg-white border border-[#E4E4E7] px-3 py-1 rounded-full"
+                className="inline-flex items-center gap-1.5 text-xs text-white/25 bg-white/[0.03] border border-white/[0.06] px-3 py-1 rounded-full"
               >
                 <Clock className="h-3 w-3" />
                 {sport}

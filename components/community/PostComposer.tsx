@@ -16,7 +16,7 @@ import {
   Loader2,
   Send,
 } from 'lucide-react'
-import { createBrowserClient } from '@/lib/supabase'
+import { createBrowserClient } from '@/lib/supabase-client'
 import type { FeedPost } from './Feed'
 
 // ── Typen ────────────────────────────────────────────────────────

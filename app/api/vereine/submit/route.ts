@@ -59,17 +59,28 @@ const BasketballDetailsSchema = z.object({
 })
 
 const SubmitSchema = z.object({
-  vereinsname: z.string().min(2).max(120),
+  vereinsname: z.string().min(2, 'Vereinsname muss mindestens 2 Zeichen haben').max(120, 'Vereinsname darf maximal 120 Zeichen haben'),
   sportSlug: z.enum(['fussball', 'tennis', 'basketball']),
-  strasse: z.string().min(1),
-  hausnummer: z.string().min(1),
-  plz: z.string().length(5),
-  stadt: z.string().min(1),
-  bundesland: z.string().min(1),
-  website: z.string().url().optional(),
-  vereinEmail: z.string().email().optional(),
+  strasse: z.string().min(1, 'Strasse ist erforderlich'),
+  hausnummer: z.string().min(1, 'Hausnummer ist erforderlich'),
+  plz: z.string().length(5, 'PLZ muss genau 5 Ziffern haben'),
+  stadt: z.string().min(1, 'Stadt ist erforderlich'),
+  bundesland: z.string().min(1, 'Bundesland ist erforderlich'),
+  website: z.preprocess(
+    (val) => {
+      if (typeof val !== 'string' || val.trim() === '') return undefined
+      const url = val.trim()
+      if (!url.startsWith('http://') && !url.startsWith('https://')) return `https://${url}`
+      return url
+    },
+    z.string().url({ message: 'Bitte gib eine gueltige Website-URL ein (z.B. www.verein.de)' }).optional(),
+  ),
+  vereinEmail: z.preprocess(
+    (val) => (typeof val === 'string' && val.trim() === '') ? undefined : val,
+    z.string().email('Bitte gib eine gueltige E-Mail-Adresse ein').optional(),
+  ),
   telefon: z.string().optional(),
-  beschreibung: z.string().min(50).max(1500),
+  beschreibung: z.string().min(50, 'Beschreibung muss mindestens 50 Zeichen haben').max(1500, 'Beschreibung darf maximal 1500 Zeichen haben'),
   niveau: z.enum(['ANFAENGER', 'FORTGESCHRITTENE', 'WETTKAMPF', 'PROFI']),
   priceCategory: z.enum(['kostenlos', 'guenstig', 'mittel', 'premium']),
   ageMin: z.number().int().min(0).max(80),

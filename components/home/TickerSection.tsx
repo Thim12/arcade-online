@@ -1,14 +1,9 @@
 // ─────────────────────────────────────────────────────────────────
-// TickerSection – Horizontaler Live-Aktivitäts-Ticker
+// TickerSection – Premium Live-Aktivitäts-Ticker
 //
 // Server Component – reine CSS-Animation (keine Client-Direktive nötig).
 //
-// Aufbau:
-//   • Dunkle Trennleiste zwischen Hero und Features
-//   • Endlos-Ticker mit Echtzeit-Aktivitäten aus der DB (oder Fallback)
-//   • Inhalt wird dupliziert → nahtloser Loop (CSS translateX(-50%))
-//   • AnimationDuration via inline style: 48 s (überschreibt globals.css 30 s)
-//   • Pause beim Hover (über .ticker-container:hover in globals.css)
+// Design: Verfeinerte dunkle Trennleiste mit glowing Aktivitäts-Dots
 // ─────────────────────────────────────────────────────────────────
 
 // ── Typen ─────────────────────────────────────────────────────────
@@ -22,7 +17,7 @@ interface TickerSectionProps {
   items: TickerItem[]
 }
 
-// ── Fallback-Items (wenn DB leer) ─────────────────────────────────
+// ── Fallback-Items ────────────────────────────────────────────────
 
 const FALLBACK_ITEMS: TickerItem[] = [
   { id: 'f01', text: 'Lukas aus Frankfurt — 45 Min. Fußball-Training absolviert' },
@@ -46,23 +41,21 @@ export default function TickerSection({ items }: TickerSectionProps) {
 
   return (
     <div
-      className="relative overflow-hidden bg-gray-950 border-y border-white/[0.06] py-3.5"
+      className="relative overflow-hidden bg-[#030712] border-y border-white/[0.04] py-3.5"
       aria-label="Aktuelle Aktivitäten auf SportRise"
     >
       {/* Seitliche Fade-Masken */}
       <div
-        className="absolute inset-y-0 left-0 w-16 z-10 pointer-events-none"
+        className="absolute inset-y-0 left-0 w-24 z-10 pointer-events-none"
         style={{
-          background:
-            'linear-gradient(to right, rgb(3 7 18), transparent)',
+          background: 'linear-gradient(to right, #030712, transparent)',
         }}
         aria-hidden="true"
       />
       <div
-        className="absolute inset-y-0 right-0 w-16 z-10 pointer-events-none"
+        className="absolute inset-y-0 right-0 w-24 z-10 pointer-events-none"
         style={{
-          background:
-            'linear-gradient(to left, rgb(3 7 18), transparent)',
+          background: 'linear-gradient(to left, #030712, transparent)',
         }}
         aria-hidden="true"
       />
@@ -80,10 +73,11 @@ export default function TickerSection({ items }: TickerSectionProps) {
               className="inline-flex items-center gap-3 mx-8"
             >
               <span
-                className="w-1.5 h-1.5 rounded-full bg-green-400/70 shrink-0"
+                className="w-1.5 h-1.5 rounded-full bg-green-400/50 shrink-0"
+                style={{ boxShadow: '0 0 6px rgba(74, 222, 128, 0.3)' }}
                 aria-hidden="true"
               />
-              <span className="text-sm text-white/45 font-mono whitespace-nowrap">
+              <span className="text-sm text-white/30 font-mono whitespace-nowrap tracking-tight">
                 {item.text}
               </span>
             </span>
@@ -96,8 +90,11 @@ export default function TickerSection({ items }: TickerSectionProps) {
               aria-hidden="true"
               className="inline-flex items-center gap-3 mx-8"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400/70 shrink-0" />
-              <span className="text-sm text-white/45 font-mono whitespace-nowrap">
+              <span
+                className="w-1.5 h-1.5 rounded-full bg-green-400/50 shrink-0"
+                style={{ boxShadow: '0 0 6px rgba(74, 222, 128, 0.3)' }}
+              />
+              <span className="text-sm text-white/30 font-mono whitespace-nowrap tracking-tight">
                 {item.text}
               </span>
             </span>

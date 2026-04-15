@@ -1,13 +1,10 @@
 'use client'
 
 // ─────────────────────────────────────────────────────────────────
-// GamificationSection – Dunkle Sektion mit Badge-Grid & XP-Balken
+// GamificationSection – Premium Badge-Grid & XP-Balken
 //
-// • bg-[#0A0A0A], zweispaltig Desktop
-// • Links: Heading, XP-Fortschrittsbalken, Fußnote
-// • Rechts: 3×3 Badge-Grid (Rarity-abhängiges Styling)
-// • Eigener ICON_MAP: Lucide-Icons per iconName-String
-// • Fallback-Badges wenn DB leer
+// Design: Dunkle Sektion mit verstärkten Glow-Effekten,
+// animiertem XP-Balken mit Shimmer, goldener Glow auf Legendaries
 // ─────────────────────────────────────────────────────────────────
 
 import { motion } from 'framer-motion'
@@ -83,40 +80,45 @@ interface RarityConfig {
   iconColor: string
   label: string
   labelColor: string
+  glowColor: string
   ring?: string
 }
 
 const RARITY_CONFIG: Record<string, RarityConfig> = {
   COMMON: {
-    cardBg: 'bg-[#27272A]',
-    iconColor: 'text-[#9CA3AF]',
+    cardBg: 'bg-white/[0.02]',
+    iconColor: 'text-white/40',
     label: 'Gewöhnlich',
-    labelColor: 'text-[#9CA3AF]',
+    labelColor: 'text-white/30',
+    glowColor: 'transparent',
   },
   RARE: {
-    cardBg: 'bg-[#1e3a5f]',
-    iconColor: 'text-[#60A5FA]',
+    cardBg: 'bg-blue-500/[0.04]',
+    iconColor: 'text-blue-400/80',
     label: 'Selten',
-    labelColor: 'text-[#60A5FA]',
+    labelColor: 'text-blue-400/60',
+    glowColor: 'rgba(96, 165, 250, 0.08)',
   },
   EPIC: {
-    cardBg: 'bg-[#2d1a4e]',
-    iconColor: 'text-[#A78BFA]',
+    cardBg: 'bg-purple-500/[0.04]',
+    iconColor: 'text-purple-400/80',
     label: 'Episch',
-    labelColor: 'text-[#A78BFA]',
+    labelColor: 'text-purple-400/60',
+    glowColor: 'rgba(167, 139, 250, 0.08)',
   },
   LEGENDARY: {
-    cardBg: 'bg-[#431407]',
-    iconColor: 'text-[#F59E0B]',
+    cardBg: 'bg-amber-500/[0.04]',
+    iconColor: 'text-amber-400',
     label: 'Legendär',
-    labelColor: 'text-[#F59E0B]',
-    ring: 'ring-1 ring-[#F59E0B]/25',
+    labelColor: 'text-amber-400/70',
+    glowColor: 'rgba(245, 158, 11, 0.12)',
+    ring: 'ring-1 ring-amber-500/20',
   },
 }
 
 const DEFAULT_RARITY = RARITY_CONFIG['COMMON']
 
-// ── Fallback-Badges (DB leer) ─────────────────────────────────────
+// ── Fallback-Badges ───────────────────────────────────────────────
 
 const FALLBACK_BADGES: GamificationBadge[] = [
   { id: 'fb-1', name: 'Erster Schritt',    iconName: 'Trophy',    rarity: 'COMMON',    isSecret: false },
@@ -136,8 +138,26 @@ export default function GamificationSection({ badges }: GamificationSectionProps
   const displayBadges = badges.length > 0 ? badges.slice(0, 9) : FALLBACK_BADGES
 
   return (
-    <section className="bg-[#0A0A0A] py-24 sm:py-32">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative bg-[#030712] py-28 sm:py-36 overflow-hidden">
+      {/* Atmosphärische Glows */}
+      <div
+        className="absolute top-[20%] left-[10%] w-[500px] h-[500px] rounded-full pointer-events-none select-none"
+        style={{
+          background: 'radial-gradient(ellipse, rgba(22,163,74,0.06) 0%, transparent 70%)',
+          filter: 'blur(80px)',
+        }}
+        aria-hidden="true"
+      />
+      <div
+        className="absolute bottom-[20%] right-[10%] w-[400px] h-[400px] rounded-full pointer-events-none select-none"
+        style={{
+          background: 'radial-gradient(ellipse, rgba(245,158,11,0.04) 0%, transparent 70%)',
+          filter: 'blur(80px)',
+        }}
+        aria-hidden="true"
+      />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
 
           {/* ── Linke Spalte: Text & XP-Balken ─────────────────── */}
@@ -147,35 +167,52 @@ export default function GamificationSection({ badges }: GamificationSectionProps
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
           >
-            <p className="text-sm font-semibold tracking-widest uppercase text-[#16A34A] mb-4">
+            <p className="text-sm font-semibold tracking-widest uppercase text-green-400 mb-4">
               Gamification
             </p>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-6">
+            <h2 className="text-3xl sm:text-4xl lg:text-[52px] font-bold text-white tracking-tight mb-6 leading-[1.1]">
               Sport als Progression.
             </h2>
 
-            <p className="text-base text-white/58 leading-relaxed max-w-md">
-              Jedes Training bringt XP. Jede Mahlzeit bringt XP. Jeder Post bringt XP. Von Level 1 bis Level 25. Abzeichen die zeigen was du wirklich geleistet hast.
+            <p className="text-base text-white/40 leading-relaxed max-w-md">
+              Jedes Training bringt XP. Jede Mahlzeit bringt XP. Jeder Post bringt XP.
+              Von Level 1 bis Level 25. Abzeichen die zeigen was du wirklich geleistet hast.
             </p>
 
-            {/* XP-Fortschrittsbalken */}
-            <div className="mt-10">
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-mono text-sm text-white/60">Level 7</span>
-                <span className="font-mono text-sm text-white/60">Level 8</span>
+            {/* XP-Fortschrittsbalken mit Shimmer */}
+            <div className="mt-12">
+              <div className="flex justify-between items-center mb-2.5">
+                <span className="font-mono text-sm text-white/50">Level 7</span>
+                <span className="font-mono text-sm text-white/50">Level 8</span>
               </div>
-              <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-[#16A34A] to-[#4ADE80] rounded-full"
-                  style={{ width: '65%' }}
-                />
+              <div className="h-2 bg-white/[0.04] rounded-full overflow-hidden border border-white/[0.06]">
+                <motion.div
+                  className="h-full rounded-full relative overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(90deg, #16A34A, #4ADE80)',
+                  }}
+                  initial={{ width: '0%' }}
+                  whileInView={{ width: '65%' }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1.5, delay: 0.3, ease: 'easeOut' }}
+                >
+                  {/* Shimmer-Effekt auf dem Balken */}
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)',
+                      backgroundSize: '200% 100%',
+                      animation: 'shimmer 2s ease-in-out infinite',
+                    }}
+                  />
+                </motion.div>
               </div>
-              <p className="mt-2 text-xs text-white/40 font-mono">6 500 / 10 000 XP</p>
+              <p className="mt-2.5 text-xs text-white/25 font-mono">6 500 / 10 000 XP</p>
             </div>
 
             {/* Fußnote */}
-            <p className="mt-8 text-xs italic text-white/22">
+            <p className="mt-10 text-xs italic text-white/15">
               Manche Abzeichen werden nicht verraten...
             </p>
           </motion.div>
@@ -199,20 +236,25 @@ export default function GamificationSection({ badges }: GamificationSectionProps
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true, margin: '-40px' }}
                   transition={{ duration: 0.35, delay: i * 0.05, ease: 'easeOut' }}
-                  className={`rounded-xl p-4 border border-white/[0.07] transition-colors hover:bg-white/[0.09] ${
+                  className={`relative rounded-xl p-4 border border-white/[0.06] transition-all duration-300 hover:bg-white/[0.04] hover:border-white/[0.1] hover:-translate-y-0.5 ${
                     config.cardBg
                   } ${config.ring ?? ''} ${badge.isSecret ? 'border-dashed' : ''}`}
+                  style={{
+                    boxShadow: config.glowColor !== 'transparent'
+                      ? `0 0 20px ${config.glowColor}`
+                      : 'none',
+                  }}
                 >
                   {badge.isSecret ? (
                     <>
-                      <Lock className="h-6 w-6 text-white/18" />
-                      <p className="text-white/40 text-xs font-medium mt-2 truncate">???</p>
+                      <Lock className="h-6 w-6 text-white/15" />
+                      <p className="text-white/25 text-xs font-medium mt-2 truncate">???</p>
                       <p className={`text-[10px] mt-1 ${config.labelColor}`}>{config.label}</p>
                     </>
                   ) : (
                     <>
                       <IconComp className={`h-6 w-6 ${config.iconColor}`} />
-                      <p className="text-white/[68%] text-xs font-medium mt-2 truncate">{badge.name}</p>
+                      <p className="text-white/55 text-xs font-medium mt-2 truncate">{badge.name}</p>
                       <p className={`text-[10px] mt-1 ${config.labelColor}`}>{config.label}</p>
                     </>
                   )}

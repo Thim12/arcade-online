@@ -13,7 +13,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { getSupabaseAdmin } from '@/lib/supabase'
+import { getSupabaseAdmin } from '@/lib/supabase-server'
 
 export async function DELETE(): Promise<NextResponse> {
   // ── Authentifizierung prüfen ───────────────────────────────────

@@ -39,6 +39,7 @@ const PUBLIC_PATHS = [
   '/faq',
   '/ueber-uns',
   '/kontakt',
+  '/in-arbeit',
 ]
 
 // Prefixes die öffentlich sind (z.B. /vereine/1234-fc-frankfurt)

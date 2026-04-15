@@ -1,12 +1,10 @@
 'use client'
 
 // ─────────────────────────────────────────────────────────────────
-// FeaturesSection – "Wie es funktioniert" / Feature-Grid
+// FeaturesSection – Premium "Alles inklusive" Feature-Grid
 //
-// • id="wie-es-funktioniert" → Scroll-Target aus HeroSection
-// • 6 Cards mit Framer Motion whileInView (Stagger: i × 0.07 s)
-// • viewport={{ once: true, margin: '-50px' }}
-// • Letzte Card (Gamification) zeigt Badge-Vorschau wenn Badges vorhanden
+// Design: Bento-Grid-Layout mit Glassmorphism-Cards
+// Hover: Card schwebt + Glow verstärkt sich + Gradient-Border
 // ─────────────────────────────────────────────────────────────────
 
 import { motion } from 'framer-motion'
@@ -36,8 +34,8 @@ interface Feature {
   Icon: LucideIcon
   title: string
   description: string
-  accent: string
-  iconBg: string
+  accentColor: string
+  glowColor: string
 }
 
 // ── Feature-Daten ─────────────────────────────────────────────────
@@ -48,48 +46,48 @@ const FEATURES: Feature[] = [
     title: 'Vereine & Trainer finden',
     description:
       'Entdecke Vereine in deiner Nähe für Fußball, Tennis und Basketball — mit allen Infos auf einen Blick.',
-    accent: 'text-green-400',
-    iconBg: 'bg-green-500/10',
+    accentColor: '#16A34A',
+    glowColor: 'rgba(22, 163, 74, 0.15)',
   },
   {
     Icon: Trophy,
     title: 'Turniere & Wettkämpfe',
     description:
       'Finde lokale Turniere und melde dich direkt an — kostenlos und ohne Umwege.',
-    accent: 'text-amber-400',
-    iconBg: 'bg-amber-500/10',
+    accentColor: '#F59E0B',
+    glowColor: 'rgba(245, 158, 11, 0.15)',
   },
   {
     Icon: Dumbbell,
     title: 'KI-Trainingsplan',
     description:
       'Dein persönlicher Trainingsplan, erstellt von KI — abgestimmt auf dein Niveau und deine Ziele.',
-    accent: 'text-blue-400',
-    iconBg: 'bg-blue-500/10',
+    accentColor: '#3B82F6',
+    glowColor: 'rgba(59, 130, 246, 0.15)',
   },
   {
     Icon: UtensilsCrossed,
     title: 'Ernährungsplan',
     description:
       'Passende Ernährungspläne für deinen Sport, erstellt mit KI-Unterstützung.',
-    accent: 'text-orange-400',
-    iconBg: 'bg-orange-500/10',
+    accentColor: '#EA580C',
+    glowColor: 'rgba(234, 88, 12, 0.15)',
   },
   {
     Icon: BookOpen,
     title: 'Sport-Guides',
     description:
       'Tipps, Techniken und Wissen — kuratiert von der SportRise-Community.',
-    accent: 'text-purple-400',
-    iconBg: 'bg-purple-500/10',
+    accentColor: '#A855F7',
+    glowColor: 'rgba(168, 85, 247, 0.15)',
   },
   {
     Icon: Zap,
     title: 'Gamification & Abzeichen',
     description:
       'Verdiene XP, steige im Level auf und schalte geheime Abzeichen frei.',
-    accent: 'text-yellow-400',
-    iconBg: 'bg-yellow-500/10',
+    accentColor: '#EAB308',
+    glowColor: 'rgba(234, 179, 8, 0.15)',
   },
 ]
 
@@ -106,28 +104,37 @@ const RARITY_STYLES: Record<string, string> = {
 
 export default function FeaturesSection({ badges }: FeaturesSectionProps) {
   return (
-    <section
-      className="relative bg-gray-950 py-20 sm:py-28 overflow-hidden"
-    >
+    <section className="relative bg-[#030712] py-24 sm:py-32 overflow-hidden">
       {/* Subtiler Glow von oben */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(22,163,74,0.07) 0%, transparent 60%)',
+            'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(22,163,74,0.06) 0%, transparent 60%)',
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Subtile Grid-Textur */}
+      <div
+        className="absolute inset-0 pointer-events-none select-none"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                           linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)`,
+          backgroundSize: '60px 60px',
         }}
         aria-hidden="true"
       />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* ── Section-Heading ─────────────────────────────────── */}
-        <div className="text-center mb-14 sm:mb-16">
+        <div className="text-center mb-16 sm:mb-20">
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
-            className="text-sm font-semibold text-green-400 tracking-widest uppercase mb-3"
+            className="text-sm font-semibold text-green-400 tracking-widest uppercase mb-4"
           >
             Alles inklusive
           </motion.p>
@@ -137,7 +144,7 @@ export default function FeaturesSection({ badges }: FeaturesSectionProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.5, delay: 0.05, ease: 'easeOut' }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight text-balance"
+            className="text-3xl sm:text-4xl lg:text-[52px] font-bold text-white tracking-tight text-balance leading-[1.1]"
           >
             Alles was du brauchst
           </motion.h2>
@@ -147,17 +154,17 @@ export default function FeaturesSection({ badges }: FeaturesSectionProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
-            className="mt-4 text-lg text-white/50 max-w-xl mx-auto"
+            className="mt-5 text-lg text-white/40 max-w-xl mx-auto"
           >
             Von der Vereinssuche bis zum KI-Trainingsplan — SportRise bietet
             alles für deinen Sport.
           </motion.p>
         </div>
 
-        {/* ── Feature-Grid ─────────────────────────────────────── */}
+        {/* ── Feature-Grid (Bento-Style) ──────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {FEATURES.map((feature, i) => {
-            const { Icon, title, description, accent, iconBg } = feature
+            const { Icon, title, description, accentColor, glowColor } = feature
             const isLast = i === FEATURES.length - 1
 
             return (
@@ -171,28 +178,42 @@ export default function FeaturesSection({ badges }: FeaturesSectionProps) {
                   delay: i * 0.07,
                   ease: 'easeOut',
                 }}
-                className="group relative rounded-2xl bg-white/[0.04] border border-white/[0.07] p-6 hover:bg-white/[0.06] hover:border-white/[0.12] transition-colors"
+                className="group relative rounded-2xl bg-white/[0.02] border border-white/[0.06] p-7 card-hover overflow-hidden"
               >
-                {/* Icon */}
+                {/* Hover Glow — erscheint nur bei Hover */}
                 <div
-                  className={`inline-flex items-center justify-center w-10 h-10 rounded-xl mb-4 ${iconBg} ${accent}`}
+                  className="absolute -top-20 -right-20 w-40 h-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{
+                    background: `radial-gradient(ellipse, ${glowColor} 0%, transparent 70%)`,
+                    filter: 'blur(30px)',
+                  }}
+                  aria-hidden="true"
+                />
+
+                {/* Icon — mit farbigem Akzent */}
+                <div
+                  className="relative inline-flex items-center justify-center w-11 h-11 rounded-xl mb-5 transition-transform duration-300 group-hover:scale-110"
+                  style={{
+                    backgroundColor: `${accentColor}12`,
+                    color: accentColor,
+                  }}
                 >
                   <Icon className="h-5 w-5" />
                 </div>
 
                 {/* Titel */}
-                <h3 className="text-base font-semibold text-white mb-2">
+                <h3 className="relative text-base font-semibold text-white mb-2.5 group-hover:text-white/95 transition-colors">
                   {title}
                 </h3>
 
                 {/* Beschreibung */}
-                <p className="text-sm text-white/50 leading-relaxed">
+                <p className="relative text-sm text-white/40 leading-relaxed group-hover:text-white/50 transition-colors">
                   {description}
                 </p>
 
                 {/* Badge-Vorschau (nur letzte Card, wenn Badges vorhanden) */}
                 {isLast && badges.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-1.5">
+                  <div className="relative mt-5 flex flex-wrap gap-1.5">
                     {badges.slice(0, 6).map((badge) => (
                       <span
                         key={badge.id}

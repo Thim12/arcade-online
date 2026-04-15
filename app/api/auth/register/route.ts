@@ -11,7 +11,7 @@ import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 import { Prisma, type GermanState } from '@prisma/client'
 import { sendElternVerificationEmail, sendWelcomeEmail } from '@/lib/resend'
-import { getSupabaseAdmin } from '@/lib/supabase'
+import { getSupabaseAdmin } from '@/lib/supabase-server'
 
 // Prisma unique-constraint Fehlercode
 const PRISMA_UNIQUE_VIOLATION = 'P2002'

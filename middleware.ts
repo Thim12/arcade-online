@@ -97,6 +97,27 @@ export default auth(
       return NextResponse.next()
     }
 
+    // ── 1.1 Password Protection (Cloudflare Tunnel) ───────────────
+    // Fordere global "T361809im" als Passwort an, ignoriere Username.
+    const basicAuth = req.headers.get('Authorization')
+    let isBasicAuthed = false
+    if (basicAuth && basicAuth.startsWith('Basic ')) {
+      const authValue = basicAuth.split(' ')[1]
+      try {
+        const decoded = atob(authValue)
+        const [, pwd] = decoded.split(':')
+        if (pwd === 'T361809im') isBasicAuthed = true
+      } catch (e) {
+        // base64 decode failed
+      }
+    }
+    if (!isBasicAuthed) {
+      return new NextResponse('Site is protected by Password', {
+        status: 401,
+        headers: { 'WWW-Authenticate': 'Basic realm="SportRise Dev Access"' }
+      })
+    }
+
     // ── 2. Statische und öffentliche Ressourcen ──────────────────
     const isPublic =
       PUBLIC_PATHS.includes(pathname) ||

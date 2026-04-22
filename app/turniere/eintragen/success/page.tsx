@@ -1,10 +1,5 @@
 'use client'
 
-// ─────────────────────────────────────────────────────────────────
-// app/turniere/eintragen/success/page.tsx
-// Dunkle Erfolgsseite nach erfolgreicher Turnier-Einreichung
-// ─────────────────────────────────────────────────────────────────
-
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { CheckCircle2, Mail, Clock, Trophy } from 'lucide-react'
@@ -29,34 +24,33 @@ const INFO_ITEMS = [
 
 export default function TurnierEintragenSuccessPage() {
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center px-6 py-16">
-      {/* Icon */}
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 py-16">
       <motion.div
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.1 }}
         className="mb-8"
       >
-        <CheckCircle2 size={96} className="text-[#16A34A]" strokeWidth={1.5} />
+        <div className="w-24 h-24 rounded-2xl bg-green-50 flex items-center justify-center">
+          <CheckCircle2 size={48} className="text-green-600" strokeWidth={1.5} />
+        </div>
       </motion.div>
 
-      {/* Heading */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.3 }}
         className="text-center mb-10"
       >
-        <h1 className="text-3xl font-bold text-white tracking-tight">
+        <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">
           Vielen Dank!
         </h1>
-        <p className="mt-3 text-[#A1A1AA] text-base max-w-md">
+        <p className="mt-3 text-zinc-500 text-base max-w-md">
           Dein Turnier wurde eingereicht. Wir prüfen es innerhalb von{' '}
-          <span className="text-white font-semibold">24–48 Stunden</span>.
+          <span className="text-zinc-900 font-semibold">24–48 Stunden</span>.
         </p>
       </motion.div>
 
-      {/* Info Cards */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -69,20 +63,19 @@ export default function TurnierEintragenSuccessPage() {
             initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3, delay: 0.5 + i * 0.1 }}
-            className="flex items-start gap-4 rounded-xl bg-white/5 border border-white/10 px-5 py-4"
+            className="flex items-start gap-4 rounded-xl bg-zinc-50 border border-zinc-200 px-5 py-4"
           >
-            <div className="w-9 h-9 rounded-lg bg-[#16A34A]/15 border border-[#16A34A]/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <Icon size={18} className="text-[#16A34A]" />
+            <div className="w-9 h-9 rounded-lg bg-green-100 border border-green-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <Icon size={18} className="text-green-600" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">{title}</p>
-              <p className="text-xs text-[#71717A] mt-0.5 leading-relaxed">{desc}</p>
+              <p className="text-sm font-semibold text-zinc-900">{title}</p>
+              <p className="text-xs text-zinc-500 mt-0.5 leading-relaxed">{desc}</p>
             </div>
           </motion.div>
         ))}
       </motion.div>
 
-      {/* Buttons */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -91,24 +84,19 @@ export default function TurnierEintragenSuccessPage() {
       >
         <Link
           href="/turniere"
-          className="flex-1 flex items-center justify-center h-12 rounded-xl text-sm font-semibold text-white transition-all"
-          style={{
-            background: 'linear-gradient(135deg, #16A34A, #15803D)',
-            boxShadow: '0 4px 20px rgba(22,163,74,0.35)',
-          }}
+          className="flex-1 flex items-center justify-center h-12 rounded-xl text-sm font-semibold text-white bg-green-600 hover:bg-green-700 transition-colors"
         >
           Zur Turniersuche
         </Link>
         <Link
           href="/"
-          className="flex-1 flex items-center justify-center h-12 rounded-xl text-sm font-semibold text-white border border-white/20 hover:border-white/40 transition-colors"
+          className="flex-1 flex items-center justify-center h-12 rounded-xl text-sm font-semibold text-zinc-600 border border-zinc-200 hover:border-zinc-300 hover:text-zinc-900 transition-colors"
         >
           Zur Startseite
         </Link>
       </motion.div>
 
-      {/* KI-Hinweis */}
-      <p className="mt-10 text-[10px] text-[#52525B] text-center">
+      <p className="mt-10 text-[10px] text-zinc-400 text-center">
         Erstellt von unserer eigenen KI · kein externer Bot · DSGVO-konform
       </p>
     </div>

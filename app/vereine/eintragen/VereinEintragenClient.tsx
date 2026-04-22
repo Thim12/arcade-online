@@ -1082,18 +1082,28 @@ export default function VereinEintragenClient() {
 
   return (
     <div data-sport={state.sportSlug || 'fussball'}>
-      {/* ── Dark Header ── */}
-      <div className="bg-[#0A0A0A] py-12 px-6">
-        <div className="max-w-xl mx-auto">
-          <h1 className="text-3xl font-bold text-white tracking-tight">Verein eintragen.</h1>
-          <p className="mt-2 text-[#A1A1AA] text-sm">
+      {/* ── Hero Header ── */}
+      <div className="bg-white py-12 px-6 relative overflow-hidden">
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: 'url(https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1600&q=60)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: 0.05,
+          }}
+        />
+        <div className="absolute inset-0 bg-white/80 z-0" />
+        <div className="max-w-xl mx-auto relative z-10">
+          <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">Verein eintragen.</h1>
+          <p className="mt-2 text-zinc-500 text-sm">
             Kostenlos · Geprüft innerhalb 24–48 Stunden · Für immer sichtbar.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             {['Kostenlos', 'Kein Abo', 'Community-geprüft'].map((chip) => (
               <span
                 key={chip}
-                className="flex items-center gap-1 px-3 py-1 rounded-full border border-white/20 text-white/80 text-xs font-medium"
+                className="flex items-center gap-1 px-3 py-1 rounded-full border border-zinc-200 text-zinc-500 text-xs font-medium bg-white shadow-sm"
               >
                 <CheckCircle2 size={11} className="text-[#16A34A]" />
                 {chip}

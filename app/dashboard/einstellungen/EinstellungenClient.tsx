@@ -28,8 +28,10 @@ import {
   X,
   Shield,
   ChevronRight,
+  ChevronLeft,
   Loader2,
 } from 'lucide-react'
+import Link from 'next/link'
 import type { EinstellungenData } from './page'
 
 // ── Sport-Farbsystem ───────────────────────────────────────────────
@@ -426,6 +428,27 @@ export function EinstellungenClient({ data }: { data: EinstellungenData }) {
       )}
 
       <div className="w-full px-8 py-8">
+
+        {/* ── Breadcrumb Navigation ──────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+          className="mb-6"
+        >
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-1.5 text-sm transition-colors"
+            style={{ color: '#71717A' }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#0A0A0A' }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#71717A' }}
+          >
+            <ChevronLeft size={14} />
+            Zurück zum Dashboard
+          </Link>
+          <span style={{ color: '#D4D4D8' }}> / </span>
+          <span className="text-sm font-semibold" style={{ color: '#0A0A0A' }}>Einstellungen</span>
+        </motion.div>
 
         {/* ── Header-Banner mit Sport-Farbakzent ─────────────────── */}
         <motion.div

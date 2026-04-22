@@ -40,7 +40,7 @@ import { LEVEL_LABELS, TURNIER_FORMAT_LABELS } from '@/lib/types/turnier'
 const SPORT_HERO_PHOTOS: Record<string, string> = {
   fussball: 'photo-1529900748604-07564a03e7a6',
   tennis: 'photo-1554068865-24cecd4e34b8',
-  basketball: 'photo-1546519638-68e109498ffc',
+  basketball: 'photo-1559692048-79a3f837883d',
 }
 
 // ── Toast ────────────────────────────────────────────────────────

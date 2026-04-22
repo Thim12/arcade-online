@@ -111,6 +111,70 @@ enum SparringStatus {
 }
 
 // ─────────────────────────────────────────────────────────────────
+// NUTRITION, FASTING & BIOMETRICS ENUMS
+// ─────────────────────────────────────────────────────────────────
+
+enum DietType {
+  VEGAN
+  VEGETARISCH
+  LOW_CARB
+  HIGH_PROTEIN
+  KETO
+  MEDITERRANEAN
+  PALEO
+  STANDARD
+}
+
+enum FastingStatus {
+  ACTIVE
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum FastingType {
+  F16_8
+  F18_6
+  F20_4
+  F24
+  CUSTOM
+}
+
+enum ActivitySource {
+  APPLE_HEALTH
+  GARMIN
+  MANUAL
+}
+
+enum MoodType {
+  SEHR_GUT
+  GUT
+  NEUTRAL
+  SCHLECHT
+  SEHR_SCHLECHT
+}
+
+enum Gender {
+  MAENNLICH
+  WEIBLICH
+  DIVERS
+}
+
+enum ActivityLevel {
+  SEDENTAER
+  LEICHT_AKTIV
+  MAESSIG_AKTIV
+  AKTIV
+  SEHR_AKTIV
+}
+
+enum InventoryUnit {
+  GRAMM
+  MILLILITER
+  STUECK
+}
+
+// ─────────────────────────────────────────────────────────────────
 // SPORT
 // ─────────────────────────────────────────────────────────────────
 
@@ -188,6 +252,14 @@ model User {
   // Ernährungs-Einstellungen (JSON, nullable)
   nutritionSettings Json?
 
+  // Biometrische Daten & Fasting
+  gender           Gender?
+  heightCm         Float?
+  weightKg         Float?
+  targetWeight     Float?
+  activityLevel    ActivityLevel?
+  streakFreezes    Int      @default(0)
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -216,6 +288,12 @@ model User {
   nutritionFeedbacks NutritionFeedback[]
   sparringSent      SparringRequest[] @relation("SparringSent")
   sparringReceived  SparringRequest[] @relation("SparringReceived")
+  inventoryItems    UserInventoryItem[]
+  dailyLogs         DailyLog[]
+  fastingLogs       FastingLog[]
+  activityLogs      ActivityLog[]
+  weightLogs        WeightLog[]
+  recipes           Recipe[]
 
   @@index([state, level])
   @@map("users")
@@ -727,4 +805,194 @@ model SparringRequest {
   @@index([receiverId, status])
   @@index([senderId, status])
   @@map("sparring_requests")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// KÜHLSCHRANK INVENTAR (Phase 4)
+// ─────────────────────────────────────────────────────────────────
+
+model UserInventoryItem {
+  id             String    @id @default(cuid())
+  userId         String
+  name           String
+  category       String?
+  quantity       Int       @default(1)
+  expiryDate     DateTime?
+  caloriesPer100 Int?
+  proteinGPer100 Float?
+  carbsGPer100   Float?
+  fatGPer100     Float?
+  addedVia       String    @default("BATCH_SCAN") // "MANUAL", "SCAN", "BATCH_SCAN"
+  barcode        String?
+  quantityG      Float     @default(100)
+  unit           InventoryUnit @default(GRAMM)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([barcode])
+  @@map("user_inventory_items")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// TAGES-LOG (Aggregiertes Tages-Tracking)
+// ─────────────────────────────────────────────────────────────────
+
+model DailyLog {
+  id             String    @id @default(cuid())
+  userId         String
+  date           DateTime  @db.Date
+  totalCalories  Int       @default(0)
+  totalProtein   Float     @default(0)
+  totalCarbs     Float     @default(0)
+  totalFat       Float     @default(0)
+  waterIntakeMl  Int       @default(0)
+  mood           MoodType?
+  weather        String?
+  notes          String?
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mealEntries MealEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("daily_logs")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// MAHLZEITEN-EINTRÄGE (Erweitert mit Mikronährstoffen)
+// ─────────────────────────────────────────────────────────────────
+
+model MealEntry {
+  id           String   @id @default(cuid())
+  dailyLogId   String
+  mealType     MealType
+  foodId       String?
+  name         String
+  amountG      Float
+  calories     Int
+  proteinG     Float
+  carbsG       Float
+  fatG         Float
+  fiberG       Float    @default(0)
+  // JSON: { sugar, saturatedFatG, cholesterolMg, sodiumMg, vitaminA_mcg, vitaminB6_mg,
+  //         vitaminB12_mcg, vitaminC_mg, vitaminD_mcg, vitaminE_mg, vitaminK_mcg,
+  //         biotin_mcg, ironMg, calciumMg, magnesiumMg, zincMg }
+  micros       Json?
+
+  dailyLog DailyLog @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([dailyLogId, mealType])
+  @@map("meal_entries")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// REZEPTE & ZUTATEN
+// ─────────────────────────────────────────────────────────────────
+
+model Recipe {
+  id          String   @id @default(cuid())
+  userId      String?
+  title       String
+  description String?
+  prepTimeMin Int
+  calories    Int
+  proteinG    Float
+  carbsG      Float
+  fatG        Float
+  dietType    DietType @default(STANDARD)
+  imageUrl    String?
+  isPublic    Boolean  @default(false)
+
+  user        User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ingredients RecipeIngredient[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([dietType])
+  @@map("recipes")
+}
+
+model RecipeIngredient {
+  id         String  @id @default(cuid())
+  recipeId   String
+  name       String
+  amountG    Float
+  unit       String  @default("g")
+  isOptional Boolean @default(false)
+
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@map("recipe_ingredients")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// INTERVALLFASTEN (Intermittent Fasting)
+// ─────────────────────────────────────────────────────────────────
+
+model FastingLog {
+  id                  String        @id @default(cuid())
+  userId              String
+  startTime           DateTime
+  endTime             DateTime?
+  targetDurationHours Int           @default(16)
+  fastingType         FastingType   @default(F16_8)
+  status              FastingStatus @default(ACTIVE)
+  notes               String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, status])
+  @@index([userId, startTime])
+  @@map("fasting_logs")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// AKTIVITÄTS- & GEWICHTS-TRACKING
+// ─────────────────────────────────────────────────────────────────
+
+model ActivityLog {
+  id             String         @id @default(cuid())
+  userId         String
+  date           DateTime       @db.Date
+  steps          Int            @default(0)
+  activeCalories Int            @default(0)
+  distanceKm     Float?
+  source         ActivitySource @default(MANUAL)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, date])
+  @@map("activity_logs")
+}
+
+model WeightLog {
+  id         String   @id @default(cuid())
+  userId     String
+  date       DateTime @db.Date
+  weightKg   Float
+  bodyFatPct Float?
+  notes      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("weight_logs")
 }

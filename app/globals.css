@@ -5,17 +5,50 @@
 @tailwind utilities;
 
 /* ─────────────────────────────────────────────────────────────────
-   SportRise Design System – Dark Mode First
-   Nike.com × Spotify × Linear.app × Whoop.com
+   SportRise Design System – Apple × Strava
    
-   Philosophie: Dunkle, atmosphaerische Oberflaechen mit
-   lebendigen Sport-Farbakzenten. Kein langweiliges Weiss.
-   Jede Seite braucht visuelle Energie.
+   Philosophie: Weiss, clean, premium – wie Apple.com fuer die
+   Landing-Page, wie Strava fuer das Dashboard. Sport-Farben als
+   lebendige Akzente (Gruen, Orange, Sand). Nicht langweilig,
+   sondern elegant undpraesent.
    ───────────────────────────────────────────────────────────────── */
 
 @layer base {
   :root {
-    /* Dunkles Farbsystem – Primary Default */
+    /* Helles Farbsystem – Weiss-basiert, Strava-inspiriert */
+    --background: 0 0% 98%;
+    --foreground: 240 10% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 4%;
+    --primary: 142 72% 29%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 10% 4%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 240 5% 96%;
+    --accent-foreground: 240 10% 4%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5% 91%;
+    --input: 240 5% 91%;
+    --ring: 142 72% 46%;
+    --radius: 0.75rem;
+
+    /* Sport-Farbsystem – Default: Fußball-Grün */
+    --sport-primary: #16a34a;
+    --sport-primary-hsl: 142 72% 29%;
+    --sport-light: #dcfce7;
+    --sport-dark: #14532d;
+    --sport-glow: rgba(22, 163, 74, 0.15);
+    --sport-glow-strong: rgba(22, 163, 74, 0.3);
+    --sport-accent: #4ade80;
+  }
+
+  /* Dark-Mode (fuer Dashboard-Sidebar, dunkle Abschnitte) */
+  .dark {
     --background: 240 10% 4%;
     --foreground: 0 0% 95%;
     --card: 240 6% 7%;
@@ -35,65 +68,33 @@
     --border: 240 4% 14%;
     --input: 240 4% 14%;
     --ring: 142 72% 46%;
-    --radius: 0.75rem;
 
-    /* Standard-Design-Tokens (SportRise Green als Default) */
-    --sport-primary: #16a34a;
-    --sport-primary-hsl: 142 72% 29%;
-    --sport-light: #bbf7d0;
-    --sport-dark: #14532d;
     --sport-glow: rgba(22, 163, 74, 0.35);
     --sport-glow-strong: rgba(22, 163, 74, 0.55);
-    --sport-accent: #4ade80;
-  }
-
-  /* Light-Mode (fuer Landing-Page-Abschnitte und Dashboard) */
-  .light {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 4%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 4%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 4%;
-    --primary: 142 72% 29%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 10% 4%;
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 46%;
-    --accent: 240 5% 96%;
-    --accent-foreground: 240 10% 4%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5% 90%;
-    --input: 240 5% 90%;
-    --ring: 142 72% 46%;
   }
 }
 
 /* ─────────────────────────────────────────────────────────────────
    Sport-Farbsystem – via data-sport Attribut
-   Verwendung: <div data-sport="fussball">...</div>
-   Automatische Farbwechsel pro Sportart.
    ───────────────────────────────────────────────────────────────── */
 
 [data-sport='fussball'] {
   --sport-primary: #16a34a;
   --sport-primary-hsl: 142 72% 29%;
-  --sport-light: #bbf7d0;
+  --sport-light: #dcfce7;
   --sport-dark: #14532d;
-  --sport-glow: rgba(22, 163, 74, 0.35);
-  --sport-glow-strong: rgba(22, 163, 74, 0.55);
+  --sport-glow: rgba(22, 163, 74, 0.15);
+  --sport-glow-strong: rgba(22, 163, 74, 0.3);
   --sport-accent: #4ade80;
 }
 
 [data-sport='tennis'] {
   --sport-primary: #c2621a;
   --sport-primary-hsl: 27 76% 44%;
-  --sport-light: #fde68a;
+  --sport-light: #fef3c7;
   --sport-dark: #7c2d12;
-  --sport-glow: rgba(194, 98, 26, 0.35);
-  --sport-glow-strong: rgba(194, 98, 26, 0.55);
+  --sport-glow: rgba(194, 98, 26, 0.15);
+  --sport-glow-strong: rgba(194, 98, 26, 0.3);
   --sport-accent: #cddc39;
 }
 
@@ -102,8 +103,8 @@
   --sport-primary-hsl: 22 91% 48%;
   --sport-light: #ffedd5;
   --sport-dark: #7c2d12;
-  --sport-glow: rgba(234, 88, 12, 0.35);
-  --sport-glow-strong: rgba(234, 88, 12, 0.55);
+  --sport-glow: rgba(234, 88, 12, 0.15);
+  --sport-glow-strong: rgba(234, 88, 12, 0.3);
   --sport-accent: #fb923c;
 }
 
@@ -123,35 +124,30 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Premium Scrollbar (Webkit) */
+  /* Premium Scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
-
   ::-webkit-scrollbar-track {
     background: transparent;
   }
-
   ::-webkit-scrollbar-thumb {
     border-radius: 999px;
-    background: hsl(var(--muted) / 0.4);
+    background: rgba(0, 0, 0, 0.08);
     transition: background 0.2s;
   }
-
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground) / 0.4);
+    background: rgba(0, 0, 0, 0.18);
   }
-
-  /* Firefox */
   * {
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--muted) / 0.4) transparent;
+    scrollbar-color: rgba(0, 0, 0, 0.08) transparent;
   }
 
-  /* Selektion – Sport-Farbe */
+  /* Selektion */
   ::selection {
-    background-color: var(--sport-glow, rgba(22, 163, 74, 0.35));
+    background-color: var(--sport-primary, #16a34a);
     color: #ffffff;
   }
 
@@ -163,64 +159,58 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   Utility Classes – Premium Design-System
+   Utility Classes – Apple × Strava Design System
    ───────────────────────────────────────────────────────────────── */
 
 @layer utilities {
   /* ── Sport-Glow Shadows ─────────────────────────────────────── */
   .shadow-sport {
-    box-shadow: 0 0 30px var(--sport-glow, rgba(22, 163, 74, 0.25)),
-      0 0 60px var(--sport-glow, rgba(22, 163, 74, 0.1));
+    box-shadow: 0 0 20px var(--sport-glow, rgba(22, 163, 74, 0.15)),
+      0 0 40px var(--sport-glow, rgba(22, 163, 74, 0.05));
   }
 
   .shadow-sport-lg {
-    box-shadow: 0 0 40px var(--sport-glow-strong, rgba(22, 163, 74, 0.4)),
-      0 0 80px var(--sport-glow, rgba(22, 163, 74, 0.15)),
-      0 8px 32px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 24px var(--sport-glow-strong, rgba(22, 163, 74, 0.3)),
+      0 0 48px var(--sport-glow, rgba(22, 163, 74, 0.05));
   }
 
-  /* ── Glassmorphism Varianten ─────────────────────────────────── */
+  /* ── Glassmorphism – fuer dunkle Abschnitte im Sidebar ──────── */
   .glass {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .glass-darker {
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .glass-card {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-  }
-
-  .glass-card-hover:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.12);
-  }
-
-  /* Glass fuer helle Hintergruende (Dashboard) */
-  .glass-light {
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(0, 0, 0, 0.06);
   }
 
+  .glass-darker {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .glass-card-hover:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .glass-light {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
   /* ── Gradient Text ──────────────────────────────────────────── */
   .text-gradient-sport {
-    background: linear-gradient(
-      135deg,
-      var(--sport-primary, #fff),
-      var(--sport-accent, #ccc)
-    );
+    background: linear-gradient(135deg, var(--sport-primary, #16a34a), var(--sport-accent, #4ade80));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -234,18 +224,18 @@
   }
 
   .text-gradient-white {
-    background: linear-gradient(135deg, rgba(255,255,255,1), rgba(255,255,255,0.6));
+    background: linear-gradient(135deg, rgba(255,255,255,1), rgba(255,255,255,0.7));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* ── Blur Blob (Hintergrund-Dekoration) ─────────────────────── */
+  /* ── Blob (Hintergrund-Dekoration) ──────────────────────────── */
   .blob {
     position: absolute;
     border-radius: 9999px;
-    filter: blur(100px);
-    opacity: 0.2;
+    filter: blur(80px);
+    opacity: 0.15;
     pointer-events: none;
     user-select: none;
     animation: blob 8s ease-in-out infinite;
@@ -279,18 +269,18 @@
     text-wrap: balance;
   }
 
-  /* ── Premium Card Hover ─────────────────────────────────────── */
+  /* ── Premium Card Hover – Strava-inspired ────────────────────── */
   .card-hover {
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   .card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-      0 0 0 1px rgba(255, 255, 255, 0.06),
-      0 0 40px var(--sport-glow, rgba(22, 163, 74, 0.1));
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(0, 0, 0, 0.05),
+      0 0 24px var(--sport-glow, rgba(22, 163, 74, 0.08));
   }
 
-  /* ── Gradient Border (via background-clip trick) ────────────── */
+  /* ── Gradient Border ────────────────────────────────────────── */
   .gradient-border {
     position: relative;
   }
@@ -300,11 +290,7 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(
-      135deg,
-      var(--sport-primary, rgba(255,255,255,0.15)),
-      var(--sport-accent, rgba(255,255,255,0.05))
-    );
+    background: linear-gradient(135deg, var(--sport-primary, #16a34a), var(--sport-accent, #4ade80));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
@@ -314,80 +300,42 @@
 
   /* ── Shimmer fuer Skeleton-Loader ───────────────────────────── */
   .shimmer-bg {
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.04) 50%,
-      transparent 100%
-    );
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.03) 50%, transparent 100%);
     background-size: 200% 100%;
     animation: shimmer 2s ease-in-out infinite;
   }
 
   /* ── Animation Utilities ────────────────────────────────────── */
-  .animate-brain-spin {
-    animation: brainSpin 3s linear infinite;
-  }
+  .animate-brain-spin { animation: brainSpin 3s linear infinite; }
+  .animate-bounce-y { animation: bounceY 2s ease-in-out infinite; }
+  .animate-float-up { animation: floatUp 3s ease-in-out forwards; }
+  .animate-load-progress { animation: loadProgress 2.4s ease-out forwards; }
+  .animate-glow-pulse { animation: glowPulse 3s ease-in-out infinite; }
+  .animate-text-shimmer { background-size: 200% auto; animation: textShimmer 3s linear infinite; }
 
-  .animate-bounce-y {
-    animation: bounceY 2s ease-in-out infinite;
-  }
-
-  .animate-float-up {
-    animation: floatUp 3s ease-in-out forwards;
-  }
-
-  .animate-load-progress {
-    animation: loadProgress 2.4s ease-out forwards;
-  }
-
-  .animate-glow-pulse {
-    animation: glowPulse 3s ease-in-out infinite;
-  }
-
-  .animate-text-shimmer {
-    background-size: 200% auto;
-    animation: textShimmer 3s linear infinite;
-  }
-
-  /* Scrollbar verstecken */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
 
   /* ── Sport-Farb-Utility fuer Text ──────────────────────────── */
-  .text-sport {
-    color: var(--sport-primary, #16a34a);
-  }
+  .text-sport { color: var(--sport-primary, #16a34a); }
+  .bg-sport { background-color: var(--sport-primary, #16a34a); }
+  .border-sport { border-color: var(--sport-primary, #16a34a); }
+  .ring-sport { --tw-ring-color: var(--sport-primary, #16a34a); }
 
-  .bg-sport {
-    background-color: var(--sport-primary, #16a34a);
-  }
-
-  .border-sport {
-    border-color: var(--sport-primary, #16a34a);
-  }
-
-  .ring-sport {
-    --tw-ring-color: var(--sport-primary, #16a34a);
-  }
-
-  /* ── Button System ───────────────────────────────────────────── */
+  /* ── Button System – Strava-inspired ─────────────────────────── */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-300;
+    @apply inline-flex items-center justify-center gap-2 font-semibold rounded-lg transition-all duration-200;
     background: var(--sport-primary, #16a34a);
     color: #fff;
     padding: 0.625rem 1.5rem;
-    box-shadow: 0 4px 24px var(--sport-glow, rgba(22, 163, 74, 0.35));
   }
   .btn-primary:hover {
     filter: brightness(1.1);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px var(--sport-glow-strong, rgba(22, 163, 74, 0.5));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px var(--sport-glow-strong, rgba(22, 163, 74, 0.3));
   }
   .btn-primary:active {
     transform: translateY(0);
@@ -400,28 +348,27 @@
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 font-medium rounded-xl transition-all duration-300;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #fff;
+    @apply inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200;
+    background: #fff;
+    border: 1px solid #e4e4e7;
+    color: #0a0a0a;
     padding: 0.625rem 1.5rem;
-    backdrop-filter: blur(12px);
   }
   .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+    background: #fafafa;
+    border-color: #d4d4d8;
+    transform: translateY(-1px);
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 font-medium rounded-xl transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200;
     background: transparent;
-    color: hsl(var(--muted-foreground));
+    color: #52525b;
     padding: 0.625rem 1.5rem;
   }
   .btn-ghost:hover {
-    background: hsl(var(--muted) / 0.5);
-    color: hsl(var(--foreground));
+    background: #f4f4f5;
+    color: #0a0a0a;
   }
 
   /* ── Radius System ───────────────────────────────────────────── */
@@ -494,12 +441,12 @@
 
 @keyframes glowPulse {
   0%, 100% {
-    box-shadow: 0 0 20px var(--sport-glow, rgba(22, 163, 74, 0.3)),
-                0 0 40px var(--sport-glow, rgba(22, 163, 74, 0.1));
+    box-shadow: 0 0 12px var(--sport-glow, rgba(22, 163, 74, 0.15)),
+                0 0 24px var(--sport-glow, rgba(22, 163, 74, 0.05));
   }
   50% {
-    box-shadow: 0 0 30px var(--sport-glow-strong, rgba(22, 163, 74, 0.5)),
-                0 0 60px var(--sport-glow, rgba(22, 163, 74, 0.2));
+    box-shadow: 0 0 20px var(--sport-glow-strong, rgba(22, 163, 74, 0.3)),
+                0 0 40px var(--sport-glow, rgba(22, 163, 74, 0.1));
   }
 }
 

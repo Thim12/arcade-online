@@ -1,19 +1,6 @@
 'use client'
-// ─────────────────────────────────────────────────────────────────
-// ProfilClient.tsx – Sport-spezifische Profilseite
-//
-// Sections:
-//   Hero          – Sportbild-Hintergrund, TiltCard-Avatar, User-Info
-//   XP-Progress   – Level + XP-Fortschrittsbalken (Glass)
-//   Stats-Row     – Einheiten / Minuten / XP / Abzeichen (Glass)
-//   Sport-Profil  – Sportartspezifische Details (Glass)
-//   Streak        – Aktuelle + Rekord-Streak (Glass)
-//   Badges        – Rarity-Grid (Glass, dunkel)
-//   Footer        – KI-Disclaimer
-// ─────────────────────────────────────────────────────────────────
-
 import { useState, useEffect } from 'react'
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   MapPin,
   Calendar,
@@ -26,6 +13,10 @@ import {
   Shield,
   Award,
   User,
+  ChevronRight,
+  TrendingUp,
+  Target,
+  Sparkles,
 } from 'lucide-react'
 import { getBadgeIcon } from '@/lib/sport-icons'
 import type { BadgeRarity } from '@prisma/client'
@@ -51,8 +42,6 @@ import {
   BASKETBALL_ZIEL_LABELS,
   WURFHAND_LABELS,
 } from '@/lib/sport-profiles'
-
-// ── Types ──────────────────────────────────────────────────────────
 
 export type SportDetailsPayload =
   | { sport: 'fussball'; data: FussballProfil }
@@ -97,144 +86,76 @@ export interface ProfilClientProps {
   levelProgressPercent: number
 }
 
-// ── Theme ──────────────────────────────────────────────────────────
-
 interface ThemeConfig {
   primary: string
   secondary: string
   glow: string
   glowStrong: string
   pageBg: string
-  heroBg: string
   heroImage: string
-  cardBg: string
-  cardBorder: string
   label: string
 }
 
 const SPORT_THEMES: Record<string, ThemeConfig> = {
   fussball: {
-    primary: '#16A34A',
-    secondary: '#22c55e',
-    glow: 'rgba(22,163,74,0.4)',
-    glowStrong: 'rgba(22,163,74,0.7)',
-    pageBg: 'linear-gradient(160deg, #030f06 0%, #04200a 35%, #051a08 70%, #020d04 100%)',
-    heroBg: 'linear-gradient(135deg, #052e16 0%, #0a3d1e 100%)',
-    heroImage:
-      'https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=1400&q=80&fit=crop',
-    cardBg: 'rgba(22,163,74,0.06)',
-    cardBorder: 'rgba(22,163,74,0.15)',
-    label: 'Fußball',
+    primary: '#16A34A', secondary: '#22c55e', glow: 'rgba(22,163,74,0.4)', glowStrong: 'rgba(22,163,74,0.7)',
+    pageBg: '#FAFAFA',
+    heroImage: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1400&q=75',
+    label: 'Fussball',
   },
   tennis: {
-    primary: '#C2621A',
-    secondary: '#f97316',
-    glow: 'rgba(194,98,26,0.4)',
-    glowStrong: 'rgba(194,98,26,0.7)',
-    pageBg: 'linear-gradient(160deg, #1a0800 0%, #2d1206 35%, #241005 70%, #160800 100%)',
-    heroBg: 'linear-gradient(135deg, #451a03 0%, #6b2d08 100%)',
-    heroImage:
-      'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1400&q=80&fit=crop',
-    cardBg: 'rgba(194,98,26,0.06)',
-    cardBorder: 'rgba(194,98,26,0.15)',
+    primary: '#C2621A', secondary: '#f97316', glow: 'rgba(194,98,26,0.4)', glowStrong: 'rgba(194,98,26,0.7)',
+    pageBg: '#FAFAFA',
+    heroImage: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1400&q=75',
     label: 'Tennis',
   },
   basketball: {
-    primary: '#EA580C',
-    secondary: '#fb923c',
-    glow: 'rgba(234,88,12,0.4)',
-    glowStrong: 'rgba(234,88,12,0.7)',
-    pageBg: 'linear-gradient(160deg, #150300 0%, #2a0800 35%, #220700 70%, #130200 100%)',
-    heroBg: 'linear-gradient(135deg, #431407 0%, #6b2312 100%)',
-    heroImage:
-      'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1400&q=80&fit=crop',
-    cardBg: 'rgba(234,88,12,0.06)',
-    cardBorder: 'rgba(234,88,12,0.15)',
+    primary: '#EA580C', secondary: '#fb923c', glow: 'rgba(234,88,12,0.4)', glowStrong: 'rgba(234,88,12,0.7)',
+    pageBg: '#FAFAFA',
+    heroImage: 'https://images.unsplash.com/photo-1559692048-79a3f837883d?w=1400&q=75',
     label: 'Basketball',
   },
 }
 
 const DEFAULT_THEME = SPORT_THEMES['fussball'] as ThemeConfig
 
-// ── Konstanten ─────────────────────────────────────────────────────
-
 const GERMAN_STATE_LABELS: Record<string, string> = {
-  HESSEN: 'Hessen',
-  BAYERN: 'Bayern',
-  BERLIN: 'Berlin',
-  BRANDENBURG: 'Brandenburg',
-  BREMEN: 'Bremen',
-  HAMBURG: 'Hamburg',
-  MECKLENBURG_VORPOMMERN: 'Mecklenburg-Vorpommern',
-  NIEDERSACHSEN: 'Niedersachsen',
-  NORDRHEIN_WESTFALEN: 'Nordrhein-Westfalen',
-  RHEINLAND_PFALZ: 'Rheinland-Pfalz',
-  SAARLAND: 'Saarland',
-  SACHSEN: 'Sachsen',
-  SACHSEN_ANHALT: 'Sachsen-Anhalt',
-  SCHLESWIG_HOLSTEIN: 'Schleswig-Holstein',
-  THUERINGEN: 'Thüringen',
-  BADEN_WUERTTEMBERG: 'Baden-Württemberg',
+  HESSEN: 'Hessen', BAYERN: 'Bayern', BERLIN: 'Berlin', BRANDENBURG: 'Brandenburg',
+  BREMEN: 'Bremen', HAMBURG: 'Hamburg', MECKLENBURG_VORPOMMERN: 'Mecklenburg-Vorpommern',
+  NIEDERSACHSEN: 'Niedersachsen', NORDRHEIN_WESTFALEN: 'Nordrhein-Westfalen',
+  RHEINLAND_PFALZ: 'Rheinland-Pfalz', SAARLAND: 'Saarland', SACHSEN: 'Sachsen',
+  SACHSEN_ANHALT: 'Sachsen-Anhalt', SCHLESWIG_HOLSTEIN: 'Schleswig-Holstein',
+  THUERINGEN: 'Thueringen', BADEN_WUERTTEMBERG: 'Baden-Wuerttemberg',
 }
 
-const RARITY_DARK: Record<
-  BadgeRarity,
-  { label: string; color: string; bg: string; border: string; glow: string }
-> = {
-  COMMON: {
-    label: 'Common',
-    color: '#94a3b8',
-    bg: 'rgba(148,163,184,0.08)',
-    border: 'rgba(148,163,184,0.20)',
-    glow: 'rgba(148,163,184,0.10)',
-  },
-  RARE: {
-    label: 'Selten',
-    color: '#60a5fa',
-    bg: 'rgba(96,165,250,0.08)',
-    border: 'rgba(96,165,250,0.25)',
-    glow: 'rgba(96,165,250,0.15)',
-  },
-  EPIC: {
-    label: 'Episch',
-    color: '#a78bfa',
-    bg: 'rgba(167,139,250,0.08)',
-    border: 'rgba(167,139,250,0.25)',
-    glow: 'rgba(167,139,250,0.15)',
-  },
-  LEGENDARY: {
-    label: 'Legendär',
-    color: '#fbbf24',
-    bg: 'rgba(251,191,36,0.08)',
-    border: 'rgba(251,191,36,0.30)',
-    glow: 'rgba(251,191,36,0.20)',
-  },
+const RARITY_LIGHT: Record<BadgeRarity, { label: string; color: string; bg: string; border: string }> = {
+  COMMON: { label: 'Common', color: '#71717A', bg: '#F4F4F5', border: '#E4E4E7' },
+  RARE: { label: 'Selten', color: '#2563EB', bg: '#EFF6FF', border: '#BFDBFE' },
+  EPIC: { label: 'Episch', color: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE' },
+  LEGENDARY: { label: 'Legendaer', color: '#D97706', bg: '#FFFBEB', border: '#FDE68A' },
 }
 
-// ── Animation Helpers ──────────────────────────────────────────────
+function getLevelTier(level: number): { label: string; bg: string; text: string; border: string } {
+  if (level >= 20) return { label: 'Legende', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' }
+  if (level >= 10) return { label: 'Elite', bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200' }
+  if (level >= 5) return { label: 'Fortgeschritten', bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' }
+  return { label: 'Anfaenger', bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' }
+}
 
 function fadeUp(delay = 0) {
   return {
-    initial: { opacity: 0, y: 24 },
+    initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
-    transition: {
-      duration: 0.55,
-      delay,
-      ease: [0.16, 1, 0.3, 1] as number[],
-    },
+    transition: { duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] as number[] },
   }
 }
 
-// ── AnimatedNumber ─────────────────────────────────────────────────
-
 function AnimatedNumber({ value, active }: { value: number; active: boolean }) {
   const [display, setDisplay] = useState(0)
-
   useEffect(() => {
     if (!active) return
     let startTs: number | null = null
     let raf: number
-
     const tick = (ts: number) => {
       if (startTs === null) startTs = ts
       const elapsed = ts - startTs
@@ -243,76 +164,21 @@ function AnimatedNumber({ value, active }: { value: number; active: boolean }) {
       setDisplay(Math.round(eased * value))
       if (progress < 1) raf = requestAnimationFrame(tick)
     }
-
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
   }, [value, active])
-
   return <>{(active ? display : value).toLocaleString('de-DE')}</>
 }
 
-// ── TiltCard ───────────────────────────────────────────────────────
-
-function TiltCard({
-  children,
-  className,
-  style,
-}: {
-  children: React.ReactNode
-  className?: string
-  style?: React.CSSProperties
-}) {
-  const tiltX = useMotionValue(0)
-  const tiltY = useMotionValue(0)
-  const springX = useSpring(tiltX, { stiffness: 200, damping: 20 })
-  const springY = useSpring(tiltY, { stiffness: 200, damping: 20 })
-  const rotateX = useTransform(springY, [-0.5, 0.5], [8, -8])
-  const rotateY = useTransform(springX, [-0.5, 0.5], [-8, 8])
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    tiltX.set((e.clientX - rect.left) / rect.width - 0.5)
-    tiltY.set((e.clientY - rect.top) / rect.height - 0.5)
-  }
-
-  const handleMouseLeave = () => {
-    tiltX.set(0)
-    tiltY.set(0)
-  }
-
+function DetailRow({ label, value, icon }: { label: string; value: string; icon?: React.ElementType }) {
+  const Icon = icon
   return (
-    <motion.div
-      style={{
-        rotateX,
-        rotateY,
-        transformStyle: 'preserve-3d',
-        perspective: 800,
-        ...style,
-      }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  )
-}
-
-// ── Detail Row & Chip List ─────────────────────────────────────────
-
-function DetailRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div
-      className="flex items-start justify-between gap-4 py-2.5"
-      style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-    >
-      <span
-        className="text-sm flex-shrink-0"
-        style={{ color: 'rgba(255,255,255,0.45)', minWidth: 140 }}
-      >
+    <div className="flex items-center justify-between py-3 border-b border-zinc-100 last:border-0">
+      <span className="text-sm text-zinc-500 flex items-center gap-2">
+        {Icon && <Icon size={14} className="text-zinc-400" />}
         {label}
       </span>
-      <span className="text-sm font-semibold text-right text-white">{value}</span>
+      <span className="text-sm font-semibold text-zinc-900">{value}</span>
     </div>
   )
 }
@@ -326,9 +192,9 @@ function ChipList({ items, theme }: { items: string[]; theme: ThemeConfig }) {
           key={item}
           className="px-3 py-1 rounded-full text-xs font-semibold"
           style={{
-            background: `${theme.primary}18`,
-            color: theme.secondary,
-            border: `1px solid ${theme.primary}30`,
+            background: `${theme.primary}10`,
+            color: theme.primary,
+            border: `1px solid ${theme.primary}25`,
           }}
         >
           {item}
@@ -338,166 +204,85 @@ function ChipList({ items, theme }: { items: string[]; theme: ThemeConfig }) {
   )
 }
 
-// ── Sport-Detail Sub-Components ────────────────────────────────────
-
-function FussballDetails({
-  data,
-  theme,
-}: {
-  data: FussballProfil
-  theme: ThemeConfig
-}) {
+function FussballDetails({ data, theme }: { data: FussballProfil; theme: ThemeConfig }) {
   return (
     <div>
-      <DetailRow label="Position" value={FUSSBALL_POSITION_LABELS[data.position]} />
-      <DetailRow label="Starker Fuß" value={STARKERFUSS_LABELS[data.starkerFuss]} />
-      <DetailRow label="Liga-Niveau" value={FUSSBALL_LIGA_LABELS[data.aktuellesLigaNiveau]} />
-      {data.aktuellerVereinsname !== undefined && (
-        <DetailRow label="Verein" value={data.aktuellerVereinsname} />
-      )}
+      <DetailRow label="Position" value={FUSSBALL_POSITION_LABELS[data.position]} icon={Target} />
+      <DetailRow label="Starker Fuss" value={STARKERFUSS_LABELS[data.starkerFuss]} />
+      <DetailRow label="Liga-Niveau" value={FUSSBALL_LIGA_LABELS[data.aktuellesLigaNiveau]} icon={TrendingUp} />
+      {data.aktuellerVereinsname !== undefined && <DetailRow label="Verein" value={data.aktuellerVereinsname} icon={MapPin} />}
       <DetailRow label="Spielstil" value={FUSSBALL_SPIELSTIL_LABELS[data.spielstil]} />
-      <DetailRow label="Trainer" value={data.hatTrainer ? 'Ja' : 'Nein'} />
-      <DetailRow label="Training / Woche" value={`${data.trainingsEinheitenProWoche}×`} />
-      <DetailRow label="Ziel" value={FUSSBALL_ZIEL_LABELS[data.ziel]} />
+      <DetailRow label="Training/Woche" value={`${data.trainingsEinheitenProWoche}x`} icon={Activity} />
+      <DetailRow label="Ziel" value={FUSSBALL_ZIEL_LABELS[data.ziel]} icon={Star} />
       {data.staerken.length > 0 && (
-        <div className="mt-4">
-          <p
-            className="text-xs font-semibold uppercase tracking-wider mb-1"
-            style={{ color: 'rgba(255,255,255,0.30)' }}
-          >
-            Stärken
-          </p>
-          <ChipList
-            items={data.staerken.map((s) => FUSSBALL_STAERKE_LABELS[s])}
-            theme={theme}
-          />
+        <div className="mt-5 pt-4 border-t border-zinc-100">
+          <p className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Staerken</p>
+          <ChipList items={data.staerken.map((s) => FUSSBALL_STAERKE_LABELS[s])} theme={theme} />
         </div>
       )}
     </div>
   )
 }
 
-function TennisDetails({
-  data,
-  theme,
-}: {
-  data: TennisProfil
-  theme: ThemeConfig
-}) {
+function TennisDetails({ data, theme }: { data: TennisProfil; theme: ThemeConfig }) {
   return (
     <div>
       <DetailRow label="Spielhand" value={SPIELHAND_LABELS[data.spielhand]} />
-      <DetailRow label="Rückhand" value={TENNIS_RUECKHAND_LABELS[data.rueckhand]} />
+      <DetailRow label="Rueckhand" value={TENNIS_RUECKHAND_LABELS[data.rueckhand]} />
       <DetailRow label="Spielstil" value={TENNIS_SPIELSTIL_LABELS[data.spielstil]} />
-      <DetailRow
-        label="Lieblingsoberfläche"
-        value={TENNIS_OBERFLAECHE_LABELS[data.lieblingsoberflaeche]}
-      />
-      <DetailRow
-        label="Turniererfahrung"
-        value={TENNIS_TURNIERERFAHRUNG_LABELS[data.turniererfahrung]}
-      />
-      {data.dtbLk !== undefined && (
-        <DetailRow label="DTB-LK" value={String(data.dtbLk)} />
-      )}
-      {data.aktuellerVereinsname !== undefined && (
-        <DetailRow label="Verein" value={data.aktuellerVereinsname} />
-      )}
-      <DetailRow label="Trainer" value={data.hatTrainer ? 'Ja' : 'Nein'} />
-      <DetailRow label="Training / Woche" value={`${data.trainingsEinheitenProWoche}×`} />
-      <DetailRow label="Ziel" value={TENNIS_ZIEL_LABELS[data.ziel]} />
+      <DetailRow label="Oberflaeche" value={TENNIS_OBERFLAECHE_LABELS[data.lieblingsoberflaeche]} />
+      <DetailRow label="Turniererfahrung" value={TENNIS_TURNIERERFAHRUNG_LABELS[data.turniererfahrung]} icon={Trophy} />
+      {data.dtbLk !== undefined && <DetailRow label="DTB-LK" value={String(data.dtbLk)} />}
+      {data.aktuellerVereinsname !== undefined && <DetailRow label="Verein" value={data.aktuellerVereinsname} icon={MapPin} />}
+      <DetailRow label="Training/Woche" value={`${data.trainingsEinheitenProWoche}x`} icon={Activity} />
+      <DetailRow label="Ziel" value={TENNIS_ZIEL_LABELS[data.ziel]} icon={Star} />
       {data.disziplinen.length > 0 && (
-        <div className="mt-4">
-          <p
-            className="text-xs font-semibold uppercase tracking-wider mb-1"
-            style={{ color: 'rgba(255,255,255,0.30)' }}
-          >
-            Disziplinen
-          </p>
-          <ChipList
-            items={data.disziplinen.map((d) => TENNIS_DISZIPLIN_LABELS[d])}
-            theme={theme}
-          />
+        <div className="mt-5 pt-4 border-t border-zinc-100">
+          <p className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Disziplinen</p>
+          <ChipList items={data.disziplinen.map((d) => TENNIS_DISZIPLIN_LABELS[d])} theme={theme} />
         </div>
       )}
     </div>
   )
 }
 
-function BasketballDetails({
-  data,
-  theme,
-}: {
-  data: BasketballProfil
-  theme: ThemeConfig
-}) {
+function BasketballDetails({ data, theme }: { data: BasketballProfil; theme: ThemeConfig }) {
   return (
     <div>
-      <DetailRow label="Position" value={BASKETBALL_POSITION_LABELS[data.position]} />
+      <DetailRow label="Position" value={BASKETBALL_POSITION_LABELS[data.position]} icon={Target} />
       <DetailRow label="Wurfhand" value={WURFHAND_LABELS[data.wurfhand]} />
-      <DetailRow
-        label="Liga-Niveau"
-        value={BASKETBALL_LIGA_LABELS[data.aktuellesLigaNiveau]}
-      />
-      {data.aktuellerVereinsname !== undefined && (
-        <DetailRow label="Verein" value={data.aktuellerVereinsname} />
-      )}
+      <DetailRow label="Liga-Niveau" value={BASKETBALL_LIGA_LABELS[data.aktuellesLigaNiveau]} icon={TrendingUp} />
+      {data.aktuellerVereinsname !== undefined && <DetailRow label="Verein" value={data.aktuellerVereinsname} icon={MapPin} />}
       <DetailRow label="Spielstil" value={BASKETBALL_SPIELSTIL_LABELS[data.spielstil]} />
-      <DetailRow label="Trainer" value={data.hatTrainer ? 'Ja' : 'Nein'} />
-      <DetailRow label="Training / Woche" value={`${data.trainingsEinheitenProWoche}×`} />
-      <DetailRow label="Ziel" value={BASKETBALL_ZIEL_LABELS[data.ziel]} />
+      <DetailRow label="Training/Woche" value={`${data.trainingsEinheitenProWoche}x`} icon={Activity} />
+      <DetailRow label="Ziel" value={BASKETBALL_ZIEL_LABELS[data.ziel]} icon={Star} />
       {data.staerken.length > 0 && (
-        <div className="mt-4">
-          <p
-            className="text-xs font-semibold uppercase tracking-wider mb-1"
-            style={{ color: 'rgba(255,255,255,0.30)' }}
-          >
-            Stärken
-          </p>
-          <ChipList
-            items={data.staerken.map((s) => BASKETBALL_STAERKE_LABELS[s])}
-            theme={theme}
-          />
+        <div className="mt-5 pt-4 border-t border-zinc-100">
+          <p className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Staerken</p>
+          <ChipList items={data.staerken.map((s) => BASKETBALL_STAERKE_LABELS[s])} theme={theme} />
         </div>
       )}
     </div>
   )
 }
 
-// ─────────────────────────────────────────────────────────────────
-// Hauptkomponente
-// ─────────────────────────────────────────────────────────────────
+const SPORT_ICONS: Record<string, string> = {
+  fussball: '⚽',
+  tennis: '🎾',
+  basketball: '🏀',
+}
 
 export function ProfilClient({
-  name,
-  email,
-  image,
-  level,
-  xp,
-  streakDays,
-  longestStreak,
-  primarySport,
-  city,
-  state,
-  bio,
-  createdAt,
-  birthYear,
-  totalSessions,
-  totalMinutes,
-  totalBadges,
-  sportPayload,
-  badges,
-  xpInCurrentLevel,
-  xpNeededInCurrentLevel,
-  levelProgressPercent,
+  name, email, image, level, xp, streakDays, longestStreak, primarySport,
+  city, state, bio, createdAt, birthYear, totalSessions, totalMinutes, totalBadges,
+  sportPayload, badges, xpInCurrentLevel, xpNeededInCurrentLevel, levelProgressPercent,
 }: ProfilClientProps) {
-  const theme =
-    primarySport !== null && primarySport in SPORT_THEMES
-      ? (SPORT_THEMES[primarySport] as ThemeConfig)
-      : DEFAULT_THEME
-
+  const theme = primarySport !== null && primarySport in SPORT_THEMES
+    ? (SPORT_THEMES[primarySport] as ThemeConfig)
+    : DEFAULT_THEME
   const [mounted, setMounted] = useState(false)
   const [xpBarWidth, setXpBarWidth] = useState(0)
+  const [activeTab, setActiveTab] = useState<'profil' | 'badges'>('profil')
 
   useEffect(() => {
     setMounted(true)
@@ -506,456 +291,306 @@ export function ProfilClient({
   }, [levelProgressPercent])
 
   const vorname = name.split(' ')[0] ?? name
-
   const locationParts: string[] = []
   if (city) locationParts.push(city)
   if (state) locationParts.push(GERMAN_STATE_LABELS[state] ?? state)
   const locationString = locationParts.join(', ')
+  const memberSince = new Date(createdAt).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })
+  const levelTier = getLevelTier(level)
 
-  const memberSince = new Date(createdAt).toLocaleDateString('de-DE', {
-    month: 'long',
-    year: 'numeric',
-  })
+  const stats: Array<{ icon: React.ElementType; label: string; value: number; sub: string; color: string }> = [
+    { icon: Activity, label: 'Einheiten', value: totalSessions, sub: 'absolviert', color: theme.primary },
+    { icon: Clock, label: 'Minuten', value: totalMinutes, sub: 'trainiert', color: '#7C3AED' },
+    { icon: Zap, label: 'XP gesamt', value: xp, sub: 'Punkte', color: '#EAB308' },
+    { icon: Trophy, label: 'Abzeichen', value: totalBadges, sub: 'erhalten', color: '#EA580C' },
+  ]
 
-  const stats: Array<{
-    icon: React.ElementType
-    label: string
-    value: number
-    sub: string
-  }> = [
-    { icon: Activity, label: 'Einheiten', value: totalSessions, sub: 'absolviert' },
-    { icon: Clock, label: 'Minuten', value: totalMinutes, sub: 'trainiert' },
-    { icon: Zap, label: 'XP gesamt', value: xp, sub: 'Punkte' },
-    { icon: Trophy, label: 'Abzeichen', value: totalBadges, sub: 'erhalten' },
+  const tabs: Array<{ id: 'profil' | 'badges'; label: string; icon: React.ElementType }> = [
+    { id: 'profil', label: 'Profil', icon: User },
+    { id: 'badges', label: 'Abzeichen', icon: Award },
   ]
 
   return (
-    <div style={{ background: theme.pageBg, minHeight: '100vh' }}>
-      {/* ── Hero Section ──────────────────────────────────────────── */}
-      <motion.div
-        {...fadeUp(0)}
-        className="relative overflow-hidden"
-        style={{
-          background: theme.heroBg,
-          borderBottom: `1px solid ${theme.cardBorder}`,
-        }}
-      >
-        {/* Sportbild */}
-        <div
-          className="absolute inset-0 bg-cover bg-center pointer-events-none"
-          style={{
-            backgroundImage: `url(${theme.heroImage})`,
-            opacity: 0.08,
-          }}
-        />
-        {/* Gradient-Overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.55) 100%)',
-          }}
-        />
+    <div style={{ background: theme.pageBg }} className="min-h-screen">
+      {/* ── Hero Banner ──────────────────────────────────── */}
+      <motion.div {...fadeUp(0)} className="relative overflow-hidden bg-white border-b border-zinc-200/60">
+        <div className="absolute top-0 inset-x-0 h-1" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.secondary})` }} />
+        <div className="absolute inset-0 bg-cover bg-center pointer-events-none" style={{ backgroundImage: `url(${theme.heroImage})`, opacity: 0.04 }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at 70% 50%, ${theme.primary}08 0%, transparent 60%)` }} />
 
-        <div className="relative px-8 py-10">
-          <div className="max-w-[960px] mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-8">
-            {/* TiltCard Avatar */}
-            <TiltCard className="flex-shrink-0">
+        <div className="relative max-w-5xl mx-auto px-6 py-10 sm:py-12">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            {/* Avatar */}
+            <div className="relative flex-shrink-0">
               <div
-                className="w-28 h-28 rounded-2xl overflow-hidden"
-                style={{
-                  boxShadow: `0 0 40px ${theme.glowStrong}, 0 8px 32px rgba(0,0,0,0.60)`,
-                  border: `2px solid ${theme.primary}60`,
-                }}
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden shadow-xl"
+                style={{ border: `3px solid ${theme.primary}` }}
               >
                 {image ? (
-                  <img
-                    src={image}
-                    alt={name}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={image} alt={name} className="w-full h-full object-cover" />
                 ) : (
-                  <div
-                    className="w-full h-full flex items-center justify-center text-white font-black text-4xl"
-                    style={{
-                      background: `linear-gradient(135deg, ${theme.primary}, ${theme.secondary})`,
-                    }}
-                  >
+                  <div className="w-full h-full flex items-center justify-center text-white font-black text-4xl" style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.secondary})` }}>
                     {vorname.charAt(0).toUpperCase()}
                   </div>
                 )}
               </div>
-            </TiltCard>
+              <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center" style={{ border: `2px solid ${theme.primary}` }}>
+                <span className="text-xs font-bold" style={{ color: theme.primary }}>{level}</span>
+              </div>
+            </div>
 
-            {/* User Info */}
+            {/* Info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 flex-wrap mb-1">
-                <h1 className="text-3xl font-black text-white">{name}</h1>
-                <span
-                  className="px-3 py-1 rounded-full text-xs font-bold"
-                  style={{
-                    background: `${theme.primary}25`,
-                    color: theme.secondary,
-                    border: `1px solid ${theme.primary}40`,
-                  }}
-                >
-                  Level {level} · {theme.label}
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">{name}</h1>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${levelTier.bg} ${levelTier.text} border ${levelTier.border}`}>
+                  Level {level} · {levelTier.label}
                 </span>
               </div>
 
-              <p
-                className="text-sm mb-3"
-                style={{ color: 'rgba(255,255,255,0.40)' }}
-              >
-                {email}
-              </p>
-
-              {bio !== null && (
-                <p
-                  className="text-sm leading-relaxed mb-3"
-                  style={{ color: 'rgba(255,255,255,0.65)' }}
-                >
-                  {bio}
-                </p>
+              {bio !== null && bio.length > 0 && (
+                <p className="text-sm text-zinc-500 mt-1 mb-2 line-clamp-2">{bio}</p>
               )}
 
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-sm text-zinc-400">
                 {locationString.length > 0 && (
-                  <span
-                    className="flex items-center gap-1.5 text-sm"
-                    style={{ color: 'rgba(255,255,255,0.50)' }}
-                  >
-                    <MapPin size={14} />
-                    {locationString}
-                  </span>
+                  <span className="flex items-center gap-1.5"><MapPin size={14} />{locationString}</span>
                 )}
-                <span
-                  className="flex items-center gap-1.5 text-sm"
-                  style={{ color: 'rgba(255,255,255,0.50)' }}
-                >
-                  <Calendar size={14} />
-                  Dabei seit {memberSince}
-                </span>
+                <span className="flex items-center gap-1.5"><Calendar size={14} />Seit {memberSince}</span>
                 {birthYear !== null && (
-                  <span
-                    className="flex items-center gap-1.5 text-sm"
-                    style={{ color: 'rgba(255,255,255,0.50)' }}
-                  >
-                    <User size={14} />
-                    Jahrgang {birthYear}
-                  </span>
+                  <span className="flex items-center gap-1.5"><User size={14} />Jg. {birthYear}</span>
                 )}
+                <span className="flex items-center gap-1.5">{SPORT_ICONS[primarySport ?? 'fussball'] ?? '⚽'}{theme.label}</span>
               </div>
+            </div>
+          </div>
+
+          {/* XP Progress Bar */}
+          <div className="mt-8">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Zap size={16} style={{ color: theme.primary }} />
+                <span className="text-sm font-semibold text-zinc-700">{mounted ? xp.toLocaleString('de-DE') : xp.toLocaleString('de-DE')} XP</span>
+              </div>
+              <span className="text-xs text-zinc-400">
+                {xpInCurrentLevel.toLocaleString('de-DE')} / {xpNeededInCurrentLevel.toLocaleString('de-DE')} XP bis Level {level + 1}
+              </span>
+            </div>
+            <div className="w-full rounded-full overflow-hidden bg-zinc-100" style={{ height: 8 }}>
+              <div
+                style={{
+                  height: '100%',
+                  width: `${xpBarWidth}%`,
+                  background: `linear-gradient(to right, ${theme.primary}, ${theme.secondary})`,
+                  borderRadius: 9999,
+                  transition: 'width 1.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                  boxShadow: `0 0 12px ${theme.glow}`,
+                }}
+              />
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* ── Page Content ────────────────────────────────────────────── */}
-      <div className="px-8 py-8 w-full">
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
-
-          {/* ── LINKE SPALTE (2/3): XP · Stats · Sport-Profil ──────── */}
-          <div className="xl:col-span-2 flex flex-col gap-6">
-
-            {/* XP Progress Card */}
-            <motion.div
-              {...fadeUp(0.06)}
-              className="rounded-2xl p-6"
-              style={{
-                background: theme.cardBg,
-                border: `1px solid ${theme.cardBorder}`,
-                backdropFilter: 'blur(12px)',
-                boxShadow: `0 4px 24px ${theme.glow}`,
-              }}
+      {/* ── Content ──────────────────────────────────────── */}
+      <div className="max-w-5xl mx-auto px-6 py-8">
+        {/* Mobile Tabs */}
+        <div className="flex gap-1 mb-6 bg-white rounded-xl p-1 border border-zinc-200 shadow-sm sm:hidden">
+          {tabs.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setActiveTab(id)}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === id ? 'bg-zinc-900 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-700'
+              }`}
             >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center"
-                    style={{ background: `${theme.primary}20` }}
-                  >
-                    <Zap size={20} style={{ color: theme.primary }} />
-                  </div>
-                  <div>
-                    <p
-                      className="text-xs font-semibold uppercase tracking-wider"
-                      style={{ color: `${theme.primary}bb` }}
-                    >
-                      Erfahrungspunkte
-                    </p>
-                    <p className="text-2xl font-black text-white">
-                      {xp.toLocaleString('de-DE')} XP
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                    Level
-                  </p>
-                  <p className="text-3xl font-black" style={{ color: theme.primary }}>
-                    {level}
-                  </p>
-                </div>
-              </div>
+              <Icon size={16} />
+              {label}
+            </button>
+          ))}
+        </div>
 
-              {/* Fortschrittsbalken */}
-              <div
-                className="w-full rounded-full overflow-hidden mb-2"
-                style={{ height: 8, background: 'rgba(255,255,255,0.08)' }}
-              >
-                <div
-                  style={{
-                    height: '100%',
-                    width: `${xpBarWidth}%`,
-                    background: `linear-gradient(to right, ${theme.primary}, ${theme.secondary})`,
-                    borderRadius: 9999,
-                    transition: 'width 1.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                    boxShadow: `0 0 10px ${theme.glow}`,
-                  }}
-                />
-              </div>
-              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.30)' }}>
-                {xpInCurrentLevel} / {xpNeededInCurrentLevel} XP bis Level {level + 1}
-              </p>
-            </motion.div>
-
-            {/* Stats Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* ── Left Column (2/3) ──────────────── */}
+          <div className={`lg:col-span-2 flex flex-col gap-6 ${activeTab !== 'profil' ? 'hidden sm:flex' : ''}`}>
+            {/* Stats Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {stats.map(({ icon: Icon, label, value, sub }, i) => (
-                <motion.div
-                  key={label}
-                  {...fadeUp(0.10 + i * 0.06)}
-                  className="rounded-2xl p-5"
-                  style={{
-                    background: theme.cardBg,
-                    border: `1px solid ${theme.cardBorder}`,
-                    backdropFilter: 'blur(8px)',
-                  }}
-                >
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center mb-3"
-                    style={{ background: `${theme.primary}18` }}
-                  >
-                    <Icon size={18} style={{ color: theme.primary }} />
+              {stats.map(({ icon: Icon, label, value, sub, color }, i) => (
+                <motion.div key={label} {...fadeUp(0.05 + i * 0.04)} className="bg-white rounded-2xl p-5 border border-zinc-200/80 shadow-sm hover:shadow-md transition-shadow duration-200">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ background: `${color}12` }}>
+                    <Icon size={20} style={{ color }} />
                   </div>
-                  <p className="text-xl font-bold text-white">
+                  <p className="text-2xl font-extrabold text-zinc-900">
                     <AnimatedNumber value={value} active={mounted} />
                   </p>
-                  <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                    {label} · {sub}
-                  </p>
+                  <p className="text-xs text-zinc-500 mt-0.5">{label}</p>
                 </motion.div>
               ))}
             </div>
 
+            {/* Streak Card */}
+            <motion.div {...fadeUp(0.2)} className="bg-white rounded-2xl border border-zinc-200/80 shadow-sm overflow-hidden">
+              <div className="px-6 py-5 flex items-center gap-3 border-b border-zinc-100">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(234,88,12,0.10)' }}>
+                  <Flame size={20} className="text-orange-500" />
+                </div>
+                <h2 className="text-lg font-bold text-zinc-900">Streak</h2>
+                {streakDays > 0 && (
+                  <span className="ml-auto px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-50 text-orange-600 border border-orange-200">
+                    {streakDays} Tag{streakDays !== 1 ? 'e' : ''}
+                  </span>
+                )}
+              </div>
+              <div className="px-6 py-5">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-xl p-5 text-center" style={{ background: 'rgba(234,88,12,0.06)', border: '1px solid rgba(234,88,12,0.15)' }}>
+                    <p className="text-4xl font-black text-orange-500">
+                      <AnimatedNumber value={streakDays} active={mounted} />
+                    </p>
+                    <p className="text-xs text-zinc-500 mt-1">Aktuelle Streak</p>
+                  </div>
+                  <div className="rounded-xl p-5 text-center bg-zinc-50 border border-zinc-200">
+                    <p className="text-4xl font-black text-zinc-900">
+                      <AnimatedNumber value={longestStreak} active={mounted} />
+                    </p>
+                    <p className="text-xs text-zinc-500 mt-1">Persoenlicher Rekord</p>
+                  </div>
+                </div>
+                {streakDays > 0 && streakDays >= longestStreak && (
+                  <p className="mt-4 text-sm text-center font-semibold" style={{ color: theme.primary }}>
+                    Du bist auf deinem persoenlichen Rekord!
+                  </p>
+                )}
+              </div>
+            </motion.div>
+
             {/* Sport-Profil Card */}
             {sportPayload !== null && (
-              <motion.div
-                {...fadeUp(0.28)}
-                className="rounded-2xl p-6"
-                style={{
-                  background: theme.cardBg,
-                  border: `1px solid ${theme.cardBorder}`,
-                  backdropFilter: 'blur(12px)',
-                }}
-              >
-                <div className="flex items-center gap-3 mb-5">
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center"
-                    style={{ background: `${theme.primary}20` }}
-                  >
+              <motion.div {...fadeUp(0.26)} className="bg-white rounded-2xl border border-zinc-200/80 shadow-sm overflow-hidden">
+                <div className="px-6 py-5 flex items-center gap-3 border-b border-zinc-100">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${theme.primary}12` }}>
                     <Shield size={20} style={{ color: theme.primary }} />
                   </div>
-                  <h2 className="text-lg font-bold text-white">{theme.label}-Profil</h2>
+                  <h2 className="text-lg font-bold text-zinc-900">{theme.label}-Profil</h2>
+                  <span className="ml-auto text-xs font-semibold px-2.5 py-0.5 rounded-full" style={{ color: theme.primary, background: `${theme.primary}10`, border: `1px solid ${theme.primary}25` }}>
+                    {theme.label}
+                  </span>
                 </div>
-
-                {sportPayload.sport === 'fussball' && (
-                  <FussballDetails data={sportPayload.data} theme={theme} />
-                )}
-                {sportPayload.sport === 'tennis' && (
-                  <TennisDetails data={sportPayload.data} theme={theme} />
-                )}
-                {sportPayload.sport === 'basketball' && (
-                  <BasketballDetails data={sportPayload.data} theme={theme} />
-                )}
+                <div className="px-6 py-2">
+                  {sportPayload.sport === 'fussball' && <FussballDetails data={sportPayload.data} theme={theme} />}
+                  {sportPayload.sport === 'tennis' && <TennisDetails data={sportPayload.data} theme={theme} />}
+                  {sportPayload.sport === 'basketball' && <BasketballDetails data={sportPayload.data} theme={theme} />}
+                </div>
               </motion.div>
             )}
           </div>
 
-          {/* ── RECHTE SPALTE (1/3): Streak · Badges ───────────────── */}
-          <div className="flex flex-col gap-6">
-
-            {/* Streak */}
-            <motion.div
-              {...fadeUp(0.34)}
-              className="rounded-2xl p-6"
-              style={{
-                background: theme.cardBg,
-                border: `1px solid ${theme.cardBorder}`,
-                backdropFilter: 'blur(12px)',
-              }}
-            >
-              <div className="flex items-center gap-3 mb-5">
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center"
-                  style={{ background: 'rgba(234,88,12,0.15)' }}
-                >
-                  <Flame size={20} style={{ color: '#fb923c' }} />
-                </div>
-                <h2 className="text-lg font-bold text-white">Streak</h2>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div
-                  className="rounded-xl p-4 text-center"
-                  style={{
-                    background: 'rgba(234,88,12,0.12)',
-                    border: '1px solid rgba(234,88,12,0.25)',
-                  }}
-                >
-                  <p className="text-4xl font-black" style={{ color: '#fb923c' }}>
-                    <AnimatedNumber value={streakDays} active={mounted} />
-                  </p>
-                  <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.45)' }}>
-                    Aktuelle Streak
-                  </p>
-                </div>
-                <div
-                  className="rounded-xl p-4 text-center"
-                  style={{
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                  }}
-                >
-                  <p className="text-4xl font-black text-white">
-                    <AnimatedNumber value={longestStreak} active={mounted} />
-                  </p>
-                  <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                    Persönlicher Rekord
-                  </p>
-                </div>
-              </div>
-
-              {streakDays > 0 && streakDays >= longestStreak && (
-                <p
-                  className="mt-3 text-sm text-center font-semibold"
-                  style={{ color: theme.primary }}
-                >
-                  Du bist auf deinem persönlichen Rekord!
-                </p>
-              )}
-            </motion.div>
-
-            {/* Badges */}
-            <motion.div
-              {...fadeUp(0.40)}
-              className="rounded-2xl overflow-hidden"
-              style={{
-                background: theme.cardBg,
-                border: `1px solid ${theme.cardBorder}`,
-                backdropFilter: 'blur(12px)',
-              }}
-            >
-              <div
-                className="px-6 py-5 flex items-center gap-3"
-                style={{ borderBottom: `1px solid ${theme.cardBorder}` }}
-              >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center"
-                  style={{ background: `${theme.primary}20` }}
-                >
+          {/* ── Right Column (1/3) — Badges ────────── */}
+          <div className={`flex flex-col gap-6 ${activeTab !== 'badges' ? 'hidden sm:flex' : ''}`}>
+            <motion.div {...fadeUp(0.32)} className="bg-white rounded-2xl border border-zinc-200/80 shadow-sm overflow-hidden">
+              <div className="px-6 py-5 flex items-center gap-3 border-b border-zinc-100">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${theme.primary}12` }}>
                   <Award size={20} style={{ color: theme.primary }} />
                 </div>
-                <h2 className="text-lg font-bold text-white">Abzeichen</h2>
-                <span
-                  className="ml-auto text-xs font-semibold"
-                  style={{ color: `${theme.primary}99` }}
-                >
+                <h2 className="text-lg font-bold text-zinc-900">Abzeichen</h2>
+                <span className="ml-auto text-xs font-semibold" style={{ color: theme.primary }}>
                   {badges.length} erhalten
                 </span>
               </div>
 
               {badges.length === 0 ? (
-                <div className="px-6 py-10 text-center">
-                  <Star
-                    size={36}
-                    style={{ color: 'rgba(255,255,255,0.08)', margin: '0 auto 12px' }}
-                  />
-                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                    Noch keine Abzeichen erhalten.
-                  </p>
-                  <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.20)' }}>
-                    Trainiere regelmäßig, um Abzeichen freizuschalten!
+                <div className="px-6 py-12 text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-zinc-100 flex items-center justify-center mx-auto mb-4">
+                    <Star size={28} className="text-zinc-300" />
+                  </div>
+                  <p className="text-sm font-semibold text-zinc-900">Noch keine Abzeichen</p>
+                  <p className="text-xs mt-1 text-zinc-400">
+                    Trainiere regelmaessig, um Abzeichen freizuschalten!
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-col gap-3 p-5">
-                  {badges.map((ub, i) => {
-                    const rarity = RARITY_DARK[ub.badge.rarity]
+                <div className="divide-y divide-zinc-100">
+                  {badges.slice(0, 8).map((ub, i) => {
+                    const rarity = RARITY_LIGHT[ub.badge.rarity]
                     const BadgeIcon = getBadgeIcon(ub.badge.iconName)
                     return (
                       <motion.div
                         key={ub.id}
-                        {...fadeUp(0.42 + i * 0.04)}
-                        className="flex items-center gap-3 p-4 rounded-xl"
-                        style={{
-                          background: rarity.bg,
-                          border: `1px solid ${rarity.border}`,
-                          boxShadow: `0 0 16px ${rarity.glow}`,
-                        }}
+                        {...fadeUp(0.34 + i * 0.03)}
+                        className="flex items-center gap-4 px-6 py-4 hover:bg-zinc-50 transition-colors"
                       >
                         <div
                           className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                          style={{
-                            background: `${rarity.color}18`,
-                            border: `1px solid ${rarity.color}30`,
-                          }}
+                          style={{ background: `${rarity.color}12`, border: `1px solid ${rarity.color}25` }}
                         >
                           <BadgeIcon size={22} style={{ color: rarity.color }} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-white truncate">
-                            {ub.badge.name}
-                          </p>
-                          <p
-                            className="text-xs truncate"
-                            style={{ color: 'rgba(255,255,255,0.40)' }}
-                          >
-                            {ub.badge.description}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-semibold text-zinc-900 truncate">{ub.badge.name}</p>
                             <span
-                              className="text-xs font-semibold"
-                              style={{ color: rarity.color }}
+                              className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                              style={{ color: rarity.color, background: rarity.bg, border: `1px solid ${rarity.border}` }}
                             >
                               {rarity.label}
                             </span>
-                            <span style={{ color: 'rgba(255,255,255,0.18)' }}>·</span>
-                            <span
-                              className="text-xs"
-                              style={{ color: 'rgba(255,255,255,0.30)' }}
-                            >
-                              +{ub.badge.xpReward} XP
-                            </span>
                           </div>
+                          <p className="text-xs text-zinc-500 truncate mt-0.5">{ub.badge.description}</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-xs font-bold" style={{ color: rarity.color }}>+{ub.badge.xpReward}</p>
+                          <p className="text-[10px] text-zinc-400">XP</p>
                         </div>
                       </motion.div>
                     )
                   })}
                 </div>
               )}
+
+              {badges.length > 8 && (
+                <div className="px-6 py-4 border-t border-zinc-100">
+                  <button className="w-full flex items-center justify-center gap-2 text-sm font-semibold hover:opacity-80 transition-opacity" style={{ color: theme.primary }}>
+                    Alle {badges.length} Abzeichen anzeigen
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              )}
             </motion.div>
 
+            {/* Quick Stats */}
+            <motion.div {...fadeUp(0.4)} className="bg-white rounded-2xl p-6 border border-zinc-200/80 shadow-sm">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-zinc-100 flex items-center justify-center">
+                  <Sparkles size={20} className="text-zinc-600" />
+                </div>
+                <h3 className="text-sm font-bold text-zinc-900">Schnelluebersicht</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-zinc-500">Mitglied seit</span>
+                  <span className="text-sm font-semibold text-zinc-900">{memberSince}</span>
+                </div>
+                {birthYear !== null && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-zinc-500">Jahrgang</span>
+                    <span className="text-sm font-semibold text-zinc-900">{birthYear}</span>
+                  </div>
+                )}
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-zinc-500">Hauptsport</span>
+                  <span className="text-sm font-semibold" style={{ color: theme.primary }}>{theme.label}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-zinc-500">Level</span>
+                  <span className="text-sm font-semibold text-zinc-900">{level} ({levelTier.label})</span>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
 
-        {/* KI-Footer */}
-        <motion.p
-          {...fadeUp(0.48)}
-          className="text-center pb-10 mt-6"
-          style={{ fontSize: 11, color: 'rgba(255,255,255,0.16)' }}
-        >
+        {/* Footer */}
+        <motion.p {...fadeUp(0.48)} className="text-center pb-10 mt-8 text-xs text-zinc-400">
           Erstellt von unserer eigenen KI · kein externer Bot · DSGVO-konform
         </motion.p>
       </div>

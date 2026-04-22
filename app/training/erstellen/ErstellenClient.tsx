@@ -5,6 +5,8 @@
 //
 // 5-Schritt-Wizard zur Trainingsplan-Erstellung.
 // Kein externer KI-Bot – vollständig eigene TypeScript-KI.
+//
+// Design: Apple.com × Strava.com — white, premium, clean.
 // ─────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useRef } from 'react'
@@ -23,6 +25,7 @@ import {
   CheckCircle,
   Lock,
   Flame,
+  ArrowLeft,
 } from 'lucide-react'
 import type { ErstellenPageProps, UserSportForWizard } from './page'
 import type { SportSlug } from '@/lib/sport-profiles'
@@ -177,7 +180,7 @@ function getSportImage(slug: SportSlug): string {
   const ids: Record<SportSlug, string> = {
     fussball:   'photo-1529900748604-07564a03e7a6',
     tennis:     'photo-1554068865-24cecd4e34b8',
-    basketball: 'photo-1546519638-68e109498ffc',
+    basketball: 'photo-1559692048-79a3f837883d',
   }
   return `https://images.unsplash.com/${ids[slug]}?auto=format&fit=crop&w=1600&q=80`
 }
@@ -189,6 +192,24 @@ function getSportGradient(slug: SportSlug): string {
     basketball: 'from-orange-950 via-red-900 to-gray-950',
   }
   return gradients[slug]
+}
+
+function getSportBgClass(slug: SportSlug): string {
+  const classes: Record<SportSlug, string> = {
+    fussball:   'bg-green-50',
+    tennis:     'bg-orange-50',
+    basketball: 'bg-orange-50',
+  }
+  return classes[slug]
+}
+
+function getSportBorderClass(slug: SportSlug): string {
+  const classes: Record<SportSlug, string> = {
+    fussball:   'border-green-500',
+    tennis:     'border-orange-500',
+    basketball: 'border-orange-500',
+  }
+  return classes[slug]
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -241,7 +262,7 @@ function Step1SportZiel({
       {/* Sport-Auswahl (nur wenn mehrere Sportarten) */}
       {userSports.length > 1 && (
         <div>
-          <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+          <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
             Sportart
           </h3>
           <div className="grid grid-cols-3 gap-3">
@@ -258,17 +279,17 @@ function Step1SportZiel({
                     setFormData((prev) => ({ ...prev, sportSlug: sport.slug }))
                   }
                   className={[
-                    'relative p-4 rounded-xl border text-left transition-all duration-200',
+                    'relative p-4 rounded-2xl border text-left transition-all duration-200',
                     isSelected
-                      ? 'border-[var(--sport-primary)] bg-[var(--sport-primary)]/10 shadow-[0_0_20px_var(--sport-glow)]'
-                      : 'border-white/10 bg-white/5 hover:border-white/20',
+                      ? `${getSportBgClass(sport.slug)} ${getSportBorderClass(sport.slug)} shadow-sm`
+                      : 'bg-white border-zinc-200 hover:border-zinc-300 shadow-sm',
                   ].join(' ')}
                   data-sport={sport.slug}
                 >
-                  <div className="font-semibold text-white">{sport.name}</div>
+                  <div className={['font-semibold', isSelected ? 'text-zinc-900' : 'text-zinc-700'].join(' ')}>{sport.name}</div>
                   {isSelected && (
                     <div
-                      className="absolute top-2 right-2 w-2 h-2 rounded-full"
+                      className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full"
                       style={{ background: 'var(--sport-primary)' }}
                     />
                   )}
@@ -281,8 +302,8 @@ function Step1SportZiel({
 
       {/* Ziele */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
-          Was sind deine Ziele? <span className="text-white/40">(mehrere möglich)</span>
+        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
+          Was sind deine Ziele? <span className="text-zinc-300">(mehrere möglich)</span>
         </h3>
         <div className="grid grid-cols-2 gap-3">
           {(Object.keys(GOAL_META) as UserGoal[]).map((goal, i) => {
@@ -297,25 +318,25 @@ function Step1SportZiel({
                 variants={cardVariants}
                 onClick={() => toggleGoal(goal)}
                 className={[
-                  'relative flex items-start gap-3 p-4 rounded-xl border text-left transition-all duration-200',
+                  'relative flex items-start gap-3 p-4 rounded-2xl border text-left transition-all duration-200 shadow-sm',
                   isSelected
-                    ? 'border-[var(--sport-primary)] bg-[var(--sport-primary)]/10'
-                    : 'border-white/10 bg-white/5 hover:border-white/20',
+                    ? 'bg-[var(--sport-primary-light)] border-[var(--sport-primary)] shadow-sm'
+                    : 'bg-white border-zinc-200 hover:border-zinc-300 text-zinc-600',
                 ].join(' ')}
               >
                 <span
                   className="mt-0.5 shrink-0"
-                  style={{ color: isSelected ? 'var(--sport-primary)' : 'rgba(255,255,255,0.5)' }}
+                  style={{ color: isSelected ? 'var(--sport-primary)' : '#a1a1aa' }}
                 >
                   {meta.icon}
                 </span>
                 <div>
-                  <div className="text-sm font-semibold text-white">{meta.label}</div>
-                  <div className="text-xs text-white/50 mt-0.5">{meta.description}</div>
+                  <div className={['text-sm font-semibold', isSelected ? 'text-zinc-900' : 'text-zinc-700'].join(' ')}>{meta.label}</div>
+                  <div className="text-xs text-zinc-400 mt-0.5">{meta.description}</div>
                 </div>
                 {isSelected && (
                   <div
-                    className="absolute top-2 right-2 w-2 h-2 rounded-full"
+                    className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full"
                     style={{ background: 'var(--sport-primary)' }}
                   />
                 )}
@@ -327,7 +348,7 @@ function Step1SportZiel({
 
       {/* Sport-spezifische Zusatzziele */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
           {formData.sportSlug === 'fussball' ? 'Fußball-Schwerpunkte' :
            formData.sportSlug === 'tennis' ? 'Tennis-Schwerpunkte' : 'Basketball-Schwerpunkte'}
         </h3>
@@ -341,8 +362,8 @@ function Step1SportZiel({
                 className={[
                   'px-4 py-2 rounded-full text-sm font-medium border transition-all duration-200',
                   isSelected
-                    ? 'border-[var(--sport-primary)] bg-[var(--sport-primary)]/20 text-white'
-                    : 'border-white/10 bg-white/5 text-white/60 hover:border-white/20',
+                    ? 'border-[var(--sport-primary)] bg-[var(--sport-primary-light)] text-zinc-900'
+                    : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300',
                 ].join(' ')}
               >
                 {label}
@@ -368,7 +389,7 @@ function Step2Intensitaet({
     <div className="space-y-8">
       {/* Intensität */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
           Trainingsintensität
         </h3>
         <div className="grid grid-cols-2 gap-3">
@@ -389,15 +410,15 @@ function Step2Intensitaet({
                   }))
                 }}
                 className={[
-                  'relative overflow-hidden p-5 rounded-xl border text-left transition-all duration-200',
+                  'relative overflow-hidden p-5 rounded-2xl border text-left transition-all duration-200 shadow-sm',
                   isSelected
-                    ? 'border-[var(--sport-primary)] shadow-[0_0_20px_var(--sport-glow)]'
-                    : 'border-white/10 hover:border-white/20',
+                    ? 'border-[var(--sport-primary)] bg-[var(--sport-primary-light)] shadow-md'
+                    : 'border-zinc-200 bg-white hover:border-zinc-300',
                 ].join(' ')}
               >
                 {/* SVG-Hintergrund-Illustration */}
                 <svg
-                  className="absolute inset-0 w-full h-full opacity-10"
+                  className="absolute inset-0 w-full h-full opacity-[0.06]"
                   viewBox="0 0 200 100"
                   preserveAspectRatio="xMidYMid slice"
                 >
@@ -424,10 +445,10 @@ function Step2Intensitaet({
                 </svg>
 
                 <div className="relative z-10">
-                  <div className="text-lg font-bold text-white">{card.label}</div>
-                  <div className="text-sm text-white/60 mt-1">{card.subtitle}</div>
-                  <div className="text-xs text-white/40 mt-2">
-                    {card.defaultSessions}×/Woche empfohlen
+                  <div className="text-lg font-bold text-zinc-900">{card.label}</div>
+                  <div className="text-sm text-zinc-500 mt-1">{card.subtitle}</div>
+                  <div className="text-xs text-zinc-400 mt-2">
+                    {card.defaultSessions}x/Woche empfohlen
                   </div>
                 </div>
 
@@ -445,7 +466,7 @@ function Step2Intensitaet({
 
       {/* Dauer */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
           Plandauer
         </h3>
         <div className="flex flex-wrap gap-2">
@@ -458,19 +479,15 @@ function Step2Intensitaet({
                 className={[
                   'relative px-5 py-2.5 rounded-full text-sm font-medium border transition-all duration-200',
                   isSelected
-                    ? 'border-[var(--sport-primary)] bg-[var(--sport-primary)]/20 text-white'
-                    : 'border-white/10 bg-white/5 text-white/60 hover:border-white/20',
+                    ? 'border-[var(--sport-primary)] bg-[var(--sport-primary-light)] text-zinc-900'
+                    : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300',
                 ].join(' ')}
               >
                 {label}
                 {recommended === true && (
                   <span
-                    className="ml-2 text-xs px-1.5 py-0.5 rounded-full"
-                    style={{
-                      background: 'var(--sport-primary)',
-                      color: '#fff',
-                      fontSize: '10px',
-                    }}
+                    className="ml-2 text-[10px] px-1.5 py-0.5 rounded-full text-white font-semibold"
+                    style={{ background: 'var(--sport-primary)' }}
                   >
                     Empfohlen
                   </span>
@@ -484,14 +501,14 @@ function Step2Intensitaet({
       {/* Einheiten/Woche Slider */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider">
+          <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest">
             Einheiten pro Woche
           </h3>
           <span
             className="text-2xl font-bold tabular-nums"
             style={{ color: 'var(--sport-primary)' }}
           >
-            {formData.sessionsPerWeek}×
+            {formData.sessionsPerWeek}x
           </span>
         </div>
         <input
@@ -505,17 +522,17 @@ function Step2Intensitaet({
           }
           className="w-full h-2 rounded-full appearance-none cursor-pointer"
           style={{
-            background: `linear-gradient(to right, var(--sport-primary) 0%, var(--sport-primary) ${((formData.sessionsPerWeek - 2) / 4) * 100}%, rgba(255,255,255,0.1) ${((formData.sessionsPerWeek - 2) / 4) * 100}%, rgba(255,255,255,0.1) 100%)`,
+            background: `linear-gradient(to right, var(--sport-primary) 0%, var(--sport-primary) ${((formData.sessionsPerWeek - 2) / 4) * 100}%, #e4e4e7 ${((formData.sessionsPerWeek - 2) / 4) * 100}%, #e4e4e7 100%)`,
           }}
         />
-        <div className="flex justify-between text-xs text-white/30 mt-1">
-          <span>2×</span><span>3×</span><span>4×</span><span>5×</span><span>6×</span>
+        <div className="flex justify-between text-xs text-zinc-400 mt-1">
+          <span>2x</span><span>3x</span><span>4x</span><span>5x</span><span>6x</span>
         </div>
       </div>
 
       {/* Minuten/Einheit */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
           Minuten pro Einheit
         </h3>
         <div className="flex gap-2">
@@ -530,8 +547,8 @@ function Step2Intensitaet({
                 className={[
                   'flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200',
                   isSelected
-                    ? 'border-[var(--sport-primary)] bg-[var(--sport-primary)]/20 text-white'
-                    : 'border-white/10 bg-white/5 text-white/60 hover:border-white/20',
+                    ? 'border-[var(--sport-primary)] bg-[var(--sport-primary-light)] text-zinc-900'
+                    : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300',
                 ].join(' ')}
               >
                 {min}
@@ -571,11 +588,11 @@ function Step3Equipment({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-1">
+        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-1">
           Verfügbares Equipment
         </h3>
-        <p className="text-sm text-white/40 mb-4">
-          Wähle aus, was dir zu Hause oder im Training zur Verfügung steht.
+        <p className="text-sm text-zinc-400 mb-4">
+          Wahle aus, was dir zu Hause oder im Training zur Verfügung steht.
         </p>
 
         <div className="grid grid-cols-2 gap-3">
@@ -590,16 +607,16 @@ function Step3Equipment({
                 variants={cardVariants}
                 onClick={() => toggleEquipment(eq.id)}
                 className={[
-                  'flex items-center gap-3 p-4 rounded-xl border text-left transition-all duration-200',
+                  'flex items-center gap-3 p-4 rounded-2xl border text-left transition-all duration-200 shadow-sm',
                   isSelected
-                    ? 'border-[var(--sport-primary)] bg-[var(--sport-primary)]/10 text-white'
-                    : 'border-white/10 bg-white/5 text-white/60 hover:border-white/20',
+                    ? 'border-[var(--sport-primary)] bg-[var(--sport-primary-light)] text-zinc-900'
+                    : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300',
                 ].join(' ')}
               >
                 <div
                   className={[
-                    'w-5 h-5 rounded border-2 shrink-0 flex items-center justify-center',
-                    isSelected ? 'border-[var(--sport-primary)]' : 'border-white/20',
+                    'w-5 h-5 rounded-md border-2 shrink-0 flex items-center justify-center transition-all',
+                    isSelected ? 'border-[var(--sport-primary)]' : 'border-zinc-300',
                   ].join(' ')}
                   style={isSelected ? { background: 'var(--sport-primary)' } : {}}
                 >
@@ -624,16 +641,16 @@ function Step3Equipment({
           transition={{ delay: 0.3 }}
           onClick={() => toggleEquipment('FITNESSSTUDIO')}
           className={[
-            'w-full flex items-center gap-4 p-4 rounded-xl border transition-all duration-200',
+            'w-full flex items-center gap-4 p-4 rounded-2xl border transition-all duration-200 shadow-sm',
             formData.equipment.includes('FITNESSSTUDIO')
-              ? 'border-[var(--sport-primary)] bg-[var(--sport-primary)]/10'
-              : 'border-white/10 bg-white/5 hover:border-white/20',
+              ? 'border-[var(--sport-primary)] bg-[var(--sport-primary-light)]'
+              : 'border-zinc-200 bg-white hover:border-zinc-300',
           ].join(' ')}
         >
           <Dumbbell size={24} style={{ color: 'var(--sport-primary)' }} />
           <div className="text-left">
-            <div className="text-sm font-semibold text-white">Fitnessstudio</div>
-            <div className="text-xs text-white/50">Geräte, Freihanteln, Kabelzug</div>
+            <div className="text-sm font-semibold text-zinc-900">Fitnessstudio</div>
+            <div className="text-xs text-zinc-400">Geräte, Freihanteln, Kabelzug</div>
           </div>
           {formData.equipment.includes('FITNESSSTUDIO') && (
             <div
@@ -643,11 +660,11 @@ function Step3Equipment({
           )}
         </motion.button>
       ) : (
-        <div className="flex items-center gap-3 p-4 rounded-xl border border-white/5 bg-white/3 opacity-50">
-          <Lock size={20} className="text-white/30" />
+        <div className="flex items-center gap-3 p-4 rounded-2xl border border-zinc-100 bg-zinc-50 opacity-50">
+          <Lock size={20} className="text-zinc-300" />
           <div>
-            <div className="text-sm font-semibold text-white/50">Fitnessstudio</div>
-            <div className="text-xs text-white/30">
+            <div className="text-sm font-semibold text-zinc-400">Fitnessstudio</div>
+            <div className="text-xs text-zinc-300">
               {isUnder14
                 ? 'Für Unter-14-Jährige nicht verfügbar'
                 : 'Kein Gym-Zugang in deinem Profil'}
@@ -683,10 +700,10 @@ function Step4Verletzungen({
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-start gap-3 p-4 rounded-xl border border-yellow-500/30 bg-yellow-500/5"
+        className="flex items-start gap-3 p-4 rounded-2xl border border-amber-200 bg-amber-50"
       >
-        <AlertTriangle size={18} className="text-yellow-400 shrink-0 mt-0.5" />
-        <p className="text-xs text-yellow-200/80 leading-relaxed">
+        <AlertTriangle size={18} className="text-amber-500 shrink-0 mt-0.5" />
+        <p className="text-xs text-amber-700 leading-relaxed">
           SportRise ersetzt keine ärztliche Beratung. Bei anhaltenden Schmerzen oder
           Verletzungen wende dich an einen Arzt oder Physiotherapeuten, bevor du mit
           dem Training beginnst.
@@ -695,9 +712,9 @@ function Step4Verletzungen({
 
       {/* Körperbereiche */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+        <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">
           Aktuelle Beschwerden
-          <span className="ml-2 text-white/30 normal-case font-normal">(optional)</span>
+          <span className="ml-2 text-zinc-300 normal-case font-normal">(optional)</span>
         </h3>
         <div className="grid grid-cols-2 gap-2">
           {INJURY_AREAS.map((area, i) => {
@@ -713,11 +730,11 @@ function Step4Verletzungen({
                 className={[
                   'flex items-center gap-2.5 p-3 rounded-xl border text-sm transition-all duration-200',
                   isSelected
-                    ? 'border-yellow-500/50 bg-yellow-500/10 text-yellow-200'
-                    : 'border-white/10 bg-white/5 text-white/60 hover:border-white/20',
+                    ? 'border-amber-400 bg-amber-50 text-amber-700'
+                    : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300',
                 ].join(' ')}
               >
-                {isSelected && <AlertTriangle size={14} className="text-yellow-400 shrink-0" />}
+                {isSelected && <AlertTriangle size={14} className="text-amber-500 shrink-0" />}
                 <span className="font-medium">{area}</span>
               </motion.button>
             )
@@ -728,10 +745,10 @@ function Step4Verletzungen({
       {/* Freitext */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider">
+          <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest">
             Weitere Hinweise
           </h3>
-          <span className="text-xs text-white/30">
+          <span className="text-xs text-zinc-300">
             {formData.injuryNotes.length}/300
           </span>
         </div>
@@ -744,7 +761,7 @@ function Step4Verletzungen({
           }}
           placeholder="z.B. Knie-OP vor 3 Monaten, leichte Rückenbeschwerden..."
           rows={3}
-          className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white text-sm placeholder-white/30 focus:outline-none focus:border-[var(--sport-primary)] resize-none"
+          className="w-full px-4 py-3 rounded-xl border border-zinc-200 bg-white text-zinc-900 text-sm placeholder-zinc-300 focus:outline-none focus:border-[var(--sport-primary)] focus:ring-1 focus:ring-[var(--sport-primary)]/20 resize-none transition-colors"
         />
       </div>
     </div>
@@ -809,213 +826,228 @@ function Step5Generierung({
 
   return (
     <div className="relative min-h-[400px]">
-      <AnimatePresence mode="wait">
-        {/* Laden */}
-        {isGenerating && (
-          <motion.div
-            key="loading"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center py-12 gap-8"
-          >
-            {/* Konzentrische Ringe */}
-            <div className="relative w-28 h-28 flex items-center justify-center">
-              {[60, 80, 100].map((size, i) => (
-                <motion.div
-                  key={size}
-                  className="absolute rounded-full border"
-                  style={{
-                    width: size,
-                    height: size,
-                    borderColor: 'var(--sport-primary)',
-                    opacity: 0.2 + i * 0.25,
-                  }}
-                  animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
-                  transition={{ duration: 3 + i, repeat: Infinity, ease: 'linear' }}
-                />
-              ))}
-              <Flame size={28} style={{ color: 'var(--sport-primary)' }} />
-            </div>
+      {/* Subtle Unsplash background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={getSportImage(formData.sportSlug)}
+          alt=""
+          className="w-full h-full object-cover"
+          style={{ opacity: 0.06 }}
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-white/90" />
+      </div>
 
-            {/* Progress-Linie */}
-            <div className="w-full max-w-xs">
-              <div className="h-1 rounded-full bg-white/10 overflow-hidden">
-                <motion.div
-                  className="h-full rounded-full"
-                  style={{ background: 'var(--sport-primary)', width: `${progress}%` }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.3 }}
-                />
-              </div>
-            </div>
-
-            {/* Rotierender Text */}
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={textIndex}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.3 }}
-                className="text-sm text-white/60 text-center"
-              >
-                {texts[textIndex]}
-              </motion.p>
-            </AnimatePresence>
-
-            <p className="text-xs text-white/30 text-center">
-              Erstellt von unserer eigenen KI · kein externer Bot · DSGVO-konform
-            </p>
-          </motion.div>
-        )}
-
-        {/* Fehler */}
-        {!isGenerating && error !== null && (
-          <motion.div
-            key="error"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center py-12 gap-6 text-center"
-          >
-            <AlertTriangle size={40} className="text-red-400" />
-            <p className="text-red-300 text-sm max-w-sm">{error}</p>
-            <button
-              onClick={onGenerate}
-              className="px-6 py-3 rounded-xl font-semibold text-white transition-all"
-              style={{ background: 'var(--sport-primary)' }}
-            >
-              Erneut versuchen
-            </button>
-          </motion.div>
-        )}
-
-        {/* Ergebnis */}
-        {!isGenerating && result !== null && (
-          <motion.div
-            key="result"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="space-y-6"
-          >
-            {/* Plan-Header */}
+      <div className="relative z-10">
+        <AnimatePresence mode="wait">
+          {/* Laden */}
+          {isGenerating && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="p-5 rounded-2xl border border-[var(--sport-primary)]/30 bg-[var(--sport-primary)]/5"
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col items-center justify-center py-12 gap-8"
             >
-              <div className="flex items-start gap-3">
-                <CheckCircle size={22} style={{ color: 'var(--sport-primary)' }} className="shrink-0 mt-0.5" />
-                <div>
-                  <h3 className="font-bold text-white leading-snug">{result.planName}</h3>
-                  <p className="text-sm text-white/50 mt-1">
-                    {result.durationWeeks} Wochen · {result.sessionsPerWeek}× pro Woche · {sportName}
-                  </p>
+              {/* Konzentrische Ringe */}
+              <div className="relative w-28 h-28 flex items-center justify-center">
+                {[60, 80, 100].map((size, i) => (
+                  <motion.div
+                    key={size}
+                    className="absolute rounded-full border"
+                    style={{
+                      width: size,
+                      height: size,
+                      borderColor: 'var(--sport-primary)',
+                      opacity: 0.15 + i * 0.2,
+                    }}
+                    animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
+                    transition={{ duration: 3 + i, repeat: Infinity, ease: 'linear' }}
+                  />
+                ))}
+                <Flame size={28} style={{ color: 'var(--sport-primary)' }} />
+              </div>
+
+              {/* Progress-Linie */}
+              <div className="w-full max-w-xs">
+                <div className="h-1 rounded-full bg-zinc-200 overflow-hidden">
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ background: 'var(--sport-primary)', width: `${progress}%` }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
                 </div>
               </div>
-              <p className="text-xs text-white/30 mt-3">
+
+              {/* Rotierender Text */}
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={textIndex}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.3 }}
+                  className="text-sm text-zinc-500 text-center"
+                >
+                  {texts[textIndex]}
+                </motion.p>
+              </AnimatePresence>
+
+              <p className="text-xs text-zinc-300 text-center">
                 Erstellt von unserer eigenen KI · kein externer Bot · DSGVO-konform
               </p>
             </motion.div>
+          )}
 
-            {/* Erste Woche Preview */}
-            {result.firstWeekPreview !== null && (
-              <div>
-                <motion.h4
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3"
-                >
-                  Woche 1 – {result.firstWeekPreview.focus}
-                </motion.h4>
-                <div className="grid grid-cols-7 gap-1.5">
-                  {result.firstWeekPreview.days.map((day, i) => (
-                    <motion.div
-                      key={day.dayName}
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.25 + i * 0.06, duration: 0.4, ease: 'easeOut' }}
-                      className={[
-                        'flex flex-col items-center p-2 rounded-xl border text-center',
-                        day.isRestDay
-                          ? 'border-white/5 bg-white/3'
-                          : 'border-[var(--sport-primary)]/30 bg-[var(--sport-primary)]/5',
-                      ].join(' ')}
-                    >
-                      <span className="text-xs text-white/40 font-medium">
-                        {day.dayName.slice(0, 2)}
-                      </span>
-                      {day.isRestDay ? (
-                        <span className="text-xs text-white/20 mt-1">Ruhe</span>
-                      ) : (
-                        <>
-                          <span
-                            className="text-xs font-bold mt-1"
-                            style={{ color: 'var(--sport-primary)' }}
-                          >
-                            {day.totalMinutes}m
-                          </span>
-                          <span className="text-xs text-white/30 mt-0.5">
-                            {day.exerciseCount} Üb.
-                          </span>
-                        </>
-                      )}
-                    </motion.div>
-                  ))}
+          {/* Fehler */}
+          {!isGenerating && error !== null && (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center py-12 gap-6 text-center"
+            >
+              <AlertTriangle size={40} className="text-red-400" />
+              <p className="text-red-500 text-sm max-w-sm">{error}</p>
+              <button
+                onClick={onGenerate}
+                className="px-6 py-3 rounded-xl font-semibold text-white transition-all shadow-sm"
+                style={{ background: 'var(--sport-primary)' }}
+              >
+                Erneut versuchen
+              </button>
+            </motion.div>
+          )}
+
+          {/* Ergebnis */}
+          {!isGenerating && result !== null && (
+            <motion.div
+              key="result"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="space-y-6"
+            >
+              {/* Plan-Header */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="p-5 rounded-2xl border-2 border-[var(--sport-primary)] bg-[var(--sport-primary-light)]"
+              >
+                <div className="flex items-start gap-3">
+                  <CheckCircle size={22} style={{ color: 'var(--sport-primary)' }} className="shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="font-bold text-zinc-900 leading-snug">{result.planName}</h3>
+                    <p className="text-sm text-zinc-500 mt-1">
+                      {result.durationWeeks} Wochen · {result.sessionsPerWeek}x pro Woche · {sportName}
+                    </p>
+                  </div>
                 </div>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.8 }}
-                  className="text-xs text-white/40 mt-3 italic"
-                >
-                  {result.firstWeekPreview.weeklyGoal}
-                </motion.p>
+                <p className="text-xs text-zinc-400 mt-3">
+                  Erstellt von unserer eigenen KI · kein externer Bot · DSGVO-konform
+                </p>
+              </motion.div>
+
+              {/* Erste Woche Preview */}
+              {result.firstWeekPreview !== null && (
+                <div>
+                  <motion.h4
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3"
+                  >
+                    Woche 1 – {result.firstWeekPreview.focus}
+                  </motion.h4>
+                  <div className="grid grid-cols-7 gap-1.5">
+                    {result.firstWeekPreview.days.map((day, i) => (
+                      <motion.div
+                        key={day.dayName}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.25 + i * 0.06, duration: 0.4, ease: 'easeOut' }}
+                        className={[
+                          'flex flex-col items-center p-2 rounded-xl border text-center shadow-sm',
+                          day.isRestDay
+                            ? 'border-zinc-100 bg-zinc-50'
+                            : 'border-[var(--sport-primary)]/30 bg-[var(--sport-primary-light)]',
+                        ].join(' ')}
+                      >
+                        <span className="text-xs text-zinc-400 font-medium">
+                          {day.dayName.slice(0, 2)}
+                        </span>
+                        {day.isRestDay ? (
+                          <span className="text-xs text-zinc-300 mt-1">Ruhe</span>
+                        ) : (
+                          <>
+                            <span
+                              className="text-xs font-bold mt-1"
+                              style={{ color: 'var(--sport-primary)' }}
+                            >
+                              {day.totalMinutes}m
+                            </span>
+                            <span className="text-xs text-zinc-400 mt-0.5">
+                              {day.exerciseCount} Ub.
+                            </span>
+                          </>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.8 }}
+                    className="text-xs text-zinc-400 mt-3 italic"
+                  >
+                    {result.firstWeekPreview.weeklyGoal}
+                  </motion.p>
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          {/* Start-Button (vor Generierung) */}
+          {!isGenerating && result === null && error === null && (
+            <motion.div
+              key="start"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center py-12 gap-6 text-center"
+            >
+              {/* KI-Ringe (statisch) */}
+              <div className="relative w-24 h-24 flex items-center justify-center">
+                {[55, 75, 95].map((size, i) => (
+                  <div
+                    key={size}
+                    className="absolute rounded-full border"
+                    style={{
+                      width: size,
+                      height: size,
+                      borderColor: 'var(--sport-primary)',
+                      opacity: 0.12 + i * 0.15,
+                    }}
+                  />
+                ))}
+                <Flame size={24} style={{ color: 'var(--sport-primary)' }} />
               </div>
-            )}
-          </motion.div>
-        )}
 
-        {/* Start-Button (vor Generierung) */}
-        {!isGenerating && result === null && error === null && (
-          <motion.div
-            key="start"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center py-12 gap-6 text-center"
-          >
-            {/* KI-Ringe (statisch) */}
-            <div className="relative w-24 h-24 flex items-center justify-center">
-              {[55, 75, 95].map((size, i) => (
-                <div
-                  key={size}
-                  className="absolute rounded-full border"
-                  style={{
-                    width: size,
-                    height: size,
-                    borderColor: 'var(--sport-primary)',
-                    opacity: 0.15 + i * 0.2,
-                  }}
-                />
-              ))}
-              <Flame size={24} style={{ color: 'var(--sport-primary)' }} />
-            </div>
+              <div>
+                <h3 className="text-lg font-bold text-zinc-900">Alles bereit?</h3>
+                <p className="text-sm text-zinc-500 mt-2 max-w-xs">
+                  Unsere KI erstellt deinen persönlichen {formData.durationWeeks}-Wochen-Plan für {sportName}.
+                </p>
+              </div>
 
-            <div>
-              <h3 className="text-lg font-bold text-white">Alles bereit?</h3>
-              <p className="text-sm text-white/50 mt-2 max-w-xs">
-                Unsere KI erstellt deinen persönlichen {formData.durationWeeks}-Wochen-Plan für {sportName}.
+              <p className="text-xs text-zinc-300">
+                Erstellt von unserer eigenen KI · kein externer Bot · DSGVO-konform
               </p>
-            </div>
-
-            <p className="text-xs text-white/30">
-              Erstellt von unserer eigenen KI · kein externer Bot · DSGVO-konform
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }
@@ -1045,7 +1077,7 @@ function WizardProgress({ step }: { step: Step }) {
                   ? 'text-white'
                   : step === n
                   ? 'text-white'
-                  : 'bg-white/10 text-white/30',
+                  : 'bg-zinc-100 text-zinc-400 border border-zinc-200',
               ].join(' ')}
               style={
                 step >= n
@@ -1064,14 +1096,14 @@ function WizardProgress({ step }: { step: Step }) {
             <span
               className={[
                 'text-xs mt-1 whitespace-nowrap hidden sm:block',
-                step === n ? 'text-white/70' : 'text-white/25',
+                step === n ? 'text-zinc-700 font-semibold' : 'text-zinc-300',
               ].join(' ')}
             >
               {label}
             </span>
           </div>
           {i < steps.length - 1 && (
-            <div className="flex-1 h-px bg-white/10 relative -mt-4 sm:-mt-5">
+            <div className="flex-1 h-px bg-zinc-200 relative -mt-4 sm:-mt-5">
               {step > n && (
                 <motion.div
                   initial={{ scaleX: 0 }}
@@ -1229,46 +1261,42 @@ export function ErstellenClient({
 
   return (
     <div
-      className="min-h-screen bg-[#0a0a0f] text-white"
+      className="min-h-screen bg-[#FAFAFA] text-zinc-900"
       data-sport={formData.sportSlug}
     >
-      {/* Hintergrund-Sport-Bild (Schritt 5) */}
-      {step === 5 && (
-        <div className="fixed inset-0 z-0 pointer-events-none">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={getSportImage(formData.sportSlug)}
-            alt=""
-            className="w-full h-full object-cover"
-            style={{ opacity: 0.08 }}
-            loading="lazy"
-          />
-          <div
-            className={[
-              'absolute inset-0 bg-gradient-to-b',
-              getSportGradient(formData.sportSlug),
-            ].join(' ')}
-            style={{ opacity: 0.85 }}
-          />
-        </div>
-      )}
+      {/* Hintergrund-Sport-Bild (Schritt 5) — now via Step5Intern component */}
 
       <div className="relative z-10 max-w-xl mx-auto px-4 py-8">
+        {/* Breadcrumbs */}
+        <nav className="flex items-center gap-2 mb-8 text-sm">
+          <button
+            onClick={() => router.push('/training')}
+            className="flex items-center gap-1 text-zinc-400 hover:text-zinc-900 transition-colors"
+          >
+            <ArrowLeft size={16} />
+            <span>Zurück</span>
+          </button>
+          <span className="text-zinc-300">/</span>
+          <span className="text-zinc-400">Training</span>
+          <span className="text-zinc-300">/</span>
+          <span className="text-zinc-700 font-medium">Plan erstellen</span>
+        </nav>
+
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-2xl font-bold text-zinc-900">
             {step === 5 ? 'Dein Trainingsplan' : 'Plan erstellen'}
           </h1>
-          <p className="text-sm text-white/50 mt-1">{STEP_TITLES[step]}</p>
+          <p className="text-sm text-zinc-400 mt-1">{STEP_TITLES[step]}</p>
         </div>
 
         {/* Rate-Limit-Banner */}
         {isAtLimit && step < 5 && (
-          <div className="mb-6 flex items-start gap-3 p-4 rounded-xl border border-red-500/30 bg-red-500/5">
+          <div className="mb-6 flex items-start gap-3 p-4 rounded-2xl border border-red-200 bg-red-50">
             <AlertTriangle size={18} className="text-red-400 shrink-0 mt-0.5" />
-            <p className="text-sm text-red-300">
-              Du hast diesen Monat bereits 3 Pläne erstellt. Nächsten Monat kannst du
-              neue Pläne generieren.
+            <p className="text-sm text-red-600">
+              Du hast diesen Monat bereits 3 Plane erstellt. Nachsten Monat kannst du
+              neue Plane generieren.
             </p>
           </div>
         )}
@@ -1278,8 +1306,8 @@ export function ErstellenClient({
           <WizardProgress step={step} />
         </div>
 
-        {/* Schritt-Inhalt */}
-        <div className="min-h-[420px]">
+        {/* Schritt-Inhalt — wrapped in a white card */}
+        <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm p-6 min-h-[420px]">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={step}
@@ -1335,7 +1363,7 @@ export function ErstellenClient({
           <button
             onClick={goBack}
             disabled={step === 5 && (isGenerating || generateResult !== null)}
-            className="flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/5 text-white/70 hover:border-white/20 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
+            className="flex items-center gap-2 px-5 py-3 rounded-xl border border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:text-zinc-900 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
           >
             <ChevronLeft size={18} />
             <span className="text-sm font-medium">Zurück</span>
@@ -1346,7 +1374,7 @@ export function ErstellenClient({
             <div className="flex gap-3 flex-1 justify-end">
               <button
                 onClick={() => router.push('/training')}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200"
+                className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200 shadow-sm"
                 style={{ background: 'var(--sport-primary)' }}
               >
                 Zum Training
@@ -1357,8 +1385,8 @@ export function ErstellenClient({
             <button
               onClick={goNext}
               disabled={!canProceed() || isAtLimit}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
-              style={{ background: canProceed() && !isAtLimit ? 'var(--sport-primary)' : 'rgba(255,255,255,0.1)' }}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+              style={{ background: canProceed() && !isAtLimit ? 'var(--sport-primary)' : '#d4d4d8' }}
             >
               <span className="text-sm">
                 {step === 4 ? 'Plan generieren' : 'Weiter'}
@@ -1376,24 +1404,28 @@ export function ErstellenClient({
           --sport-secondary: #15803D;
           --sport-accent: #DCFCE7;
           --sport-glow: rgba(22,163,74,0.35);
+          --sport-primary-light: #F0FDF4;
         }
         [data-sport="fussball"] {
           --sport-primary: #16A34A;
           --sport-secondary: #15803D;
           --sport-accent: #DCFCE7;
           --sport-glow: rgba(22,163,74,0.35);
+          --sport-primary-light: #F0FDF4;
         }
         [data-sport="tennis"] {
           --sport-primary: #C2621A;
           --sport-secondary: #9A4E15;
           --sport-accent: #FFEDD5;
           --sport-glow: rgba(194,98,26,0.35);
+          --sport-primary-light: #FFF7ED;
         }
         [data-sport="basketball"] {
           --sport-primary: #EA580C;
           --sport-secondary: #C2490A;
           --sport-accent: #FFEDD5;
           --sport-glow: rgba(234,88,12,0.35);
+          --sport-primary-light: #FFF7ED;
         }
         input[type="range"]::-webkit-slider-thumb {
           -webkit-appearance: none;
@@ -1402,7 +1434,7 @@ export function ErstellenClient({
           border-radius: 50%;
           background: var(--sport-primary);
           cursor: pointer;
-          box-shadow: 0 0 8px var(--sport-glow);
+          box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
         input[type="range"]::-moz-range-thumb {
           width: 20px;
@@ -1411,6 +1443,7 @@ export function ErstellenClient({
           background: var(--sport-primary);
           cursor: pointer;
           border: none;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
       `}</style>
     </div>

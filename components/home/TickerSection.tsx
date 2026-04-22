@@ -1,12 +1,7 @@
-// ─────────────────────────────────────────────────────────────────
-// TickerSection – Premium Live-Aktivitäts-Ticker
-//
-// Server Component – reine CSS-Animation (keine Client-Direktive nötig).
-//
-// Design: Verfeinerte dunkle Trennleiste mit glowing Aktivitäts-Dots
-// ─────────────────────────────────────────────────────────────────
+'use client'
 
-// ── Typen ─────────────────────────────────────────────────────────
+import { useRef, useState, useCallback } from 'react'
+import { motion, useAnimationFrame } from 'framer-motion'
 
 interface TickerItem {
   id: string
@@ -17,90 +12,93 @@ interface TickerSectionProps {
   items: TickerItem[]
 }
 
-// ── Fallback-Items ────────────────────────────────────────────────
-
 const FALLBACK_ITEMS: TickerItem[] = [
-  { id: 'f01', text: 'Lukas aus Frankfurt — 45 Min. Fußball-Training absolviert' },
+  { id: 'f01', text: 'Lukas aus Frankfurt — 45 Min. Fussball-Training absolviert' },
   { id: 'f02', text: 'Anna aus Wiesbaden folgt jetzt dem TSV Einheit Frankfurt' },
   { id: 'f03', text: 'Max hat das Abzeichen "Erster Schritt" erhalten' },
   { id: 'f04', text: 'Jonas aus Kassel — 60 Min. Basketball-Training absolviert' },
-  { id: 'f05', text: 'Sarah folgt jetzt dem TC Rot-Weiß Kassel' },
-  { id: 'f06', text: 'Tim hat das Abzeichen "7 Tage am Stück" erhalten' },
+  { id: 'f05', text: 'Sarah folgt jetzt dem TC Rot-Weiss Kassel' },
+  { id: 'f06', text: 'Tim hat das Abzeichen "7 Tage am Stueck" erhalten' },
   { id: 'f07', text: 'Felix aus Darmstadt — 30 Min. Tennis-Training absolviert' },
-  { id: 'f08', text: 'Laura aus Fulda folgt jetzt dem VfB 1900 Gießen' },
-  { id: 'f09', text: 'Marco aus Gießen — 50 Min. Fußball-Training absolviert' },
+  { id: 'f08', text: 'Laura aus Fulda folgt jetzt dem VfB 1900 Giessen' },
+  { id: 'f09', text: 'Marco aus Giessen — 50 Min. Fussball-Training absolviert' },
   { id: 'f10', text: 'Nina hat das Abzeichen "Durchstarter" erhalten' },
   { id: 'f11', text: 'Kevin aus Offenbach — 40 Min. Basketball-Training absolviert' },
   { id: 'f12', text: 'Lena folgt jetzt dem TSG Marburg Tennis' },
 ]
 
-// ── Komponente ────────────────────────────────────────────────────
+function TickerRow({ items }: { items: TickerItem[] }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [offset, setOffset] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const speed = 0.5
 
-export default function TickerSection({ items }: TickerSectionProps) {
-  const display = items.length > 0 ? items : FALLBACK_ITEMS
+  useAnimationFrame((_, delta) => {
+    if (paused) return
+    setOffset((prev) => {
+      const halfWidth = ref.current ? ref.current.scrollWidth / 2 : 0
+      const next = prev + (delta / 1000) * speed * 100
+      return halfWidth > 0 && next >= halfWidth ? 0 : next
+    })
+  })
+
+  const handleMouseEnter = useCallback(() => setPaused(true), [])
+  const handleMouseLeave = useCallback(() => setPaused(false), [])
 
   return (
     <div
-      className="relative overflow-hidden bg-[#030712] border-y border-white/[0.04] py-3.5"
-      aria-label="Aktuelle Aktivitäten auf SportRise"
+      className="overflow-hidden relative"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      {/* Seitliche Fade-Masken */}
-      <div
-        className="absolute inset-y-0 left-0 w-24 z-10 pointer-events-none"
-        style={{
-          background: 'linear-gradient(to right, #030712, transparent)',
-        }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-y-0 right-0 w-24 z-10 pointer-events-none"
-        style={{
-          background: 'linear-gradient(to left, #030712, transparent)',
-        }}
-        aria-hidden="true"
-      />
+      <div className="absolute inset-y-0 left-0 w-20 z-10 pointer-events-none bg-gradient-to-r from-white to-transparent" />
+      <div className="absolute inset-y-0 right-0 w-20 z-10 pointer-events-none bg-gradient-to-l from-white to-transparent" />
 
-      {/* Ticker */}
-      <div className="ticker-container">
-        <div
-          className="ticker-content"
-          style={{ animationDuration: '48s' }}
+      <div ref={ref} className="flex whitespace-nowrap">
+        <motion.div
+          className="flex"
+          style={{ x: -offset }}
         >
-          {/* Erste Kopie */}
-          {display.map((item) => (
+          {items.map((item) => (
             <span
               key={item.id}
-              className="inline-flex items-center gap-3 mx-8"
+              className="inline-flex items-center gap-2.5 mx-6"
             >
-              <span
-                className="w-1.5 h-1.5 rounded-full bg-green-400/50 shrink-0"
-                style={{ boxShadow: '0 0 6px rgba(74, 222, 128, 0.3)' }}
-                aria-hidden="true"
-              />
-              <span className="text-sm text-white/30 font-mono whitespace-nowrap tracking-tight">
+              <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
+              <span className="text-sm text-zinc-500 font-medium whitespace-nowrap">
                 {item.text}
               </span>
             </span>
           ))}
-
-          {/* Zweite Kopie für nahtlosen Loop */}
-          {display.map((item) => (
+          {items.map((item) => (
             <span
               key={`${item.id}-dup`}
+              className="inline-flex items-center gap-2.5 mx-6"
               aria-hidden="true"
-              className="inline-flex items-center gap-3 mx-8"
             >
-              <span
-                className="w-1.5 h-1.5 rounded-full bg-green-400/50 shrink-0"
-                style={{ boxShadow: '0 0 6px rgba(74, 222, 128, 0.3)' }}
-              />
-              <span className="text-sm text-white/30 font-mono whitespace-nowrap tracking-tight">
+              <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
+              <span className="text-sm text-zinc-500 font-medium whitespace-nowrap">
                 {item.text}
               </span>
             </span>
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
+  )
+}
+
+export default function TickerSection({ items }: TickerSectionProps) {
+  const display: TickerItem[] = items.length > 0 ? items : FALLBACK_ITEMS
+
+  return (
+    <section
+      className="w-full bg-white border-y border-zinc-100 py-4"
+      aria-label="Aktuelle Aktivitaeten"
+    >
+      <div className="px-4 overflow-hidden">
+        <TickerRow items={display} />
+      </div>
+    </section>
   )
 }

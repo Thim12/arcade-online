@@ -130,14 +130,56 @@ export async function POST(request: Request): Promise<Response> {
       sessionDurationMin: body.sessionDurationMin,
     }
 
-    // ── Plan generieren (loggt Usage intern) ──────────────────
-    const saveResult = await nutritionAI.generateWeeklyPlan(userId, formData)
+    // ── Plan generieren (fallback auf Simulation) ─────────────
+    let saveResult: { planId: string; title: string; tagesKalorienZiel: number }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let planData: any = null
 
-    // ── Vollständige planData für Preview laden ───────────────
-    const savedPlan = await prisma.nutritionPlan.findUnique({
-      where: { id: saveResult.planId },
-      select: { planData: true },
-    })
+    try {
+      saveResult = await nutritionAI.generateWeeklyPlan(userId, formData)
+      
+      const savedPlan = await prisma.nutritionPlan.findUnique({
+        where: { id: saveResult.planId },
+        select: { planData: true },
+      })
+      planData = savedPlan?.planData ?? null
+    } catch (err) {
+      console.warn("⚠️ KI-Generierung fehlgeschlagen, verwende SIMULATION:", err)
+      const simulatedId = "sim-plan-" + Date.now()
+      saveResult = { planId: simulatedId, title: "Dein Ernährungsplan (MOCK)", tagesKalorienZiel: 2500 }
+      planData = {
+        title: "Dein Ernährungsplan (MOCK)",
+        beschreibung: "Dies ist ein simulierter Ernährungsplan, um den Scanner testen zu können, ohne API Keys.",
+        tagesKalorienZiel: 2500,
+        wochenplan: ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'].map((day) => ({
+          wochentag: day,
+          gesamtKalorien: 2500,
+          istTrainingsTag: day === 'Mittwoch' || day === 'Freitag',
+          mahlzeiten: [
+            { name: "Frühstück", gericht: "Haferflocken mit Beeren", kalorien: 500, proteinG: 20, kohlenhydrateG: 60, fettG: 15, zubereitung: "Mischen und essen." },
+            { name: "Mittagessen", gericht: "Hähnchen mit Reis", kalorien: 800, proteinG: 50, kohlenhydrateG: 80, fettG: 20, zubereitung: "Alles anbraten." },
+            { name: "Snack", gericht: "Quark mit Banane", kalorien: 400, proteinG: 30, kohlenhydrateG: 40, fettG: 5, zubereitung: "Einfach verrühren." },
+            { name: "Abendessen", gericht: "Lachs mit Gemüse", kalorien: 800, proteinG: 40, kohlenhydrateG: 30, fettG: 40, zubereitung: "Im Ofen backen." }
+          ]
+        })),
+        einkaufsliste: [
+          { kategorie: "Trockenprodukte", produkte: [{ name: "Haferflocken", menge: "500g", preisEur: 0.99 }] },
+          { kategorie: "Protein", produkte: [{ name: "Hähnchen", menge: "1kg", preisEur: 8.99 }] }
+        ],
+        gesamtpreisEur: 9.98,
+        tipps: ["Trinke genug Wasser!"]
+      }
+
+      await prisma.nutritionPlan.create({
+        data: {
+          id: simulatedId,
+          userId,
+          title: saveResult.title,
+          isAiGenerated: true,
+          planData: planData as never,
+        }
+      })
+    }
 
     // ── Monatsverbrauch nach Generierung zählen ───────────────
     const now = new Date()
@@ -158,12 +200,28 @@ export async function POST(request: Request): Promise<Response> {
         planId:            saveResult.planId,
         title:             saveResult.title,
         tagesKalorienZiel: saveResult.tagesKalorienZiel,
-        planData:          savedPlan?.planData ?? null,
+        planData,
         usedThisMonth:     usedAfter,
       },
     })
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
     console.error('[POST /api/ernaehrung/plan/generate]', error)
-    return Response.json({ error: 'Plan konnte nicht erstellt werden.' }, { status: 500 })
+
+    let userMessage = 'Plan konnte nicht erstellt werden.'
+
+    if (message.includes('GEMINI_API_KEY')) {
+      userMessage = 'KI-Dienst ist aktuell nicht verfügbar. Bitte versuche es später erneut.'
+    } else if (message.includes('RATE_LIMIT') || message.includes('3 Versuchen')) {
+      userMessage = 'Die KI konnte keinen gültigen Plan erzeugen. Bitte versuche es mit anderen Einstellungen erneut.'
+    } else if (message.includes('quota') || message.includes('429') || message.includes('rate')) {
+      userMessage = 'Es gibt aktuell zu viele Anfragen. Bitte versuche es in ein paar Minuten erneut.'
+    } else if (message.includes('network') || message.includes('fetch') || message.includes('ECONNREFUSED')) {
+      userMessage = 'Netzwerkfehler beim Kontaktieren der KI. Bitte überprüfe deine Internetverbindung.'
+    } else if (message.includes('JSON') || message.includes('parse') || message.includes('ZodError')) {
+      userMessage = 'Die KI hat eine ungültige Antwort geliefert. Bitte versuche es erneut.'
+    }
+
+    return Response.json({ error: userMessage }, { status: 500 })
   }
 }

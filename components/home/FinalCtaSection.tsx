@@ -1,90 +1,37 @@
 'use client'
 
-// ─────────────────────────────────────────────────────────────────
-// FinalCtaSection – Dramatischer Abschluss-CTA
-//
-// Design: Gradient-Hintergrund mit animierten Glow-Orbs
-// Premium CTA-Button mit Hover-Effekt
-// ─────────────────────────────────────────────────────────────────
-
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
-// ── Daten ─────────────────────────────────────────────────────────
-
 const CHIPS = ['Kein Abo', 'Keine Werbung', 'DSGVO-konform', 'Eigene KI']
-
-// ── Komponente ────────────────────────────────────────────────────
 
 export default function FinalCtaSection() {
   return (
-    <section className="relative overflow-hidden py-28 sm:py-36">
-      {/* ── Dramatischer Gradient-Hintergrund ──────────────────── */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#052e16] via-[#16A34A] to-[#065f46]" />
-
-      {/* ── Animierte Glow-Orbs ────────────────────────────────── */}
-      <motion.div
-        className="absolute top-[10%] left-[20%] w-[400px] h-[400px] rounded-full pointer-events-none select-none"
-        style={{
-          background: 'radial-gradient(ellipse, rgba(255,255,255,0.12) 0%, transparent 70%)',
-          filter: 'blur(60px)',
-        }}
-        animate={{
-          x: [0, 30, -15, 0],
-          y: [0, -20, 15, 0],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-        aria-hidden="true"
-      />
-      <motion.div
-        className="absolute bottom-[10%] right-[15%] w-[350px] h-[350px] rounded-full pointer-events-none select-none"
-        style={{
-          background: 'radial-gradient(ellipse, rgba(255,255,255,0.08) 0%, transparent 70%)',
-          filter: 'blur(60px)',
-        }}
-        animate={{
-          x: [0, -20, 25, 0],
-          y: [0, 15, -20, 0],
-        }}
-        transition={{
-          duration: 13,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-        aria-hidden="true"
-      />
-
-      {/* ── Subtiles Grid-Pattern ──────────────────────────────── */}
+    <section className="relative overflow-hidden bg-white py-28 sm:py-36">
+      {/* Decorative gradient */}
       <div
         className="absolute inset-0 pointer-events-none select-none"
         style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-                           linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px',
+          background:
+            'radial-gradient(ellipse at 50% 50%, rgba(22,163,74,0.06) 0%, transparent 60%)',
         }}
         aria-hidden="true"
       />
 
-      <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        {/* Heading */}
+      <div className="relative max-w-3xl mx-auto px-5 sm:px-6 lg:px-8 text-center">
         <motion.h2
-          initial={{ opacity: 0, y: 20 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="text-3xl sm:text-4xl lg:text-[52px] font-bold text-white tracking-tight leading-[1.1]"
+          className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-900 tracking-tight"
         >
-          Starte jetzt. Kostenlos. Für immer.
+          Starte jetzt. Kostenlos. Fuer immer.
         </motion.h2>
 
-        {/* Chips */}
         <motion.div
-          initial={{ opacity: 0, y: 14 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.5, delay: 0.08, ease: 'easeOut' }}
@@ -93,27 +40,25 @@ export default function FinalCtaSection() {
           {CHIPS.map((chip) => (
             <span
               key={chip}
-              className="border border-white/20 text-white/70 text-sm px-4 py-1.5 rounded-full backdrop-blur-sm"
+              className="inline-flex bg-green-50 border border-green-200 text-green-700 text-sm font-semibold px-4 py-1.5 rounded-full"
             >
               {chip}
             </span>
           ))}
         </motion.div>
 
-        {/* Region-Hinweis */}
         <motion.p
-          initial={{ opacity: 0 }}
+          initial={false}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.5, delay: 0.16, ease: 'easeOut' }}
-          className="mt-6 italic text-white/35 text-sm"
+          className="mt-6 italic text-zinc-500 text-sm"
         >
           Startet in Hessen — bald in ganz Deutschland
         </motion.p>
 
-        {/* CTA-Button — Premium mit Glow */}
         <motion.div
-          initial={{ opacity: 0, y: 14 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.5, delay: 0.22, ease: 'easeOut' }}
@@ -121,26 +66,35 @@ export default function FinalCtaSection() {
         >
           <Link
             href="/registrieren"
-            className="group inline-flex items-center gap-3 bg-white text-[#0A0A0A] font-semibold
-                       px-10 py-4 rounded-xl transition-all duration-300
-                       hover:bg-white/95 hover:scale-[1.02] active:scale-[0.98]
-                       shadow-[0_4px_24px_rgba(0,0,0,0.2)]
-                       hover:shadow-[0_8px_40px_rgba(0,0,0,0.3)]"
+            className="group inline-flex items-center gap-3 bg-[#16A34A] text-white font-bold
+                       px-10 py-4 rounded-full transition-all duration-200
+                       hover:bg-[#15803D] hover:scale-[1.02] active:scale-[0.98]
+                       shadow-[0_4px_24px_rgba(22,163,74,0.3)]
+                       hover:shadow-[0_8px_40px_rgba(22,163,74,0.4)]"
           >
             Profil erstellen
-            <ArrowRight className="h-5 w-5 text-[#16A34A] transition-transform duration-300 group-hover:translate-x-0.5" />
+            <ArrowRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5" />
           </Link>
         </motion.div>
 
-        {/* Kleingedruckt */}
         <motion.p
-          initial={{ opacity: 0 }}
+          initial={false}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
-          className="mt-5 text-xs text-white/30"
+          className="mt-5 text-xs text-zinc-400"
         >
-          Direkt loslegen · Kein Bestätigungsschritt · Jederzeit löschbar
+          Direkt loslegen · Kein Bestaetigungsschritt · Jederzeit loeschbar
+        </motion.p>
+
+        <motion.p
+          initial={false}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.5, delay: 0.38, ease: 'easeOut' }}
+          className="mt-16 text-xs text-zinc-400"
+        >
+          Erstellt von unserer eigenen KI · kein externer Bot · DSGVO-konform
         </motion.p>
       </div>
     </section>

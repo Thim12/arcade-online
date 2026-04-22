@@ -1,24 +1,16 @@
 'use client'
 
-// ─────────────────────────────────────────────────────────────────
-// FeaturesSection – Premium "Alles inklusive" Feature-Grid
-//
-// Design: Bento-Grid-Layout mit Glassmorphism-Cards
-// Hover: Card schwebt + Glow verstärkt sich + Gradient-Border
-// ─────────────────────────────────────────────────────────────────
-
 import { motion } from 'framer-motion'
 import {
-  MapPin,
-  Trophy,
-  Dumbbell,
-  UtensilsCrossed,
-  BookOpen,
+  Shield,
   Zap,
+  Eye,
+  Brain,
+  Trophy,
+  Users,
+  Sparkles,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-
-// ── Typen ─────────────────────────────────────────────────────────
 
 interface BadgePreview {
   id: string
@@ -30,206 +22,170 @@ interface FeaturesSectionProps {
   badges: BadgePreview[]
 }
 
+type IconColorClass = {
+  bg: string
+  text: string
+  border: string
+}
+
 interface Feature {
   Icon: LucideIcon
   title: string
   description: string
-  accentColor: string
-  glowColor: string
+  iconColor: IconColorClass
 }
-
-// ── Feature-Daten ─────────────────────────────────────────────────
 
 const FEATURES: Feature[] = [
   {
-    Icon: MapPin,
-    title: 'Vereine & Trainer finden',
+    Icon: Shield,
+    title: 'Kostenlos & ohne Werbung',
     description:
-      'Entdecke Vereine in deiner Nähe für Fußball, Tennis und Basketball — mit allen Infos auf einen Blick.',
-    accentColor: '#16A34A',
-    glowColor: 'rgba(22, 163, 74, 0.15)',
+      'Keine Abos, keine Werbung — SportRise ist und bleibt komplett kostenlos.',
+    iconColor: { bg: 'bg-green-50', text: 'text-green-600', border: 'border-green-200' },
+  },
+  {
+    Icon: Brain,
+    title: 'Deine eigene KI',
+    description:
+      'Trainingsplaene, Ernaehrungstipps und Analysen — persoenlich erstellt von deiner KI.',
+    iconColor: { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200' },
+  },
+  {
+    Icon: Eye,
+    title: 'DSGVO-konform',
+    description:
+      'Deine Daten gehoeren dir. SportRise erfuellt die hoechsten europaeischen Datenschutzstandards.',
+    iconColor: { bg: 'bg-amber-50', text: 'text-amber-600', border: 'border-amber-200' },
   },
   {
     Icon: Trophy,
-    title: 'Turniere & Wettkämpfe',
-    description:
-      'Finde lokale Turniere und melde dich direkt an — kostenlos und ohne Umwege.',
-    accentColor: '#F59E0B',
-    glowColor: 'rgba(245, 158, 11, 0.15)',
-  },
-  {
-    Icon: Dumbbell,
-    title: 'KI-Trainingsplan',
-    description:
-      'Dein persönlicher Trainingsplan, erstellt von KI — abgestimmt auf dein Niveau und deine Ziele.',
-    accentColor: '#3B82F6',
-    glowColor: 'rgba(59, 130, 246, 0.15)',
-  },
-  {
-    Icon: UtensilsCrossed,
-    title: 'Ernährungsplan',
-    description:
-      'Passende Ernährungspläne für deinen Sport, erstellt mit KI-Unterstützung.',
-    accentColor: '#EA580C',
-    glowColor: 'rgba(234, 88, 12, 0.15)',
-  },
-  {
-    Icon: BookOpen,
-    title: 'Sport-Guides',
-    description:
-      'Tipps, Techniken und Wissen — kuratiert von der SportRise-Community.',
-    accentColor: '#A855F7',
-    glowColor: 'rgba(168, 85, 247, 0.15)',
-  },
-  {
-    Icon: Zap,
     title: 'Gamification & Abzeichen',
     description:
-      'Verdiene XP, steige im Level auf und schalte geheime Abzeichen frei.',
-    accentColor: '#EAB308',
-    glowColor: 'rgba(234, 179, 8, 0.15)',
+      'Verdiene XP, steige im Level auf und schalte seltene Abzeichen frei.',
+    iconColor: { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200' },
+  },
+  {
+    Icon: Users,
+    title: 'Vereinssuche & Turniere',
+    description:
+      'Finde Vereine in deiner Naehe und melde dich direkt fuer lokale Turniere an.',
+    iconColor: { bg: 'bg-green-50', text: 'text-green-600', border: 'border-green-200' },
+  },
+  {
+    Icon: Sparkles,
+    title: 'Community',
+    description:
+      'Tritt der SportRise-Community bei — teile Erfolge und motiviere andere.',
+    iconColor: { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200' },
   },
 ]
 
-// ── Rarity-Styles für Badge-Vorschau ─────────────────────────────
-
 const RARITY_STYLES: Record<string, string> = {
-  COMMON: 'bg-white/5 text-white/45 border-white/10',
-  RARE: 'bg-blue-500/10 text-blue-400/80 border-blue-500/20',
-  EPIC: 'bg-purple-500/10 text-purple-400/80 border-purple-500/20',
-  LEGENDARY: 'bg-amber-500/10 text-amber-400/80 border-amber-500/20',
+  COMMON: 'bg-zinc-100 text-zinc-600 border-zinc-200',
+  RARE: 'bg-blue-50 text-blue-700 border-blue-200',
+  EPIC: 'bg-purple-50 text-purple-700 border-purple-200',
+  LEGENDARY: 'bg-amber-50 text-amber-700 border-amber-200',
 }
 
-// ── Komponente ────────────────────────────────────────────────────
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.06,
+    },
+  },
+}
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: 'easeOut' },
+  },
+}
 
 export default function FeaturesSection({ badges }: FeaturesSectionProps) {
+  const visibleBadges = badges.slice(0, 6)
+
   return (
-    <section className="relative bg-[#030712] py-24 sm:py-32 overflow-hidden">
-      {/* Subtiler Glow von oben */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(22,163,74,0.06) 0%, transparent 60%)',
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Subtile Grid-Textur */}
-      <div
-        className="absolute inset-0 pointer-events-none select-none"
-        style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-                           linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px',
-        }}
-        aria-hidden="true"
-      />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* ── Section-Heading ─────────────────────────────────── */}
-        <div className="text-center mb-16 sm:mb-20">
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
-            className="text-sm font-semibold text-green-400 tracking-widest uppercase mb-4"
-          >
+    <section className="bg-zinc-50 py-28 sm:py-32">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8">
+        <motion.div
+          initial={false}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="text-center mb-16"
+        >
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200 mb-4">
             Alles inklusive
-          </motion.p>
+          </span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-900 tracking-tight">
+            Kein Abo. Keine Werbung.
+          </h2>
+          <p className="mt-4 text-lg text-zinc-500 max-w-xl mx-auto">
+            Von der Vereinssuche bis zum KI-Trainingsplan — alles kostenlos, alles fuer deinen Sport.
+          </p>
+        </motion.div>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.5, delay: 0.05, ease: 'easeOut' }}
-            className="text-3xl sm:text-4xl lg:text-[52px] font-bold text-white tracking-tight text-balance leading-[1.1]"
-          >
-            Alles was du brauchst
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
-            className="mt-5 text-lg text-white/40 max-w-xl mx-auto"
-          >
-            Von der Vereinssuche bis zum KI-Trainingsplan — SportRise bietet
-            alles für deinen Sport.
-          </motion.p>
-        </div>
-
-        {/* ── Feature-Grid (Bento-Style) ──────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-          {FEATURES.map((feature, i) => {
-            const { Icon, title, description, accentColor, glowColor } = feature
-            const isLast = i === FEATURES.length - 1
+        <motion.div
+          variants={containerVariants}
+          initial={false}
+          whileInView="visible"
+          viewport={{ once: true, margin: '-50px' }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+        >
+          {FEATURES.map((feature) => {
+            const { Icon, title, description, iconColor } = feature
 
             return (
               <motion.div
                 key={title}
-                initial={{ opacity: 0, y: 32 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{
-                  duration: 0.5,
-                  delay: i * 0.07,
-                  ease: 'easeOut',
-                }}
-                className="group relative rounded-2xl bg-white/[0.02] border border-white/[0.06] p-7 card-hover overflow-hidden"
+                variants={cardVariants}
+                className="group relative bg-white rounded-2xl p-7 border border-zinc-200/80 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-zinc-200/50 hover:-translate-y-1 hover:border-zinc-300"
               >
-                {/* Hover Glow — erscheint nur bei Hover */}
                 <div
-                  className="absolute -top-20 -right-20 w-40 h-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                  style={{
-                    background: `radial-gradient(ellipse, ${glowColor} 0%, transparent 70%)`,
-                    filter: 'blur(30px)',
-                  }}
-                  aria-hidden="true"
-                />
-
-                {/* Icon — mit farbigem Akzent */}
-                <div
-                  className="relative inline-flex items-center justify-center w-11 h-11 rounded-xl mb-5 transition-transform duration-300 group-hover:scale-110"
-                  style={{
-                    backgroundColor: `${accentColor}12`,
-                    color: accentColor,
-                  }}
+                  className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-5 border ${iconColor.bg} ${iconColor.text} ${iconColor.border}`}
                 >
                   <Icon className="h-5 w-5" />
                 </div>
 
-                {/* Titel */}
-                <h3 className="relative text-base font-semibold text-white mb-2.5 group-hover:text-white/95 transition-colors">
+                <h3 className="text-base font-bold text-zinc-900 mb-2">
                   {title}
                 </h3>
 
-                {/* Beschreibung */}
-                <p className="relative text-sm text-white/40 leading-relaxed group-hover:text-white/50 transition-colors">
+                <p className="text-sm text-zinc-500 leading-relaxed">
                   {description}
                 </p>
-
-                {/* Badge-Vorschau (nur letzte Card, wenn Badges vorhanden) */}
-                {isLast && badges.length > 0 && (
-                  <div className="relative mt-5 flex flex-wrap gap-1.5">
-                    {badges.slice(0, 6).map((badge) => (
-                      <span
-                        key={badge.id}
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border ${
-                          RARITY_STYLES[badge.rarity] ?? RARITY_STYLES['COMMON']
-                        }`}
-                      >
-                        {badge.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
               </motion.div>
             )
           })}
-        </div>
+        </motion.div>
+
+        {visibleBadges.length > 0 && (
+          <motion.div
+            initial={false}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-30px' }}
+            transition={{ duration: 0.5, delay: 0.4, ease: 'easeOut' }}
+            className="mt-12 flex flex-wrap items-center justify-center gap-2"
+          >
+            <span className="text-xs font-semibold text-zinc-500 mr-1">
+              Abzeichen
+            </span>
+            {visibleBadges.map((badge) => (
+              <span
+                key={badge.id}
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
+                  RARITY_STYLES[badge.rarity] ?? RARITY_STYLES['COMMON']
+                }`}
+              >
+                {badge.name}
+              </span>
+            ))}
+          </motion.div>
+        )}
       </div>
     </section>
   )

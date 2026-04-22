@@ -30,11 +30,16 @@ import {
   Moon,
   Clock,
   ChevronRight,
+  ChevronLeft,
   Target,
   TrendingUp,
   Medal,
   Star,
   Calendar,
+  Sparkles,
+  Zap,
+  Timer,
+  Package,
 } from 'lucide-react'
 import { getBadgeIcon } from '@/lib/sport-icons'
 import type { BadgeRarity } from '@prisma/client'
@@ -65,16 +70,10 @@ const DEFAULT_COLORS: SportColors = {
   primary: '#16A34A', glow: 'rgba(22,163,74,0.35)', highlight: '#22c55e',
 }
 
-const SPORT_HERO_GRADIENT: Record<string, string> = {
-  fussball:   'linear-gradient(135deg, #0A0A0A 0%, #0f1f0f 50%, #0A0A0A 100%)',
-  tennis:     'linear-gradient(135deg, #1A1208 0%, #2D1E0A 50%, #1A1208 100%)',
-  basketball: 'linear-gradient(135deg, #0A0500 0%, #1A0F00 50%, #0A0500 100%)',
-}
-
 const SPORT_HERO_IMAGE: Record<string, string> = {
-  fussball:   'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=1600&q=60',
+  fussball:   'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1600&q=60',
   tennis:     'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1600&q=60',
-  basketball: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1600&q=60',
+  basketball: 'https://images.unsplash.com/photo-1559692048-79a3f837883d?w=1600&q=60',
 }
 
 const SPORT_NAMES: Record<string, string> = {
@@ -609,7 +608,6 @@ type _NutritionSummaryCheck = NutritionSummary
 export function DashboardHomeClient({ data }: { data: DashboardPageData }) {
   const sport        = data.primarySport ?? 'fussball'
   const colors       = SPORT_COLORS[sport]          ?? DEFAULT_COLORS
-  const heroGradient = SPORT_HERO_GRADIENT[sport]   ?? SPORT_HERO_GRADIENT['fussball'] ?? ''
   const heroImage    = SPORT_HERO_IMAGE[sport]      ?? SPORT_HERO_IMAGE['fussball']    ?? ''
   const sportLabel   = SPORT_NAMES[sport]           ?? 'Sport'
   const firstName    = data.userName.split(' ')[0]  ?? data.userName
@@ -641,76 +639,97 @@ export function DashboardHomeClient({ data }: { data: DashboardPageData }) {
 
   const weekXpTotal = data.xpHistory.reduce((sum, d) => sum + d.xp, 0)
 
+  const SPORT_BG_IMAGES = [
+    'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=60',
+    'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&q=60',
+    'https://images.unsplash.com/photo-1559692048-79a3f837883d?w=800&q=60',
+    'https://images.unsplash.com/photo-1517466787926-bc5b6be5293b?w=800&q=60',
+    'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&q=60',
+    'https://images.unsplash.com/photo-1535127014032-4c6101293211?w=800&q=60',
+  ]
+
   return (
     <div className="min-h-screen" style={{ ...cssVars, background: '#FAFAFA' }}>
       <div className="px-8 py-6 w-full">
 
+        {/* ── Breadcrumb Navigation ──────────────────────────────────── */}
+        <motion.div {...fadeUp(0.0)} className="mb-4">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-700 transition-colors"
+          >
+            <ChevronLeft size={14} />
+            Zurück zum Dashboard
+          </Link>
+        </motion.div>
+
         {/* ── Hero ──────────────────────────────────────────────────── */}
         <motion.div
-          {...fadeUp(0.0)}
+          {...fadeUp(0.04)}
           className="rounded-2xl overflow-hidden mb-6 relative"
-          style={{ height: 200, background: heroGradient }}
+          style={{ minHeight: 200 }}
         >
-          {/* Layer 2: Unsplash */}
-          <Image
-            src={heroImage}
-            alt=""
-            fill
-            className="object-cover"
-            style={{ opacity: 0.08 }}
-            priority
-            sizes="(max-width: 1280px) 100vw, 1200px"
-          />
+          {/* Multi-sport Unsplash background mosaic */}
+          <div className="absolute inset-0 grid grid-cols-3 grid-rows-2 gap-0.5" aria-hidden="true">
+            {SPORT_BG_IMAGES.map((src, i) => (
+              <div key={i} className="relative overflow-hidden">
+                <img
+                  src={src}
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-cover"
+                  loading={i < 2 ? 'eager' : 'lazy'}
+                />
+              </div>
+            ))}
+          </div>
+          <div className="absolute inset-0 bg-white/90" />
 
-          {/* Layer 3: Overlay */}
-          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.45)' }} />
-
-          {/* Layer 4: Blur Blob */}
+          {/* Sport-color accent blob */}
           <div
             className="absolute top-1/2 -translate-y-1/2 rounded-full blur-3xl pointer-events-none"
             style={{
               right:      -40,
-              width:      300,
-              height:     300,
+              width:      350,
+              height:     350,
               background: colors.primary,
-              opacity:    0.06,
+              opacity:    0.1,
             }}
           />
 
           {/* Content */}
-          <div className="relative z-10 h-full flex flex-col justify-between px-8 pt-6 pb-6">
+          <div className="relative z-10 flex flex-col justify-between px-8 pt-6 pb-6" style={{ minHeight: 200 }}>
             {/* Oben: Begrüßung + Sport-Tag */}
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p
-                  className="text-xs font-semibold uppercase tracking-wider mb-1"
-                  style={{ color: 'rgba(255,255,255,0.40)' }}
-                >
-                  {new Date().toLocaleDateString('de-DE', {
-                    weekday: 'long',
-                    day:     'numeric',
-                    month:   'long',
-                  })}
-                </p>
-                <h1 className="text-2xl font-bold text-white tracking-tight">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles size={14} style={{ color: colors.primary }} />
+                  <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                    {new Date().toLocaleDateString('de-DE', {
+                      weekday: 'long',
+                      day:     'numeric',
+                      month:   'long',
+                    })}
+                  </p>
+                </div>
+                <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">
                   {mounted ? greeting : `Willkommen zurück, ${firstName}`}
                 </h1>
+                <p className="text-sm text-zinc-500 mt-1">
+                  Level {data.level} · {(mounted ? xpCount : data.xp).toLocaleString('de-DE')} XP · {sportLabel}
+                </p>
               </div>
               <div className="flex items-center gap-3 flex-shrink-0">
                 <span
                   className="px-3 py-1.5 rounded-full text-xs font-semibold"
                   style={{
-                    background: `${colors.primary}30`,
-                    color:      colors.highlight,
-                    border:     `1px solid ${colors.primary}40`,
+                    background: `${colors.primary}15`,
+                    color:      colors.primary,
+                    border:     `1px solid ${colors.primary}30`,
                   }}
                 >
                   {sportLabel}
                 </span>
-                <p
-                  className="hidden xl:block text-right leading-relaxed"
-                  style={{ fontSize: 10, color: 'rgba(255,255,255,0.20)', maxWidth: 160 }}
-                >
+                <p className="hidden xl:block text-right leading-relaxed text-zinc-400" style={{ fontSize: 10, maxWidth: 160 }}>
                   Erstellt von unserer eigenen KI · kein externer Bot · DSGVO-konform
                 </p>
               </div>
@@ -720,16 +739,10 @@ export function DashboardHomeClient({ data }: { data: DashboardPageData }) {
             {!data.levelInfo.isMaxLevel ? (
               <div>
                 <div className="flex items-center gap-3 mb-1.5">
-                  <span
-                    className="text-xs font-bold"
-                    style={{ color: 'rgba(255,255,255,0.50)', minWidth: 40 }}
-                  >
+                  <span className="text-xs font-bold text-zinc-400" style={{ minWidth: 40 }}>
                     Lv.{data.level}
                   </span>
-                  <div
-                    className="flex-1 rounded-full overflow-hidden"
-                    style={{ height: 6, background: 'rgba(255,255,255,0.12)' }}
-                  >
+                  <div className="flex-1 rounded-full overflow-hidden bg-zinc-100" style={{ height: 6 }}>
                     <div
                       style={{
                         height:       '100%',
@@ -740,28 +753,22 @@ export function DashboardHomeClient({ data }: { data: DashboardPageData }) {
                       }}
                     />
                   </div>
-                  <span
-                    className="text-xs font-bold"
-                    style={{ color: 'rgba(255,255,255,0.50)', minWidth: 40, textAlign: 'right' }}
-                  >
+                  <span className="text-xs font-bold text-zinc-400" style={{ minWidth: 40, textAlign: 'right' }}>
                     Lv.{data.level + 1}
                   </span>
-                  <span
-                    className="text-xs hidden sm:block"
-                    style={{ color: 'rgba(255,255,255,0.30)', minWidth: 90, textAlign: 'right' }}
-                  >
+                  <span className="text-xs hidden sm:block text-zinc-400" style={{ minWidth: 90, textAlign: 'right' }}>
                     {(mounted ? xpCount : data.xp).toLocaleString('de-DE')} XP
                   </span>
                 </div>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.28)' }}>
+                <p className="text-xs text-zinc-400">
                   {data.levelInfo.xpInCurrentLevel.toLocaleString('de-DE')} /{' '}
                   {data.levelInfo.xpNeededInCurrentLevel.toLocaleString('de-DE')} XP bis Level {data.level + 1}
                 </p>
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-white">MAX LEVEL</span>
-                <span className="text-xs" style={{ color: colors.highlight }}>Lv.{data.level}</span>
+                <span className="text-sm font-bold text-zinc-900">MAX LEVEL</span>
+                <span className="text-xs" style={{ color: colors.primary }}>Lv.{data.level}</span>
               </div>
             )}
           </div>
@@ -947,35 +954,39 @@ export function DashboardHomeClient({ data }: { data: DashboardPageData }) {
               Schnellzugriff
             </p>
           </div>
-          <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {(
               [
-                { Icon: BookOpen,  label: 'Tagebuch',    href: '/dashboard/training' },
-                { Icon: Utensils,  label: 'Ernährung',   href: '/dashboard/ernaehrung' },
-                { Icon: MapPin,    label: 'Vereine',     href: '/vereine' },
-                { Icon: Trophy,    label: 'Turniere',    href: '/turniere' },
-                { Icon: Users,     label: 'Community',   href: '/community' },
-                { Icon: BarChart2, label: 'Statistiken', href: '/dashboard/profil' },
+                { Icon: BookOpen,  label: 'Tagebuch',    desc: 'Training einsehen',  href: '/dashboard/training' },
+                { Icon: Utensils,  label: 'Ernährung',   desc: 'Makros tracken',     href: '/dashboard/ernaehrung' },
+                { Icon: MapPin,    label: 'Vereine',      desc: 'Vereine finden',     href: '/vereine' },
+                { Icon: Trophy,    label: 'Turniere',     desc: 'Turnier anmelden',   href: '/turniere' },
+                { Icon: Users,     label: 'Community',   desc: 'Mitglieder',        href: '/community' },
+                { Icon: BarChart2, label: 'Statistiken', desc: 'Deine Fortschritte', href: '/dashboard/profil' },
+                { Icon: Timer,     label: 'Fasten',       desc: 'Intervallfasten',    href: '/dashboard/ernaehrung/fasten' },
+                { Icon: Package,   label: 'Kühlschrank',  desc: 'Smart Fridge',       href: '/dashboard/ernaehrung/kuehlschrank' },
               ] as const
-            ).map(({ Icon, label, href }) => (
+            ).map(({ Icon, label, desc, href }) => (
               <Link
                 key={label}
                 href={href}
-                className="flex flex-col items-center gap-2 flex-shrink-0 px-5 py-4 rounded-2xl transition-transform hover:scale-105 active:scale-95"
+                className="group flex flex-col rounded-2xl p-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]"
                 style={{
                   background: '#FFFFFF',
                   border:     '1px solid #E4E4E7',
-                  minWidth:   80,
                 }}
               >
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center"
-                  style={{ background: `${colors.primary}10` }}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-2 transition-transform duration-200 group-hover:scale-110"
+                  style={{ background: `${colors.primary}12` }}
                 >
                   <Icon size={20} style={{ color: colors.primary }} />
                 </div>
-                <span className="text-xs font-medium whitespace-nowrap" style={{ color: '#0A0A0A' }}>
+                <span className="text-sm font-semibold whitespace-nowrap" style={{ color: '#0A0A0A' }}>
                   {label}
+                </span>
+                <span className="text-xs mt-0.5" style={{ color: '#71717A' }}>
+                  {desc}
                 </span>
               </Link>
             ))}

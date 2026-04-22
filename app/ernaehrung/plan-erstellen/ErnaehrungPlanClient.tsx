@@ -202,7 +202,7 @@ function WizardProgress({ step }: { step: Step }) {
             <div
               className={[
                 'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300',
-                step >= n ? 'text-white' : 'bg-white/10 text-white/30',
+                step >= n ? 'text-zinc-900' : 'bg-zinc-100 text-zinc-400',
               ].join(' ')}
               style={step >= n ? { background: '#16A34A' } : {}}
             >
@@ -217,14 +217,14 @@ function WizardProgress({ step }: { step: Step }) {
             <span
               className={[
                 'text-xs mt-1 whitespace-nowrap hidden sm:block',
-                step === n ? 'text-white/70' : 'text-white/25',
+                step === n ? 'text-zinc-700' : 'text-zinc-400',
               ].join(' ')}
             >
               {label}
             </span>
           </div>
           {i < steps.length - 1 && (
-            <div className="flex-1 h-px bg-white/10 relative -mt-4 sm:-mt-5">
+            <div className="flex-1 h-px bg-zinc-100 relative -mt-4 sm:-mt-5">
               {step > n && (
                 <motion.div
                   initial={{ scaleX: 0 }}
@@ -286,15 +286,15 @@ function Step1KoerperZiel({
     <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <h2 className="text-xl font-bold text-white">Dein Körper</h2>
-        <Lock size={14} className="text-white/40" />
-        <span className="text-sm text-white/40">Daten werden lokal berechnet</span>
+        <h2 className="text-xl font-bold text-zinc-900">Dein Körper</h2>
+        <Lock size={14} className="text-zinc-500" />
+        <span className="text-sm text-zinc-500">Daten werden lokal berechnet</span>
       </div>
 
       {/* Körpergröße */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-white/60 uppercase tracking-wider">
+          <span className="text-sm font-semibold text-zinc-600 uppercase tracking-wider">
             Körpergröße
           </span>
           <span className="text-2xl font-bold tabular-nums text-[#16A34A]">
@@ -312,10 +312,10 @@ function Step1KoerperZiel({
           }
           className="w-full h-2 rounded-full appearance-none cursor-pointer"
           style={{
-            background: `linear-gradient(to right, #16A34A 0%, #16A34A ${heightPct}%, rgba(255,255,255,0.1) ${heightPct}%, rgba(255,255,255,0.1) 100%)`,
+            background: `linear-gradient(to right, #16A34A 0%, #16A34A ${heightPct}%, rgba(0,0,0,0.05) ${heightPct}%, rgba(0,0,0,0.05) 100%)`,
           }}
         />
-        <div className="flex justify-between text-xs text-white/30 mt-1">
+        <div className="flex justify-between text-xs text-zinc-400 mt-1">
           <span>150 cm</span>
           <span>215 cm</span>
         </div>
@@ -324,7 +324,7 @@ function Step1KoerperZiel({
       {/* Körpergewicht */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-white/60 uppercase tracking-wider">
+          <span className="text-sm font-semibold text-zinc-600 uppercase tracking-wider">
             Körpergewicht
           </span>
           <span className="text-2xl font-bold tabular-nums text-[#16A34A]">
@@ -342,27 +342,27 @@ function Step1KoerperZiel({
           }
           className="w-full h-2 rounded-full appearance-none cursor-pointer"
           style={{
-            background: `linear-gradient(to right, #16A34A 0%, #16A34A ${weightPct}%, rgba(255,255,255,0.1) ${weightPct}%, rgba(255,255,255,0.1) 100%)`,
+            background: `linear-gradient(to right, #16A34A 0%, #16A34A ${weightPct}%, rgba(0,0,0,0.05) ${weightPct}%, rgba(0,0,0,0.05) 100%)`,
           }}
         />
-        <div className="flex justify-between text-xs text-white/30 mt-1">
+        <div className="flex justify-between text-xs text-zinc-400 mt-1">
           <span>40 kg</span>
           <span>130 kg</span>
         </div>
       </div>
 
       {/* Alter (read-only) */}
-      <div className="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-white/5">
-        <Cake size={14} className="text-white/40 shrink-0" />
-        <span className="text-sm text-white/60">Alter (aus Profil):</span>
-        <span className="text-sm font-semibold text-white ml-auto">
+      <div className="flex items-center gap-3 p-4 rounded-xl border border-zinc-200 bg-zinc-50">
+        <Cake size={14} className="text-zinc-500 shrink-0" />
+        <span className="text-sm text-zinc-600">Alter (aus Profil):</span>
+        <span className="text-sm font-semibold text-zinc-900 ml-auto">
           {age !== null ? `${age} Jahre` : 'Nicht angegeben'}
         </span>
       </div>
 
       {/* Geschlecht */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+        <h3 className="text-sm font-semibold text-zinc-600 uppercase tracking-wider mb-3">
           Geschlecht
         </h3>
         <div className="grid grid-cols-2 gap-3">
@@ -382,8 +382,8 @@ function Step1KoerperZiel({
                 className={[
                   'flex items-center gap-3 p-4 rounded-xl border text-left transition-all duration-200',
                   isSelected
-                    ? 'border-[#16A34A] bg-[#16A34A]/10 text-white'
-                    : 'border-white/10 bg-white/5 text-white/60 hover:border-white/20',
+                    ? 'border-[#16A34A] bg-[#16A34A]/10 text-zinc-900'
+                    : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300',
                 ].join(' ')}
               >
                 <User size={18} style={{ color: isSelected ? '#16A34A' : undefined }} />
@@ -399,7 +399,7 @@ function Step1KoerperZiel({
 
       {/* Ziel-Cards */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+        <h3 className="text-sm font-semibold text-zinc-600 uppercase tracking-wider mb-3">
           Dein Ziel
         </h3>
         <div className="grid grid-cols-1 gap-2.5">
@@ -417,15 +417,15 @@ function Step1KoerperZiel({
                   'flex items-center gap-3 p-4 rounded-xl border text-left transition-all duration-200',
                   isSelected
                     ? 'border-[#16A34A] bg-[#16A34A]/10'
-                    : 'border-white/10 bg-white/5 hover:border-white/20',
+                    : 'border-zinc-200 bg-zinc-50 hover:border-zinc-300',
                 ].join(' ')}
               >
-                <span style={{ color: isSelected ? '#16A34A' : 'rgba(255,255,255,0.4)' }}>
+                <span style={{ color: isSelected ? '#16A34A' : 'rgba(0,0,0,0.4)' }}>
                   {card.icon}
                 </span>
                 <div>
-                  <div className="text-sm font-semibold text-white">{card.label}</div>
-                  <div className="text-xs text-white/50 mt-0.5">{card.description}</div>
+                  <div className="text-sm font-semibold text-zinc-900">{card.label}</div>
+                  <div className="text-xs text-zinc-500 mt-0.5">{card.description}</div>
                 </div>
                 {isSelected && (
                   <div className="ml-auto w-2 h-2 rounded-full bg-[#16A34A] shrink-0" />
@@ -503,7 +503,7 @@ function Step2AktivitaetSport({
     <div className="space-y-8">
       {/* Aktivitätslevel */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+        <h3 className="text-sm font-semibold text-zinc-600 uppercase tracking-wider mb-3">
           Aktivitätslevel
         </h3>
         <div className="grid grid-cols-1 gap-2">
@@ -523,15 +523,15 @@ function Step2AktivitaetSport({
                   'flex items-center gap-3 p-4 rounded-xl border text-left transition-all duration-200',
                   isSelected
                     ? 'border-[#16A34A] bg-[#16A34A]/10'
-                    : 'border-white/10 bg-white/5 hover:border-white/20',
+                    : 'border-zinc-200 bg-zinc-50 hover:border-zinc-300',
                 ].join(' ')}
               >
-                <span style={{ color: isSelected ? '#16A34A' : 'rgba(255,255,255,0.4)' }}>
+                <span style={{ color: isSelected ? '#16A34A' : 'rgba(0,0,0,0.4)' }}>
                   {card.icon}
                 </span>
                 <div>
-                  <div className="text-sm font-semibold text-white">{card.label}</div>
-                  <div className="text-xs text-white/50">{card.description}</div>
+                  <div className="text-sm font-semibold text-zinc-900">{card.label}</div>
+                  <div className="text-xs text-zinc-500">{card.description}</div>
                 </div>
                 {isSelected && (
                   <div className="ml-auto w-2 h-2 rounded-full bg-[#16A34A] shrink-0" />
@@ -544,7 +544,7 @@ function Step2AktivitaetSport({
 
       {/* Sportart */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+        <h3 className="text-sm font-semibold text-zinc-600 uppercase tracking-wider mb-3">
           Sportart
         </h3>
         <div className="grid grid-cols-2 gap-3">
@@ -564,11 +564,11 @@ function Step2AktivitaetSport({
                   'p-4 rounded-xl border text-left transition-all duration-200',
                   isSelected
                     ? 'border-[#16A34A] bg-[#16A34A]/10'
-                    : 'border-white/10 bg-white/5 hover:border-white/20',
+                    : 'border-zinc-200 bg-zinc-50 hover:border-zinc-300',
                 ].join(' ')}
               >
                 <div className="text-xl mb-1">{card.emoji}</div>
-                <div className="text-sm font-semibold text-white">{card.label}</div>
+                <div className="text-sm font-semibold text-zinc-900">{card.label}</div>
                 {isSelected && (
                   <div className="mt-1 w-2 h-2 rounded-full bg-[#16A34A]" />
                 )}
@@ -588,7 +588,7 @@ function Step2AktivitaetSport({
             transition={{ duration: 0.3 }}
           >
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-semibold text-white/60 uppercase tracking-wider">
+              <span className="text-sm font-semibold text-zinc-600 uppercase tracking-wider">
                 Trainingstage pro Woche
               </span>
               <span className="text-2xl font-bold tabular-nums text-[#16A34A]">
@@ -609,10 +609,10 @@ function Step2AktivitaetSport({
               }
               className="w-full h-2 rounded-full appearance-none cursor-pointer"
               style={{
-                background: `linear-gradient(to right, #16A34A 0%, #16A34A ${trainingPct}%, rgba(255,255,255,0.1) ${trainingPct}%, rgba(255,255,255,0.1) 100%)`,
+                background: `linear-gradient(to right, #16A34A 0%, #16A34A ${trainingPct}%, rgba(0,0,0,0.05) ${trainingPct}%, rgba(0,0,0,0.05) 100%)`,
               }}
             />
-            <div className="flex justify-between text-xs text-white/30 mt-1">
+            <div className="flex justify-between text-xs text-zinc-400 mt-1">
               {[1, 2, 3, 4, 5, 6, 7].map((n) => (
                 <span key={n}>{n}</span>
               ))}
@@ -624,7 +624,7 @@ function Step2AktivitaetSport({
       {/* Session-Dauer Slider */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-white/60 uppercase tracking-wider">
+          <span className="text-sm font-semibold text-zinc-600 uppercase tracking-wider">
             Dauer pro Einheit
           </span>
           <span className="text-2xl font-bold tabular-nums text-[#16A34A]">
@@ -645,10 +645,10 @@ function Step2AktivitaetSport({
           }
           className="w-full h-2 rounded-full appearance-none cursor-pointer"
           style={{
-            background: `linear-gradient(to right, #16A34A 0%, #16A34A ${sessionPct}%, rgba(255,255,255,0.1) ${sessionPct}%, rgba(255,255,255,0.1) 100%)`,
+            background: `linear-gradient(to right, #16A34A 0%, #16A34A ${sessionPct}%, rgba(0,0,0,0.05) ${sessionPct}%, rgba(0,0,0,0.05) 100%)`,
           }}
         />
-        <div className="flex justify-between text-xs text-white/30 mt-1">
+        <div className="flex justify-between text-xs text-zinc-400 mt-1">
           <span>20 min</span>
           <span>120 min</span>
         </div>
@@ -703,7 +703,7 @@ function Step3BudgetPraeferenzen({
     <div className="space-y-8">
       {/* Budget */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+        <h3 className="text-sm font-semibold text-zinc-600 uppercase tracking-wider mb-3">
           Wochenbudget
         </h3>
         <div className="grid grid-cols-2 gap-3">
@@ -723,15 +723,15 @@ function Step3BudgetPraeferenzen({
                   'flex flex-col gap-2 p-4 rounded-xl border text-left transition-all duration-200',
                   isSelected
                     ? 'border-[#16A34A] bg-[#16A34A]/10'
-                    : 'border-white/10 bg-white/5 hover:border-white/20',
+                    : 'border-zinc-200 bg-zinc-50 hover:border-zinc-300',
                 ].join(' ')}
               >
-                <span style={{ color: isSelected ? '#16A34A' : 'rgba(255,255,255,0.4)' }}>
+                <span style={{ color: isSelected ? '#16A34A' : 'rgba(0,0,0,0.4)' }}>
                   {card.icon}
                 </span>
                 <div>
-                  <div className="text-sm font-semibold text-white">{card.label}</div>
-                  <div className="text-xs text-white/50">{card.sublabel}</div>
+                  <div className="text-sm font-semibold text-zinc-900">{card.label}</div>
+                  <div className="text-xs text-zinc-500">{card.sublabel}</div>
                 </div>
                 {isSelected && (
                   <div className="w-2 h-2 rounded-full bg-[#16A34A]" />
@@ -762,7 +762,7 @@ function Step3BudgetPraeferenzen({
 
       {/* Ernährungsweise */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+        <h3 className="text-sm font-semibold text-zinc-600 uppercase tracking-wider mb-3">
           Ernährungsweise
         </h3>
         <div className="flex flex-wrap gap-2">
@@ -775,8 +775,8 @@ function Step3BudgetPraeferenzen({
                 className={[
                   'px-4 py-2 rounded-full text-sm font-medium border transition-all duration-200',
                   isSelected
-                    ? 'border-[#16A34A] bg-[#16A34A]/20 text-white'
-                    : 'border-white/10 bg-white/5 text-white/60 hover:border-white/20',
+                    ? 'border-[#16A34A] bg-[#16A34A]/20 text-zinc-900'
+                    : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300',
                 ].join(' ')}
               >
                 {chip.label}
@@ -789,11 +789,11 @@ function Step3BudgetPraeferenzen({
       {/* Ausschlüsse */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider">
+          <h3 className="text-sm font-semibold text-zinc-600 uppercase tracking-wider">
             Ausschlüsse{' '}
-            <span className="text-white/30 normal-case font-normal">(optional)</span>
+            <span className="text-zinc-400 normal-case font-normal">(optional)</span>
           </h3>
-          <span className="text-xs text-white/30">
+          <span className="text-xs text-zinc-400">
             {formData.ausschluesse.length}/300
           </span>
         </div>
@@ -806,7 +806,7 @@ function Step3BudgetPraeferenzen({
           }}
           placeholder="z.B. Fisch, Nüsse, bestimmte Gemüsesorten..."
           rows={3}
-          className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#16A34A] resize-none"
+          className="w-full px-4 py-3 rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-900 text-sm placeholder-white/30 focus:outline-none focus:border-[#16A34A] resize-none"
         />
       </div>
     </div>
@@ -827,28 +827,28 @@ function MahlzeitKarte({
   onToggle: () => void
 }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 overflow-hidden">
+    <div className="rounded-xl border border-zinc-200 bg-zinc-50 overflow-hidden">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition-colors"
+        className="w-full flex items-center justify-between p-4 text-left hover:bg-zinc-50 transition-colors"
       >
         <div className="flex-1 min-w-0">
-          <div className="text-xs text-white/40 font-medium uppercase tracking-wide">
+          <div className="text-xs text-zinc-500 font-medium uppercase tracking-wide">
             {mahlzeit.name}
           </div>
-          <div className="text-sm font-semibold text-white mt-0.5 truncate">
+          <div className="text-sm font-semibold text-zinc-900 mt-0.5 truncate">
             {mahlzeit.gericht}
           </div>
           <div className="flex items-center gap-3 mt-1.5">
             <span className="text-xs text-[#16A34A] font-semibold">
               {mahlzeit.kalorien} kcal
             </span>
-            <span className="text-xs text-white/40">
+            <span className="text-xs text-zinc-500">
               P {mahlzeit.proteinG}g · K {mahlzeit.kohlenhydrateG}g · F {mahlzeit.fettG}g
             </span>
           </div>
         </div>
-        <div className="ml-3 text-white/40 shrink-0">
+        <div className="ml-3 text-zinc-500 shrink-0">
           {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </div>
       </button>
@@ -862,8 +862,8 @@ function MahlzeitKarte({
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 border-t border-white/5">
-              <p className="text-xs text-white/60 leading-relaxed pt-3">
+            <div className="px-4 pb-4 border-t border-zinc-100">
+              <p className="text-xs text-zinc-600 leading-relaxed pt-3">
                 {mahlzeit.zubereitung}
               </p>
             </div>
@@ -983,13 +983,13 @@ function Step4Generierung({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3 }}
-                className="text-sm text-white/60 text-center"
+                className="text-sm text-zinc-600 text-center"
               >
                 {AI_LOADING_TEXTS[textIndex]}
               </motion.p>
             </AnimatePresence>
 
-            <p className="text-xs text-white/30 text-center">
+            <p className="text-xs text-zinc-400 text-center">
               Erstellt von unserer eigenen KI · kein externer Bot · DSGVO-konform
             </p>
           </motion.div>
@@ -1003,11 +1003,11 @@ function Step4Generierung({
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col items-center py-12 gap-6 text-center"
           >
-            <AlertTriangle size={40} className="text-red-400" />
-            <p className="text-red-300 text-sm max-w-sm">{error}</p>
+            <AlertTriangle size={40} className="text-red-500" />
+            <p className="text-red-600 text-sm max-w-sm">{error}</p>
             <button
               onClick={onRetry}
-              className="px-6 py-3 rounded-xl font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] transition-colors"
+              className="px-6 py-3 rounded-xl font-semibold text-zinc-900 bg-[#16A34A] hover:bg-[#15803D] transition-colors"
             >
               Erneut versuchen
             </button>
@@ -1032,32 +1032,32 @@ function Step4Generierung({
               <div className="flex items-start gap-3">
                 <CheckCircle size={22} className="text-[#16A34A] shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-white leading-snug">{result.title}</h3>
-                  <p className="text-sm text-white/50 mt-1">
+                  <h3 className="font-bold text-zinc-900 leading-snug">{result.title}</h3>
+                  <p className="text-sm text-zinc-500 mt-1">
                     {result.tagesKalorienZiel.toLocaleString('de-DE')} kcal / Tag · 7 Tage
                   </p>
                   {result.planData.beschreibung.length > 0 && (
-                    <p className="text-xs text-white/40 mt-2 leading-relaxed">
+                    <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
                       {result.planData.beschreibung}
                     </p>
                   )}
                 </div>
               </div>
-              <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/10">
-                <p className="text-xs text-white/30">
+              <div className="flex items-center justify-between mt-4 pt-3 border-t border-zinc-200">
+                <p className="text-xs text-zinc-400">
                   Erstellt von unserer eigenen KI · kein externer Bot · DSGVO-konform
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={onPrint}
-                    className="p-2 rounded-lg border border-white/10 hover:border-white/20 text-white/50 hover:text-white transition-all"
+                    className="p-2 rounded-lg border border-zinc-200 hover:border-zinc-300 text-zinc-500 hover:text-zinc-900 transition-all"
                     title="Drucken"
                   >
                     <Printer size={15} />
                   </button>
                   <button
                     onClick={onShare}
-                    className="p-2 rounded-lg border border-white/10 hover:border-white/20 text-white/50 hover:text-white transition-all"
+                    className="p-2 rounded-lg border border-zinc-200 hover:border-zinc-300 text-zinc-500 hover:text-zinc-900 transition-all"
                     title={copied ? 'Kopiert!' : 'Teilen'}
                   >
                     {copied ? <CheckCircle size={15} className="text-[#16A34A]" /> : <Share2 size={15} />}
@@ -1081,8 +1081,8 @@ function Step4Generierung({
                     className={[
                       'flex-shrink-0 px-3 py-2 rounded-lg text-xs font-semibold border transition-all duration-200',
                       activeTab === i
-                        ? 'border-[#16A34A] bg-[#16A34A]/20 text-white'
-                        : 'border-white/10 bg-white/5 text-white/50 hover:border-white/20',
+                        ? 'border-[#16A34A] bg-[#16A34A]/20 text-zinc-900'
+                        : 'border-zinc-200 bg-zinc-50 text-zinc-500 hover:border-zinc-300',
                     ].join(' ')}
                   >
                     {day}
@@ -1096,8 +1096,8 @@ function Step4Generierung({
                   className={[
                     'flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition-all duration-200',
                     activeTab === 7
-                      ? 'border-[#16A34A] bg-[#16A34A]/20 text-white'
-                      : 'border-white/10 bg-white/5 text-white/50 hover:border-white/20',
+                      ? 'border-[#16A34A] bg-[#16A34A]/20 text-zinc-900'
+                      : 'border-zinc-200 bg-zinc-50 text-zinc-500 hover:border-zinc-300',
                   ].join(' ')}
                 >
                   <ShoppingCart size={12} />
@@ -1117,7 +1117,7 @@ function Step4Generierung({
                     className="mt-3 space-y-2.5"
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-white/40">
+                      <span className="text-xs text-zinc-500">
                         {activeDay.wochentag}
                         {activeDay.istTrainingsTag && (
                           <span className="ml-2 text-[#16A34A]">Trainingstag</span>
@@ -1149,7 +1149,7 @@ function Step4Generierung({
                   >
                     {result.planData.einkaufsliste.map((kat, ki) => (
                       <div key={ki}>
-                        <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wide mb-2">
+                        <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-2">
                           {kat.kategorie}
                         </h4>
                         <div className="space-y-1">
@@ -1160,16 +1160,16 @@ function Step4Generierung({
                               <button
                                 key={key}
                                 onClick={() => toggleCheck(key)}
-                                className="w-full flex items-center gap-3 p-3 rounded-lg border border-white/5 bg-white/3 hover:bg-white/5 text-left transition-colors"
+                                className="w-full flex items-center gap-3 p-3 rounded-lg border border-zinc-100 bg-white hover:bg-zinc-50 text-left transition-colors"
                               >
                                 <div
                                   className={[
                                     'w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-all',
-                                    isChecked ? 'bg-[#16A34A] border-[#16A34A]' : 'border-white/20',
+                                    isChecked ? 'bg-[#16A34A] border-[#16A34A]' : 'border-zinc-300',
                                   ].join(' ')}
                                 >
                                   {isChecked && (
-                                    <svg viewBox="0 0 12 12" className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                                    <svg viewBox="0 0 12 12" className="w-2.5 h-2.5 text-zinc-900" fill="none" stroke="currentColor" strokeWidth={2.5}>
                                       <path d="M2 6l3 3 5-5" />
                                     </svg>
                                   )}
@@ -1177,13 +1177,13 @@ function Step4Generierung({
                                 <span
                                   className={[
                                     'text-sm font-medium flex-1 min-w-0',
-                                    isChecked ? 'line-through text-white/30' : 'text-white',
+                                    isChecked ? 'line-through text-zinc-400' : 'text-zinc-900',
                                   ].join(' ')}
                                 >
                                   {prod.name}
                                 </span>
-                                <span className="text-xs text-white/40 shrink-0">{prod.menge}</span>
-                                <span className="text-xs text-white/60 tabular-nums shrink-0 w-14 text-right">
+                                <span className="text-xs text-zinc-500 shrink-0">{prod.menge}</span>
+                                <span className="text-xs text-zinc-600 tabular-nums shrink-0 w-14 text-right">
                                   {formatPrice(prod.preisEur)}
                                 </span>
                               </button>
@@ -1195,7 +1195,7 @@ function Step4Generierung({
 
                     {/* Gesamtpreis */}
                     <div className="flex items-center justify-between p-4 rounded-xl border border-[#16A34A]/30 bg-[#16A34A]/5">
-                      <span className="text-sm font-semibold text-white">Gesamt</span>
+                      <span className="text-sm font-semibold text-zinc-900">Gesamt</span>
                       <span className="text-lg font-bold text-[#16A34A] tabular-nums">
                         {formatPrice(result.planData.gesamtpreisEur)}
                       </span>
@@ -1211,14 +1211,14 @@ function Step4Generierung({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="p-4 rounded-xl border border-white/5 bg-white/3"
+                className="p-4 rounded-xl border border-zinc-100 bg-white"
               >
-                <h4 className="text-xs font-semibold text-white/50 uppercase tracking-wide mb-2">
+                <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-2">
                   Ernährungstipps
                 </h4>
                 <ul className="space-y-1">
                   {result.planData.tipps.map((tip, i) => (
-                    <li key={i} className="text-xs text-white/50 leading-relaxed flex gap-2">
+                    <li key={i} className="text-xs text-zinc-500 leading-relaxed flex gap-2">
                       <span className="text-[#16A34A] shrink-0">·</span>
                       {tip}
                     </li>
@@ -1237,7 +1237,7 @@ function Step4Generierung({
               <button
                 onClick={onActivate}
                 disabled={isActivating}
-                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-zinc-900 bg-[#16A34A] hover:bg-[#15803D] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 <CheckCircle size={18} />
                 {isActivating ? 'Wird aktiviert...' : 'Plan aktivieren'}
@@ -1246,7 +1246,7 @@ function Step4Generierung({
               {canRegenerate && (
                 <button
                   onClick={onRegenerate}
-                  className="w-full py-3 rounded-xl font-semibold text-white/70 border border-white/10 hover:border-white/20 hover:text-white transition-all duration-200 text-sm"
+                  className="w-full py-3 rounded-xl font-semibold text-zinc-700 border border-zinc-200 hover:border-zinc-300 hover:text-zinc-900 transition-all duration-200 text-sm"
                 >
                   Nochmals generieren
                 </button>
@@ -1453,7 +1453,7 @@ export function ErnaehrungPlanClient({
     generateResult !== null && generateResult.usedThisMonth < 3
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white">
+    <div className="min-h-screen bg-[#FAFAFA] text-zinc-900">
       {/* Atmosphärischer Hintergrund für Schritt 4 */}
       {step === 4 && (
         <div className="fixed inset-0 z-0 pointer-events-none">
@@ -1466,7 +1466,7 @@ export function ErnaehrungPlanClient({
             loading="lazy"
           />
           <div
-            className="absolute inset-0 bg-gradient-to-b from-gray-950 via-green-950 to-gray-950"
+            className="absolute inset-0 bg-gradient-to-b from-white via-zinc-50 to-zinc-100"
             style={{ opacity: 0.88 }}
           />
         </div>
@@ -1475,17 +1475,17 @@ export function ErnaehrungPlanClient({
       <div className="relative z-10 max-w-xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-2xl font-bold text-zinc-900">
             {step === 4 ? 'Dein Ernährungsplan' : 'Plan erstellen'}
           </h1>
-          <p className="text-sm text-white/50 mt-1">{STEP_TITLES[step]}</p>
+          <p className="text-sm text-zinc-500 mt-1">{STEP_TITLES[step]}</p>
         </div>
 
         {/* Rate-Limit-Banner */}
         {isAtLimit && step < 4 && (
-          <div className="mb-6 flex items-start gap-3 p-4 rounded-xl border border-red-500/30 bg-red-500/5">
-            <AlertTriangle size={18} className="text-red-400 shrink-0 mt-0.5" />
-            <p className="text-sm text-red-300">
+          <div className="mb-6 flex items-start gap-3 p-4 rounded-xl border border-red-200 bg-red-50">
+            <AlertTriangle size={18} className="text-red-500 shrink-0 mt-0.5" />
+            <p className="text-sm text-red-600">
               Du hast diesen Monat bereits 3 Pläne erstellt. Nächsten Monat kannst
               du neue Pläne generieren.
             </p>
@@ -1494,9 +1494,9 @@ export function ErnaehrungPlanClient({
 
         {/* Aktivierungs-Fehler */}
         {activateError !== null && (
-          <div className="mb-4 flex items-start gap-3 p-4 rounded-xl border border-red-500/30 bg-red-500/5">
-            <AlertTriangle size={18} className="text-red-400 shrink-0 mt-0.5" />
-            <p className="text-sm text-red-300">{activateError}</p>
+          <div className="mb-4 flex items-start gap-3 p-4 rounded-xl border border-red-200 bg-red-50">
+            <AlertTriangle size={18} className="text-red-500 shrink-0 mt-0.5" />
+            <p className="text-sm text-red-600">{activateError}</p>
           </div>
         )}
 
@@ -1563,7 +1563,7 @@ export function ErnaehrungPlanClient({
             <button
               onClick={goBack}
               disabled={step === 4 && (isGenerating || generateResult !== null)}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 bg-white/5 text-white/70 hover:border-white/20 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
+              className="flex items-center gap-2 px-5 py-3 rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-zinc-300 hover:text-zinc-900 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
             >
               <ChevronLeft size={18} />
               <span className="text-sm font-medium">Zurück</span>
@@ -1573,7 +1573,7 @@ export function ErnaehrungPlanClient({
               <button
                 onClick={goNext}
                 disabled={!canProceed() || (isAtLimit && step === 3)}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white bg-[#16A34A] hover:bg-[#15803D] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+                className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-zinc-900 bg-[#16A34A] hover:bg-[#15803D] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
               >
                 <span className="text-sm">
                   {step === 3 ? 'Plan generieren' : 'Weiter'}

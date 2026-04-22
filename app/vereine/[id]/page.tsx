@@ -3,7 +3,7 @@
 //
 // Route-Segment: /vereine/[slug]
 // Sucht den Verein per Slug (oder ID) direkt via Prisma.
-// Rendert dunklen Sport-Gradient-Hero + VereinDetailContent.
+// Rendert weißen Sport-Hero + VereinDetailContent.
 // ─────────────────────────────────────────────────────────────────
 
 import Image from 'next/image'
@@ -146,7 +146,7 @@ export default async function VereinDetailPage({ params }: PageProps) {
 
   const { sport } = verein
   const initials = getInitials(verein.name)
-  const heroGradient = `linear-gradient(135deg, ${sport.colorPrimary}cc 0%, #0A0A0A 100%)`
+  const heroGradient = `linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%)`
 
   return (
     <div data-sport={sport.slug} className="min-h-screen bg-[#FAFAFA]">
@@ -161,16 +161,16 @@ export default async function VereinDetailPage({ params }: PageProps) {
             src={verein.coverUrl}
             alt=""
             fill
-            className="object-cover opacity-[0.12]"
+            className="object-cover opacity-[0.05]"
             priority
           />
         )}
-        {/* Bottom fade */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+        {/* Fade to white */}
+        <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
 
         {/* Blur-Blob Atmosphäre */}
         <div
-          className="absolute -top-20 -right-20 w-80 h-80 rounded-full blur-3xl opacity-20"
+          className="absolute -top-20 -right-20 w-80 h-80 rounded-full blur-3xl opacity-10"
           style={{ backgroundColor: sport.colorPrimary }}
         />
 
@@ -179,7 +179,7 @@ export default async function VereinDetailPage({ params }: PageProps) {
           {/* Zurück-Link */}
           <Link
             href="/vereine"
-            className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm font-medium transition-colors w-fit"
+            className="inline-flex items-center gap-1.5 text-zinc-500 hover:text-zinc-900 text-sm font-medium transition-colors w-fit"
           >
             <ArrowLeft size={16} />
             Vereinssuche
@@ -188,7 +188,7 @@ export default async function VereinDetailPage({ params }: PageProps) {
           {/* Verein-Info */}
           <div className="flex items-end gap-4">
             {/* Logo */}
-            <div className="w-16 h-16 rounded-2xl border-2 border-white/20 overflow-hidden shadow-lg flex-shrink-0">
+            <div className="w-16 h-16 rounded-2xl border-2 border-zinc-200 overflow-hidden shadow-lg flex-shrink-0">
               {verein.logoUrl ? (
                 <Image
                   src={verein.logoUrl}
@@ -210,12 +210,12 @@ export default async function VereinDetailPage({ params }: PageProps) {
             {/* Name + Stadt */}
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-2xl font-bold text-white leading-tight">{verein.name}</h1>
+                <h1 className="text-2xl font-bold text-zinc-900 leading-tight">{verein.name}</h1>
                 {verein.isVerified && (
-                  <ShieldCheck size={18} className="text-white/80 flex-shrink-0" aria-label="Verifizierter Verein" />
+                  <ShieldCheck size={18} className="text-zinc-500 flex-shrink-0" aria-label="Verifizierter Verein" />
                 )}
               </div>
-              <div className="flex items-center gap-1 mt-1 text-white/70 text-sm">
+              <div className="flex items-center gap-1 mt-1 text-zinc-500 text-sm">
                 <MapPin size={13} />
                 <span>{verein.city}, {verein.postalCode}</span>
               </div>

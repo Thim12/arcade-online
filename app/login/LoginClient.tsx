@@ -1,15 +1,5 @@
 'use client'
 
-// ─────────────────────────────────────────────────────────────────
-// app/login/LoginClient.tsx – Login-Formular (Client Component)
-//
-// Layout: Zweispaltig (links 55% dunkel, rechts 45% weiß)
-// Links:  Blur-Blobs, SVG-Grid, Logo, rotierende Testimonials,
-//         Feature-Chips, Nav-Dots
-// Rechts: Google-Button, E-Mail/Passwort-Formular, Error-Banner,
-//         Checkbox "Angemeldet bleiben", Link "Passwort vergessen"
-// ─────────────────────────────────────────────────────────────────
-
 import { useState, useEffect, useRef } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
@@ -21,29 +11,25 @@ import {
   Eye,
   EyeOff,
   CheckCircle2,
-  MapPin,
-  Brain,
-  Clock,
   AlertCircle,
   ArrowRight,
+  Zap,
+  Shield,
+  Users,
 } from 'lucide-react'
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
 import * as LabelPrimitive from '@radix-ui/react-label'
-
-// ── Types ─────────────────────────────────────────────────────────
 
 interface LoginClientProps {
   error?: string
   callbackUrl?: string
 }
 
-// ── Static data ───────────────────────────────────────────────────
-
 const TESTIMONIALS = [
   {
     initials: 'JK',
     name: 'Jonas K.',
-    sport: 'Fußball Mittelstürmer',
+    sport: 'Fußball · Mittelstürmer',
     age: 17,
     quote:
       'Seit ich SportRise nutze, hat sich mein Training komplett verändert. Der KI-Plan ist genau auf mein Niveau abgestimmt.',
@@ -51,15 +37,15 @@ const TESTIMONIALS = [
   {
     initials: 'SM',
     name: 'Sarah M.',
-    sport: 'Tennis LK 14.3',
+    sport: 'Tennis · LK 14.3',
     age: 15,
     quote:
-      'Endlich eine Plattform, die den Sportalltag in Deutschland wirklich versteht. Die Vereinssuche hat mir so viel Zeit gespart.',
+      'Endlich eine Plattform, die den Sportalltag in Deutschland wirklich versteht.',
   },
   {
     initials: 'LT',
     name: 'Leon T.',
-    sport: 'Basketball PG',
+    sport: 'Basketball · PG',
     age: 16,
     quote:
       'Die Community und das Turnier-Feature sind unglaublich. Ich habe hier Gegner gefunden, die wirklich auf meinem Niveau spielen.',
@@ -67,20 +53,13 @@ const TESTIMONIALS = [
 ]
 
 const FEATURES = [
-  { icon: CheckCircle2, label: 'Kostenlos & werbefrei' },
-  { icon: MapPin, label: 'Hessen & DE-weit' },
-  { icon: Brain, label: 'KI-Trainingsplan' },
-  { icon: Clock, label: 'Immer verfügbar' },
+  { icon: Zap, label: 'KI-Trainingsplan' },
+  { icon: Shield, label: 'DSGVO-konform' },
+  { icon: Users, label: 'Community' },
+  { icon: CheckCircle2, label: 'Kostenlos' },
 ]
 
-// ── Error map ─────────────────────────────────────────────────────
-
-interface ErrorInfo {
-  message: string
-  hasRegistrationLink?: boolean
-}
-
-const ERROR_MAP: Record<string, ErrorInfo> = {
+const ERROR_MAP: Record<string, { message: string; hasRegistrationLink?: boolean }> = {
   user_not_found: {
     message: 'Diese E-Mail ist noch nicht registriert.',
     hasRegistrationLink: true,
@@ -102,16 +81,11 @@ const ERROR_MAP: Record<string, ErrorInfo> = {
   },
 }
 
-const FALLBACK_ERROR: ErrorInfo = {
-  message: 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.',
-}
-
-// ── Component ─────────────────────────────────────────────────────
+const FALLBACK_ERROR = { message: 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.' }
 
 export default function LoginClient({ error: urlError, callbackUrl }: LoginClientProps) {
   const router = useRouter()
 
-  // Form state
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
@@ -119,7 +93,6 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
   const [isLoading, setIsLoading] = useState(false)
   const [currentError, setCurrentError] = useState<string | null>(urlError ?? null)
 
-  // Testimonial rotation
   const [testimonialIndex, setTestimonialIndex] = useState(0)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -131,8 +104,6 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
   }, [])
-
-  // ── Handlers ──────────────────────────────────────────────────
 
   const safeCallbackUrl =
     callbackUrl && callbackUrl.startsWith('/') ? callbackUrl : '/dashboard'
@@ -163,42 +134,29 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
     await signIn('google', { callbackUrl: safeCallbackUrl })
   }
 
-  // ── Derived values ────────────────────────────────────────────
-
   const errorInfo = currentError
     ? (ERROR_MAP[currentError] ?? FALLBACK_ERROR)
     : null
 
   const currentTestimonial = TESTIMONIALS[testimonialIndex]
 
-  // ── Render ────────────────────────────────────────────────────
-
   return (
-    <div className="min-h-screen flex">
-      {/* ── Left panel (55%, dark, sticky) ──────────────────────── */}
-      <div className="hidden lg:flex lg:w-[55%] bg-[#0A0A0A] relative overflow-hidden flex-col sticky top-0 h-screen">
-        {/* Blur blob – top right */}
+    <div className="min-h-screen bg-white flex flex-col lg:flex-row">
+      {/* ── Left panel (55%) — Testimonials, Apple-style ────────── */}
+      <div className="hidden lg:flex lg:w-[55%] bg-zinc-50 relative overflow-hidden flex-col">
+        {/* Subtle decorative blob */}
         <div
-          className="absolute top-[-60px] right-[-80px] w-[400px] h-[400px] rounded-full pointer-events-none"
-          style={{ background: 'rgba(22,163,74,0.08)', filter: 'blur(120px)' }}
+          className="absolute top-[-120px] right-[-80px] w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{ background: 'rgba(22,163,74,0.06)', filter: 'blur(120px)' }}
         />
-        {/* Blur blob – bottom left */}
         <div
-          className="absolute bottom-[80px] left-[-60px] w-[300px] h-[300px] rounded-full pointer-events-none"
-          style={{ background: 'rgba(22,163,74,0.05)', filter: 'blur(80px)' }}
-        />
-        {/* SVG grid pattern */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='40' height='40' fill='none' stroke='rgba(255,255,255,0.025)' stroke-width='0.5'/%3E%3C/svg%3E")`,
-            backgroundRepeat: 'repeat',
-          }}
+          className="absolute bottom-[-60px] left-[-40px] w-[350px] h-[350px] rounded-full pointer-events-none"
+          style={{ background: 'rgba(22,163,74,0.04)', filter: 'blur(100px)' }}
         />
 
-        {/* Logo – top left */}
-        <div className="relative z-10 p-8">
-          <Link href="/" className="flex items-center gap-2.5 w-fit">
+        {/* Logo */}
+        <div className="relative z-10 p-10">
+          <Link href="/" className="flex items-center gap-2.5 w-fit group">
             <svg
               width="32"
               height="32"
@@ -216,11 +174,11 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
                 strokeLinejoin="round"
               />
             </svg>
-            <span className="text-white font-bold text-xl tracking-tight">SportRise</span>
+            <span className="text-zinc-900 font-bold text-xl tracking-tight">SportRise</span>
           </Link>
         </div>
 
-        {/* Testimonial – vertically centered */}
+        {/* Testimonial — vertically centered */}
         <div className="relative z-10 flex-1 flex flex-col justify-center px-12 pb-8">
           <AnimatePresence mode="wait">
             <motion.div
@@ -231,32 +189,28 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
               transition={{ duration: 0.45, ease: 'easeOut' }}
               className="flex flex-col"
             >
-              {/* Decorative opening quote */}
               <div
-                className="text-[#16A34A] text-7xl font-serif leading-none mb-4 select-none"
+                className="text-green-600 text-6xl font-serif leading-none mb-4 select-none"
                 aria-hidden="true"
               >
                 &#x201C;
               </div>
 
-              {/* Quote text */}
-              <p className="text-white/85 text-xl font-light italic max-w-[320px] leading-relaxed">
+              <p className="text-zinc-800 text-xl font-light leading-relaxed max-w-[360px]">
                 {currentTestimonial.quote}
               </p>
 
-              {/* Green separator */}
-              <div className="w-10 h-[2px] bg-[#16A34A] my-5" />
+              <div className="w-10 h-[2px] bg-green-600 my-5" />
 
-              {/* Author */}
               <div className="flex items-center gap-3">
-                <div className="w-[38px] h-[38px] rounded-full bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0">
-                  <span className="text-white text-xs font-semibold">
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <span className="text-green-700 text-sm font-semibold">
                     {currentTestimonial.initials}
                   </span>
                 </div>
                 <div>
-                  <p className="text-white text-sm font-medium">{currentTestimonial.name}</p>
-                  <p className="text-white/50 text-xs">
+                  <p className="text-zinc-900 text-sm font-medium">{currentTestimonial.name}</p>
+                  <p className="text-zinc-500 text-xs">
                     {currentTestimonial.sport} · {currentTestimonial.age} Jahre
                   </p>
                 </div>
@@ -267,20 +221,18 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
 
         {/* Bottom: feature chips + nav dots */}
         <div className="relative z-10 px-12 pb-10 flex flex-col gap-5">
-          {/* Feature chips */}
           <div className="flex flex-wrap gap-2">
             {FEATURES.map(({ icon: Icon, label }) => (
               <div
                 key={label}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-zinc-200 shadow-sm"
               >
-                <Icon className="w-3.5 h-3.5 text-[#16A34A]" />
-                <span className="text-white/60 text-xs">{label}</span>
+                <Icon className="w-3.5 h-3.5 text-green-600" />
+                <span className="text-zinc-600 text-xs font-medium">{label}</span>
               </div>
             ))}
           </div>
 
-          {/* Nav dots */}
           <div className="flex items-center gap-2">
             {TESTIMONIALS.map((_, i) => (
               <button
@@ -289,8 +241,8 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
                 onClick={() => setTestimonialIndex(i)}
                 className={`rounded-full transition-all duration-300 ${
                   i === testimonialIndex
-                    ? 'bg-[#16A34A] w-8 h-1.5'
-                    : 'bg-white/20 w-1.5 h-1.5 hover:bg-white/40'
+                    ? 'bg-green-600 w-8 h-1.5'
+                    : 'bg-zinc-300 w-1.5 h-1.5 hover:bg-zinc-400'
                 }`}
                 aria-label={`Testimonial ${i + 1}`}
               />
@@ -299,8 +251,8 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
         </div>
       </div>
 
-      {/* ── Right panel (45%, white) ─────────────────────────────── */}
-      <div className="flex-1 lg:w-[45%] bg-white flex items-center justify-center px-6 py-12">
+      {/* ── Right panel (45%) — Login form, white ─────────────────── */}
+      <div className="flex-1 min-h-screen bg-white flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-[400px]">
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 mb-8 lg:hidden">
@@ -320,17 +272,17 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
                 strokeLinejoin="round"
               />
             </svg>
-            <span className="text-[#0A0A0A] font-bold text-lg tracking-tight">SportRise</span>
+            <span className="text-zinc-900 font-bold text-lg tracking-tight">SportRise</span>
           </div>
 
           {/* Heading */}
           <div className="mb-7">
-            <h1 className="text-2xl font-bold text-[#0A0A0A] mb-2">Willkommen zurück</h1>
-            <p className="text-[#71717A] text-sm">
+            <h1 className="text-2xl font-bold text-zinc-900 mb-2 tracking-tight">Willkommen zurück</h1>
+            <p className="text-zinc-500 text-sm">
               Noch kein Konto?{' '}
               <Link
                 href="/registrieren"
-                className="text-[#16A34A] font-medium hover:text-[#15803D] transition-colors"
+                className="text-green-600 font-medium hover:text-green-700 transition-colors"
               >
                 Jetzt registrieren
               </Link>
@@ -347,16 +299,16 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
                 transition={{ duration: 0.2 }}
                 className="mb-5 overflow-hidden"
               >
-                <div className="flex items-start gap-3 p-3.5 rounded-lg bg-[#FEF2F2] border border-[#FECACA]">
-                  <AlertCircle className="w-4 h-4 text-[#EF4444] flex-shrink-0 mt-0.5" />
-                  <p className="text-[#991B1B] text-sm leading-snug">
+                <div className="flex items-start gap-3 p-3.5 rounded-xl bg-red-50 border border-red-200">
+                  <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-red-700 text-sm leading-snug">
                     {errorInfo.message}
                     {errorInfo.hasRegistrationLink && (
                       <>
                         {' '}
                         <Link
                           href="/registrieren"
-                          className="font-medium underline underline-offset-2 hover:text-[#7F1D1D] transition-colors"
+                          className="font-medium underline underline-offset-2 hover:text-red-900 transition-colors"
                         >
                           Jetzt registrieren
                         </Link>
@@ -373,9 +325,8 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-3 h-11 rounded-lg border border-[#E4E4E7] bg-white hover:bg-[#FAFAFA] transition-colors text-[#0A0A0A] text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed mb-5"
+            className="w-full flex items-center justify-center gap-3 h-12 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 transition-colors text-zinc-900 text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed mb-5"
           >
-            {/* Google G – four-color SVG */}
             <svg
               width="18"
               height="18"
@@ -406,9 +357,9 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
 
           {/* Divider */}
           <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-px bg-[#E4E4E7]" />
-            <span className="text-[#71717A] text-xs">oder per E-Mail</span>
-            <div className="flex-1 h-px bg-[#E4E4E7]" />
+            <div className="flex-1 h-px bg-zinc-200" />
+            <span className="text-zinc-400 text-xs">oder per E-Mail</span>
+            <div className="flex-1 h-px bg-zinc-200" />
           </div>
 
           {/* Credentials form */}
@@ -417,12 +368,12 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
             <div className="flex flex-col gap-1.5">
               <LabelPrimitive.Root
                 htmlFor="email"
-                className="text-sm font-medium text-[#0A0A0A]"
+                className="text-sm font-medium text-zinc-900"
               >
                 E-Mail
               </LabelPrimitive.Root>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#71717A] pointer-events-none" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
                 <input
                   id="email"
                   type="email"
@@ -431,7 +382,7 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
                   placeholder="name@email.de"
                   required
                   autoComplete="email"
-                  className="w-full h-11 pl-10 pr-4 rounded-lg border border-[#E4E4E7] bg-white text-[#0A0A0A] text-sm placeholder:text-[#A1A1AA] focus:outline-none focus:ring-2 focus:ring-[#16A34A]/30 focus:border-[#16A34A] transition-colors"
+                  className="w-full h-12 pl-10 pr-4 rounded-xl border border-zinc-200 bg-white text-zinc-900 text-sm placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-600/20 focus:border-green-600 transition-colors"
                 />
               </div>
             </div>
@@ -440,12 +391,12 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
             <div className="flex flex-col gap-1.5">
               <LabelPrimitive.Root
                 htmlFor="password"
-                className="text-sm font-medium text-[#0A0A0A]"
+                className="text-sm font-medium text-zinc-900"
               >
                 Passwort
               </LabelPrimitive.Root>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#71717A] pointer-events-none" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
@@ -454,12 +405,12 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
                   placeholder="Dein Passwort"
                   required
                   autoComplete="current-password"
-                  className="w-full h-11 pl-10 pr-11 rounded-lg border border-[#E4E4E7] bg-white text-[#0A0A0A] text-sm placeholder:text-[#A1A1AA] focus:outline-none focus:ring-2 focus:ring-[#16A34A]/30 focus:border-[#16A34A] transition-colors"
+                  className="w-full h-12 pl-10 pr-11 rounded-xl border border-zinc-200 bg-white text-zinc-900 text-sm placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-600/20 focus:border-green-600 transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#71717A] hover:text-[#52525B] transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
                   aria-label={showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'}
                 >
                   {showPassword ? (
@@ -478,7 +429,7 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
                   id="rememberMe"
                   checked={rememberMe}
                   onCheckedChange={(checked) => setRememberMe(checked === true)}
-                  className="w-4 h-4 rounded border border-[#E4E4E7] bg-white data-[state=checked]:bg-[#16A34A] data-[state=checked]:border-[#16A34A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A]/30 transition-colors flex-shrink-0 flex items-center justify-center"
+                  className="w-4 h-4 rounded border border-zinc-300 bg-white data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-600/30 transition-colors flex-shrink-0 flex items-center justify-center"
                 >
                   <CheckboxPrimitive.Indicator>
                     <svg
@@ -500,14 +451,14 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
                 </CheckboxPrimitive.Root>
                 <LabelPrimitive.Root
                   htmlFor="rememberMe"
-                  className="text-sm text-[#52525B] cursor-pointer select-none"
+                  className="text-sm text-zinc-500 cursor-pointer select-none"
                 >
                   Angemeldet bleiben
                 </LabelPrimitive.Root>
               </div>
               <Link
                 href="/passwort-vergessen"
-                className="text-sm text-[#71717A] hover:text-[#16A34A] transition-colors"
+                className="text-sm text-zinc-400 hover:text-green-600 transition-colors"
               >
                 Passwort vergessen?
               </Link>
@@ -517,10 +468,7 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
             <button
               type="submit"
               disabled={isLoading}
-              className="relative w-full h-11 rounded-lg bg-[#16A34A] text-white text-sm font-semibold hover:bg-[#15803D] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 group mt-1"
-              style={{
-                boxShadow: isLoading ? 'none' : '0 4px 24px rgba(22,163,74,0.35)',
-              }}
+              className="relative w-full h-12 rounded-xl bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-800 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 group mt-1"
             >
               {isLoading ? (
                 <>
@@ -557,18 +505,18 @@ export default function LoginClient({ error: urlError, callbackUrl }: LoginClien
           </form>
 
           {/* Privacy note */}
-          <p className="mt-6 text-xs text-center text-[#71717A] leading-relaxed">
+          <p className="mt-6 text-xs text-center text-zinc-400 leading-relaxed">
             Mit der Anmeldung stimmst du unseren{' '}
             <Link
               href="/agb"
-              className="underline underline-offset-2 hover:text-[#52525B] transition-colors"
+              className="underline underline-offset-2 hover:text-zinc-600 transition-colors"
             >
               AGB
             </Link>{' '}
             und unserer{' '}
             <Link
               href="/datenschutz"
-              className="underline underline-offset-2 hover:text-[#52525B] transition-colors"
+              className="underline underline-offset-2 hover:text-zinc-600 transition-colors"
             >
               Datenschutzerklärung
             </Link>{' '}

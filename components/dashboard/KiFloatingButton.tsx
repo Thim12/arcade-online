@@ -1,28 +1,16 @@
 'use client'
-// ─────────────────────────────────────────────────────────────────
-// components/dashboard/KiFloatingButton.tsx
-//
-// Floating-Button (fixed, unten rechts) auf allen Dashboard-Seiten.
-// Navigiert zu /dashboard/ki-trainer.
-// Nicht sichtbar wenn bereits auf /dashboard/ki-trainer.
-// Sportfarbe als Hintergrund (via primarySport-Prop).
-// ─────────────────────────────────────────────────────────────────
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Brain } from 'lucide-react'
 
-// ── Konstanten ─────────────────────────────────────────────────────
-
 const SPORT_COLORS: Record<string, { primary: string; glow: string }> = {
-  fussball:   { primary: '#16A34A', glow: 'rgba(22,163,74,0.45)'  },
-  tennis:     { primary: '#C2621A', glow: 'rgba(194,98,26,0.45)'  },
-  basketball: { primary: '#EA580C', glow: 'rgba(234,88,12,0.45)'  },
+  fussball:   { primary: '#16A34A', glow: 'rgba(22,163,74,0.40)' },
+  tennis:     { primary: '#C2621A', glow: 'rgba(194,98,26,0.40)' },
+  basketball: { primary: '#EA580C', glow: 'rgba(234,88,12,0.40)' },
 }
-const DEFAULT_COLORS = { primary: '#16A34A', glow: 'rgba(22,163,74,0.45)' }
-
-// ── Component ──────────────────────────────────────────────────────
+const DEFAULT_COLORS = { primary: '#16A34A', glow: 'rgba(22,163,74,0.40)' }
 
 interface Props {
   primarySport: string | null
@@ -30,48 +18,50 @@ interface Props {
 
 export function KiFloatingButton({ primarySport }: Props) {
   const pathname = usePathname()
-  const visible  = !pathname.startsWith('/dashboard/ki-trainer')
-  const colors   = SPORT_COLORS[primarySport ?? ''] ?? DEFAULT_COLORS
+  const visible = !pathname.startsWith('/dashboard/ki-trainer')
+  const colors = SPORT_COLORS[primarySport ?? ''] ?? DEFAULT_COLORS
 
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.8, y: 12 }}
+          initial={{ opacity: 0, scale: 0.6, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 12 }}
-          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          exit={{ opacity: 0, scale: 0.6, y: 20 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="fixed bottom-6 right-6 z-40"
         >
           <Link
             href="/dashboard/ki-trainer"
-            aria-label="KI-Trainer öffnen"
-            className="group flex items-center gap-0 rounded-full overflow-hidden transition-all duration-300 hover:gap-2.5 hover:px-4"
+            aria-label="KI-Trainer oeffnen"
+            className="group relative flex items-center gap-0 rounded-full overflow-hidden transition-all duration-300 hover:gap-2 hover:px-5 hover:py-4"
             style={{
-              width: 48,
-              height: 48,
-              background: colors.primary,
-              boxShadow: `0 4px 20px ${colors.glow}`,
-              paddingLeft: 14,
-              paddingRight: 14,
+              height: 56,
+              background: `linear-gradient(135deg, ${colors.primary}, ${colors.primary}dd)`,
+              boxShadow: `0 4px 24px ${colors.glow}, 0 2px 8px rgba(0,0,0,0.1)`,
+              paddingLeft: 16,
+              paddingRight: 16,
             }}
             onMouseEnter={(e) => {
               const el = e.currentTarget as HTMLAnchorElement
-              el.style.width = 'auto'
-              el.style.paddingLeft = '14px'
-              el.style.paddingRight = '16px'
+              el.style.paddingLeft = '20px'
+              el.style.paddingRight = '20px'
+              el.style.boxShadow = `0 8px 32px ${colors.glow}, 0 4px 12px rgba(0,0,0,0.12)`
             }}
             onMouseLeave={(e) => {
               const el = e.currentTarget as HTMLAnchorElement
-              el.style.width = '48px'
-              el.style.paddingLeft = '14px'
-              el.style.paddingRight = '14px'
+              el.style.paddingLeft = '16px'
+              el.style.paddingRight = '16px'
+              el.style.boxShadow = `0 4px 24px ${colors.glow}, 0 2px 8px rgba(0,0,0,0.1)`
             }}
           >
-            <Brain size={20} color="#fff" className="flex-shrink-0" />
-            <span
-              className="text-white text-sm font-semibold whitespace-nowrap overflow-hidden transition-all duration-300 max-w-0 group-hover:max-w-xs"
+            <motion.div
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 3, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' }}
             >
+              <Brain size={22} color="#fff" className="flex-shrink-0" strokeWidth={2} />
+            </motion.div>
+            <span className="text-white text-sm font-semibold whitespace-nowrap overflow-hidden transition-all duration-300 max-w-0 group-hover:max-w-xs">
               KI-Trainer
             </span>
           </Link>
